@@ -1,13 +1,18 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class MainPage {
   private final ElementsCollection tableRows = $$("#spendings tr");
+  private final SelenideElement spendings = $("#spendings");
+  private final SelenideElement statistics = $("#stat");
+
 
   public EditSpendingPage editSpending(String description) {
     tableRows.find(text(description)).$$("td").get(5).click();
@@ -16,6 +21,12 @@ public class MainPage {
 
   public MainPage checkThatTableContains(String description) {
     tableRows.find(text(description)).should(visible);
+    return this;
+  }
+
+  public MainPage checkElements() {
+    statistics.should(visible);
+    spendings.shouldBe(visible);
     return this;
   }
 }
