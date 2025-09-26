@@ -3,6 +3,7 @@ package guru.qa.niffler.service;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -99,6 +100,11 @@ public class SpendDbClient implements SpendClient {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public CategoryJson updateCategory(CategoryJson category) {
+    throw new UnsupportedOperationException("Not implemented :(");
   }
 
   @Override

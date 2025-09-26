@@ -1,12 +1,13 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
 import java.io.File;
 
 import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.*;
 
 public class ProfilePage {
 
@@ -15,11 +16,12 @@ public class ProfilePage {
     private final SelenideElement usernameInput = $("#username");
     private final SelenideElement nameInput = $("#name");
     private final SelenideElement saveChangesButton = $("#:r12:");
-    private final SelenideElement showArchivedCategoriesCheckbox = $(By.xpath("//span[contains(text(),'Show archived')]/..//input[@type='checkbox']"));
+    private final SelenideElement showArchivedCategoriesCheckbox = $x("//span[contains(text(),'Show archived')]/..//input[@type='checkbox']");
     private final SelenideElement addNewCategoryInput = $("#category");
+    private final SelenideElement submitArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Archive']");
 
     private SelenideElement findCategory(String category) {
-        return $("span.MuiChip-label").$(byText(category)).$x("ancestor::*[2]");
+        return $x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
     }
 
     private SelenideElement editCategoryButton(String category) {
@@ -136,6 +138,7 @@ public class ProfilePage {
 
     public ProfilePage clickArchiveCategory(String category) {
         archiveCategoryButton(category).click();
+        submitArchive.click();
         return this;
     }
 
