@@ -4,7 +4,6 @@ import guru.qa.niffler.api.SpendApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
-import lombok.SneakyThrows;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -47,7 +46,7 @@ public class SpendApiClient implements SpendClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-        assertEquals(200, response.code()); // здесь 200 OK
+        assertEquals(200, response.code());
         return response.body();
     }
 

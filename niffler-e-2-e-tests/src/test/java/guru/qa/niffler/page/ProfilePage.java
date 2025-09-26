@@ -1,13 +1,11 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class ProfilePage {
 
@@ -19,6 +17,7 @@ public class ProfilePage {
     private final SelenideElement showArchivedCategoriesCheckbox = $x("//span[contains(text(),'Show archived')]/..//input[@type='checkbox']");
     private final SelenideElement addNewCategoryInput = $("#category");
     private final SelenideElement submitArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Archive']");
+    private final SelenideElement submitUnArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unarchive']");
 
     private SelenideElement findCategory(String category) {
         return $x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
@@ -136,7 +135,7 @@ public class ProfilePage {
         return editCategoryButton(category).isDisplayed();
     }
 
-    public ProfilePage clickArchiveCategory(String category) {
+    public ProfilePage archiveCategory(String category) {
         archiveCategoryButton(category).click();
         submitArchive.click();
         return this;
@@ -146,8 +145,9 @@ public class ProfilePage {
         return archiveCategoryButton(category).isDisplayed();
     }
 
-    public ProfilePage clickUnArchiveCategory(String category) {
+    public ProfilePage unArchiveCategory(String category) {
         unArchiveCategoryButton(category).click();
+        submitUnArchive.click();
         return this;
     }
 
