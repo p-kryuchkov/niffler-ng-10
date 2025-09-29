@@ -8,34 +8,26 @@ import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.service.SpendApiClient;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class CategoryTest {
     private static final Config CFG = Config.getInstance();
 
     @Category(
-            name = "TestCategory",
             username = "TestUserForCategory",
             archived = false
     )
     @Test
-    public void achiveCathegoryTest(CategoryJson categoryJson) {
+    public void archiveCategoryTest(CategoryJson categoryJson) {
         SpendApiClient spendApiClient = new SpendApiClient();
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(categoryJson.username(), "CatCat")
                 .editProfile()
-                .archiveCategory(categoryJson.name());
-
-        CategoryJson found = spendApiClient
-                .findCategoryByNameAndUsername(categoryJson.name(), categoryJson.username())
-                .orElseThrow(() -> new AssertionError("Category not found"));
-
-        assertTrue(found.archived(), "Category not archived");
+                .archiveCategory(categoryJson.name())
+                .checkShowArchivedCategories()
+                .isCategoryExists(categoryJson.name());
     }
 
     @Category(
-            name = "TestArchiveCategory",
             username = "TestUserForCategory",
             archived = true
     )
@@ -47,12 +39,8 @@ public class CategoryTest {
                 .login(categoryJson.username(), "CatCat")
                 .editProfile()
                 .checkShowArchivedCategories()
-                .unArchiveCategory(categoryJson.name());
-
-        CategoryJson found = spendApiClient
-                .findCategoryByNameAndUsername(categoryJson.name(), categoryJson.username())
-                .orElseThrow(() -> new AssertionError("Category not found"));
-
-        assertTrue(!found.archived());
+                .unArchiveCategory(categoryJson.name())
+                .uncheckShowArchivedCategories()
+                .isCategoryExists(categoryJson.name());
     }
 }

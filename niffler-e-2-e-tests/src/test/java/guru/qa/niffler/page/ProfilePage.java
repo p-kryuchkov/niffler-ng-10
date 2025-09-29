@@ -4,8 +4,8 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 public class ProfilePage {
 
@@ -19,6 +19,14 @@ public class ProfilePage {
     private final SelenideElement submitArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Archive']");
     private final SelenideElement submitUnArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unarchive']");
 
+    /**
+     * Метод для клика по элементу с помощью JS
+     * @param element
+     */
+    private void clickWithJs(SelenideElement element) {
+        element.shouldBe(enabled);
+        executeJavaScript("arguments[0].click();", element);
+    }
     private SelenideElement findCategory(String category) {
         return $x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
     }
@@ -46,12 +54,14 @@ public class ProfilePage {
         return this;
     }
 
-    public String getUsername() {
-        return usernameInput.getValue();
+    public ProfilePage checkUserNameInputValue(String value) {
+        usernameInput.shouldHave(text(value));
+        return this;
     }
 
-    public boolean isUsernameFieldVisible() {
-        return usernameInput.isDisplayed();
+    public ProfilePage isUsernameFieldVisible() {
+        usernameInput.shouldBe(visible);
+        return this;
     }
 
     public ProfilePage setName(String name) {
@@ -64,12 +74,14 @@ public class ProfilePage {
         return this;
     }
 
-    public String getName() {
-        return nameInput.getValue();
+    public ProfilePage checkNameInputValue(String value) {
+        nameInput.shouldHave(text(value));
+        return this;
     }
 
-    public boolean isNameFieldVisible() {
-        return nameInput.isDisplayed();
+    public ProfilePage isNameFieldVisible() {
+        nameInput.shouldBe(visible);
+        return this;
     }
 
     public ProfilePage clickSaveChanges() {
@@ -77,28 +89,28 @@ public class ProfilePage {
         return this;
     }
 
-
     public ProfilePage checkShowArchivedCategories() {
-        if (!isShowArchivedCategoriesChecked()) {
-            toggleShowArchivedCategories();
+        if (!showArchivedCategoriesCheckbox.isSelected()) {
+            clickWithJs(showArchivedCategoriesCheckbox);
         }
         return this;
     }
 
     public ProfilePage uncheckShowArchivedCategories() {
-        if (isShowArchivedCategoriesChecked()) {
-            toggleShowArchivedCategories();
+        if (showArchivedCategoriesCheckbox.isSelected()) {
+            clickWithJs(showArchivedCategoriesCheckbox);
         }
         return this;
     }
 
     public ProfilePage toggleShowArchivedCategories() {
-        showArchivedCategoriesCheckbox.click();
+        showArchivedCategoriesCheckbox.shouldBe(clickable).click();
         return this;
     }
 
-    public boolean isShowArchivedCategoriesChecked() {
-        return showArchivedCategoriesCheckbox.isSelected();
+    public ProfilePage isShowArchivedCategoriesChecked() {
+        showArchivedCategoriesCheckbox.shouldBe(selected);
+        return this;
     }
 
     public ProfilePage setNewCategoryName(String categoryName) {
@@ -121,18 +133,14 @@ public class ProfilePage {
         return this;
     }
 
-    public String getNewCategoryInputValue() {
-        return addNewCategoryInput.getValue();
+    public ProfilePage checkNewCategoryInputValue(String value) {
+        addNewCategoryInput.shouldHave(text(value));
+        return this;
     }
-
 
     public ProfilePage clickEditCategoryButton(String category) {
         editCategoryButton(category);
         return this;
-    }
-
-    public boolean isEditCategoryButtonVisible(String category) {
-        return editCategoryButton(category).isDisplayed();
     }
 
     public ProfilePage archiveCategory(String category) {
@@ -141,21 +149,14 @@ public class ProfilePage {
         return this;
     }
 
-    public boolean isArchiveCategoryButtonVisible(String category) {
-        return archiveCategoryButton(category).isDisplayed();
-    }
-
     public ProfilePage unArchiveCategory(String category) {
         unArchiveCategoryButton(category).click();
         submitUnArchive.click();
         return this;
     }
 
-    public boolean isUnArchiveCategoryButtonVisible(String category) {
-        return unArchiveCategoryButton(category).isDisplayed();
-    }
-
-    public boolean isCategoryExists(String category) {
-        return findCategory(category).exists();
+    public ProfilePage isCategoryExists(String category) {
+        findCategory(category).shouldBe(exist);
+        return this;
     }
 }

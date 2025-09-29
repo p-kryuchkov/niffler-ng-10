@@ -1,11 +1,12 @@
 package guru.qa.niffler.api;
 
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
-import org.springframework.data.repository.query.Param;
 import retrofit2.Call;
 import retrofit2.http.*;
 
+import java.util.Date;
 import java.util.List;
 
 public interface SpendApi {
@@ -22,9 +23,9 @@ public interface SpendApi {
     @GET("/internal/spends/all")
     Call<List<SpendJson>> getAllSpends(
             @Query("username") String username,
-            @Query("filterCurrency") String filterCurrency,
-            @Query("from") String from,
-            @Query("to") String to
+            @Query("filterCurrency") CurrencyValues filterCurrency,
+            @Query("from") Date from,
+            @Query("to") Date to
     );
 
     @PATCH("/internal/spends/edit")
@@ -48,4 +49,3 @@ public interface SpendApi {
     @PATCH("/internal/categories/update")
     Call<CategoryJson> updateCategory(@Body CategoryJson category);
 }
-

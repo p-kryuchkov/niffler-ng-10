@@ -3,12 +3,14 @@ package guru.qa.niffler.service;
 import guru.qa.niffler.api.SpendApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +78,7 @@ public class SpendApiClient implements SpendClient {
         return response.body();
     }
 
-    public List<SpendJson> getAllSpends(String username, String filterCurrency, String from, String to) {
+    public List<SpendJson> getAllSpends(String username, CurrencyValues filterCurrency, Date from, Date to) {
         final Response<List<SpendJson>> response;
         try {
             response = spendApi.getAllSpends(username, filterCurrency, from, to).execute();

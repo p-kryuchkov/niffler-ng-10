@@ -31,8 +31,8 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                     if (anno.archived()) created = spendClient.updateCategory(
                             new CategoryJson(
                                     created.id(),
-                                    anno.name() + new Random().nextInt(1000, 10000),
-                                    anno.username(),
+                                    created.name(),
+                                    created.username(),
                                     true
                             ));
                     context.getStore(NAMESPACE).put(
@@ -56,16 +56,17 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
 
     @Override
     public void afterTestExecution(ExtensionContext context) throws Exception {
-
         CategoryJson category = context.getStore(NAMESPACE)
                 .get(context.getUniqueId(), CategoryJson.class);
-
-        spendClient.updateCategory(
-                new CategoryJson(
-                        category.id(),
-                        category.name(),
-                        category.username(),
-                        true
-                ));
+        category = spendClient
+                .findCategoryByNameAndUsername(category.name(), category.username()).orElseThrow();
+        if (!category.archived())
+            spendClient.updateCategory(
+                    new CategoryJson(
+                            category.id(),
+                            category.name(),
+                            category.username(),
+                            true
+                    ));
     }
 }
