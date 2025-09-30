@@ -25,7 +25,7 @@ services:
     container_name: zookeeper
     image: confluentinc/cp-zookeeper:7.3.2
     ports:
-      - 2181:2181
+      - - 22181:2181
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
     networks:

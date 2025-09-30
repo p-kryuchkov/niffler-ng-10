@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.ClickOptions;
 import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
@@ -19,14 +20,7 @@ public class ProfilePage {
     private final SelenideElement submitArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Archive']");
     private final SelenideElement submitUnArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unarchive']");
 
-    /**
-     * Метод для клика по элементу с помощью JS
-     * @param element
-     */
-    private void clickWithJs(SelenideElement element) {
-        element.shouldBe(enabled);
-        executeJavaScript("arguments[0].click();", element);
-    }
+
     private SelenideElement findCategory(String category) {
         return $x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
     }
@@ -91,14 +85,14 @@ public class ProfilePage {
 
     public ProfilePage checkShowArchivedCategories() {
         if (!showArchivedCategoriesCheckbox.isSelected()) {
-            clickWithJs(showArchivedCategoriesCheckbox);
+            showArchivedCategoriesCheckbox.click(ClickOptions.usingJavaScript());
         }
         return this;
     }
 
     public ProfilePage uncheckShowArchivedCategories() {
         if (showArchivedCategoriesCheckbox.isSelected()) {
-            clickWithJs(showArchivedCategoriesCheckbox);
+            showArchivedCategoriesCheckbox.click(ClickOptions.usingJavaScript());
         }
         return this;
     }
