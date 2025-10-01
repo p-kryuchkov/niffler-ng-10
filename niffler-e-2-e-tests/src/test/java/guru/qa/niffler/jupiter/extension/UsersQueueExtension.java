@@ -46,10 +46,10 @@ public class UsersQueueExtension implements
     @Target(ElementType.PARAMETER)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface UserType {
-        Type value() default Type.EMPTY;
+        Type value() default Type.WITHOUT_FRIEND;
 
         enum Type {
-            EMPTY, WITH_FRIEND, WITH_INCOME_REQUEST, WITH_OUTCOME_REQUEST
+            WITHOUT_FRIEND, WITH_FRIEND, WITH_INCOME_REQUEST, WITH_OUTCOME_REQUEST
         }
     }
 
@@ -64,7 +64,7 @@ public class UsersQueueExtension implements
                     StopWatch sw = StopWatch.createStarted();
                     while (user.isEmpty() && sw.getTime(TimeUnit.SECONDS) < 30) {
                         switch (ut.value()) {
-                            case EMPTY -> user = Optional.ofNullable(EMPTY_USERS.poll());
+                            case WITHOUT_FRIEND -> user = Optional.ofNullable(EMPTY_USERS.poll());
                             case WITH_FRIEND -> user = Optional.ofNullable(WITH_FRIEND_USERS.poll());
                             case WITH_INCOME_REQUEST -> user = Optional.ofNullable(WITH_INCOME_REQUEST_USERS.poll());
                             case WITH_OUTCOME_REQUEST -> user = Optional.ofNullable(WITH_OUTCOME_REQUEST_USERS.poll());
@@ -94,7 +94,7 @@ public class UsersQueueExtension implements
                 .get(context.getUniqueId(), Map.class);
         for (Map.Entry<UserType, StaticUser> entry : userMap.entrySet()) {
             switch (entry.getKey().value()) {
-                case EMPTY -> EMPTY_USERS.add(entry.getValue());
+                case WITHOUT_FRIEND -> EMPTY_USERS.add(entry.getValue());
                 case WITH_FRIEND -> WITH_FRIEND_USERS.add(entry.getValue());
                 case WITH_INCOME_REQUEST -> WITH_INCOME_REQUEST_USERS.add(entry.getValue());
                 case WITH_OUTCOME_REQUEST -> WITH_OUTCOME_REQUEST_USERS.add(entry.getValue());
@@ -110,6 +110,14 @@ public class UsersQueueExtension implements
 
     @Override
     public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), StaticUser.class);
+        return parameterContext.findAnnotation(UserType.class)
+                .map(anno -> {
+                    Map<UserType, StaticUser> userMap = extensionContext.getStore(NAMESPACE)
+                            .get(extensionContext.getUniqueId(), Map.class);
+                    return userMap.get(anno);
+                })
+                .orElseThrow(
+                        () -> new ParameterResolutionException("No @UserType annotation found")
+                );
     }
 }
