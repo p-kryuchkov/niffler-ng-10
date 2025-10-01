@@ -8,8 +8,7 @@ import java.util.Optional;
 public interface SpendClient {
 
   SpendJson createSpend(SpendJson spend);
-
   CategoryJson createCategory(CategoryJson category);
-
+  CategoryJson updateCategory(CategoryJson category);
   Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username);
 }
