@@ -22,7 +22,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                     CategoryJson created = spendClient.createCategory(
                             new CategoryJson(
                                     null,
-                                    anno.categories()[0].name() + RandomDataUtils.randomCategoryName(),
+                                    RandomDataUtils.randomCategoryName(),
                                     anno.username(),
                                     false
                             )

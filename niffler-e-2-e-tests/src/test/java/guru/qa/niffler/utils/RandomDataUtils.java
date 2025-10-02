@@ -2,8 +2,10 @@ package guru.qa.niffler.utils;
 
 import com.github.javafaker.Faker;
 
+import java.util.Locale;
+
 public class RandomDataUtils {
-    private static final Faker faker = new Faker();
+    private static final Faker faker = new Faker(new Locale("ru"));
 
     public static String randomUsername() {
         return faker.name().username();

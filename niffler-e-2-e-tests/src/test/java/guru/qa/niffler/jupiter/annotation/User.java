@@ -19,9 +19,7 @@ public @interface User {
 
     String password() default "12345";
 
-    Category[] categories() default {@Category(
-            archived = false
-    )};
+    Category[] categories() default {@Category()};
 
     Spending[] spendings() default {@Spending(
             category = "Тестовая Категория",
