@@ -1,13 +1,12 @@
 package guru.qa.niffler.jupiter.extension;
 
-import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.service.SpendClient;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
-
-import java.util.Random;
 
 public class CategoryExtension implements BeforeEachCallback, ParameterResolver, AfterTestExecutionCallback {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
@@ -17,18 +16,18 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
     public void beforeEach(ExtensionContext context) throws Exception {
         AnnotationSupport.findAnnotation(
                 context.getRequiredTestMethod(),
-                Category.class
+                User.class
         ).ifPresent(
                 anno -> {
                     CategoryJson created = spendClient.createCategory(
                             new CategoryJson(
                                     null,
-                                    anno.name() + new Random().nextInt(1000, 10000),
+                                    anno.categories()[0].name() + RandomDataUtils.randomCategoryName(),
                                     anno.username(),
                                     false
                             )
                     );
-                    if (anno.archived()) created = spendClient.updateCategory(
+                    if (anno.categories()[0].archived()) created = spendClient.updateCategory(
                             new CategoryJson(
                                     created.id(),
                                     created.name(),
