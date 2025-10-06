@@ -13,9 +13,9 @@ public class MainPage {
     private final SelenideElement spendings = $("#spendings");
     private final SelenideElement statistics = $("#stat");
     private final SelenideElement personIcon = $("[data-testid='PersonIcon']");
-private final SelenideElement profileLink = $("a[href='/profile']");
-  private final SelenideElement friendsLink = $("a[href='/people/friends']");
-  private final SelenideElement allPeopleLink = $("a[href='/people/all']");
+    private final SelenideElement profileLink = $("a[href='/profile']");
+    private final SelenideElement friendsLink = $("a[href='/people/friends']");
+    private final SelenideElement allPeopleLink = $("a[href='/people/all']");
 
 
     public EditSpendingPage editSpending(String description) {
@@ -40,4 +40,15 @@ private final SelenideElement profileLink = $("a[href='/profile']");
         return new ProfilePage();
     }
 
+    public AllPeoplePage goToAllPeoplePage() {
+        personIcon.click();
+        allPeopleLink.click();
+        return new AllPeoplePage();
+    }
+
+    public FriendsPage goToFriendsPage() {
+        personIcon.click();
+        friendsLink.click();
+        return new FriendsPage();
+    }
 }
