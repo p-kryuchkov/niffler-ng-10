@@ -1,5 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
+import guru.qa.niffler.jupiter.annotation.UserType;
 import io.qameta.allure.Allure;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.extension.*;
@@ -12,6 +13,8 @@ import java.lang.annotation.Target;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+
+import static guru.qa.niffler.jupiter.annotation.UserType.Type.*;
 
 public class UsersQueueExtension implements
         BeforeTestExecutionCallback,
@@ -43,16 +46,6 @@ public class UsersQueueExtension implements
         WITH_OUTCOME_REQUEST_USERS.add(new StaticUser("ORTestUser2", "12345", null, "IRTestUser2", null));
     }
 
-    @Target(ElementType.PARAMETER)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface UserType {
-        Type value() default Type.WITHOUT_FRIEND;
-
-        enum Type {
-            WITHOUT_FRIEND, WITH_FRIEND, WITH_INCOME_REQUEST, WITH_OUTCOME_REQUEST
-        }
-    }
-
     @Override
     public void beforeTestExecution(ExtensionContext context) {
         Arrays.stream(context.getRequiredTestMethod().getParameters())
@@ -63,12 +56,7 @@ public class UsersQueueExtension implements
                     Optional<StaticUser> user = Optional.empty();
                     StopWatch sw = StopWatch.createStarted();
                     while (user.isEmpty() && sw.getTime(TimeUnit.SECONDS) < 30) {
-                        switch (ut.value()) {
-                            case WITHOUT_FRIEND -> user = Optional.ofNullable(EMPTY_USERS.poll());
-                            case WITH_FRIEND -> user = Optional.ofNullable(WITH_FRIEND_USERS.poll());
-                            case WITH_INCOME_REQUEST -> user = Optional.ofNullable(WITH_INCOME_REQUEST_USERS.poll());
-                            case WITH_OUTCOME_REQUEST -> user = Optional.ofNullable(WITH_OUTCOME_REQUEST_USERS.poll());
-                        }
+                        user = Optional.ofNullable(getQueueByUserType(ut).poll());
                     }
                     Allure.getLifecycle().updateTestCase(testCase ->
                             testCase.setStart(new Date().getTime())
@@ -93,12 +81,7 @@ public class UsersQueueExtension implements
         Map<UserType, StaticUser> userMap = context.getStore(NAMESPACE)
                 .get(context.getUniqueId(), Map.class);
         for (Map.Entry<UserType, StaticUser> entry : userMap.entrySet()) {
-            switch (entry.getKey().value()) {
-                case WITHOUT_FRIEND -> EMPTY_USERS.add(entry.getValue());
-                case WITH_FRIEND -> WITH_FRIEND_USERS.add(entry.getValue());
-                case WITH_INCOME_REQUEST -> WITH_INCOME_REQUEST_USERS.add(entry.getValue());
-                case WITH_OUTCOME_REQUEST -> WITH_OUTCOME_REQUEST_USERS.add(entry.getValue());
-            }
+            getQueueByUserType(entry.getKey()).add(entry.getValue());
         }
     }
 
@@ -119,5 +102,23 @@ public class UsersQueueExtension implements
                 .orElseThrow(
                         () -> new ParameterResolutionException("No @UserType annotation found")
                 );
+    }
+
+    private Queue<StaticUser> getQueueByUserType(UserType userType) {
+        switch (userType.value()) {
+            case WITHOUT_FRIEND -> {
+                return EMPTY_USERS;
+            }
+            case WITH_FRIEND -> {
+                return WITH_FRIEND_USERS;
+            }
+            case WITH_INCOME_REQUEST -> {
+                return WITH_INCOME_REQUEST_USERS;
+            }
+            case WITH_OUTCOME_REQUEST -> {
+                return WITH_OUTCOME_REQUEST_USERS;
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + userType);
+        }
     }
 }
