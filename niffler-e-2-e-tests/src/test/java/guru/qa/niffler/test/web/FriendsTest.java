@@ -12,42 +12,39 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static guru.qa.niffler.jupiter.annotation.UserType.Type.*;
 
 
-@ExtendWith(BrowserExtension.class)
+@ExtendWith({BrowserExtension.class, UsersQueueExtension.class})
 public class FriendsTest {
     private static final Config CFG = Config.getInstance();
+
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) UsersQueueExtension.StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .viewFriends()
-                .friendExist(user.friend());
+                .goToFriendsPage()
+                .checkFriend(user.friend());
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void friendsTableShouldBeEmptyForNewUser(@UserType(WITHOUT_FRIEND) UsersQueueExtension.StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .viewFriends()
-                .friendsEmpty();
+                .goToFriendsPage()
+                .checkFriendsEmpty();
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) UsersQueueExtension.StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .viewFriends()
-                .requestExist(user.income());
+                .goToFriendsPage()
+                .checkRequest(user.income());
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) UsersQueueExtension.StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
-                .viewAllPeople()
-                .userWaitingExists(user.outcome());
+                .goToAllPeoplePage()
+                .checkUserWaiting(user.outcome());
     }
 }

@@ -40,13 +40,13 @@ public class MainPage {
         return new ProfilePage();
     }
 
-    public AllPeoplePage viewAllPeople() {
+    public AllPeoplePage goToAllPeoplePage() {
         personIcon.click();
         allPeopleLink.click();
         return new AllPeoplePage();
     }
 
-    public FriendsPage viewFriends() {
+    public FriendsPage goToFriendsPage() {
         personIcon.click();
         friendsLink.click();
         return new FriendsPage();

@@ -20,7 +20,7 @@ public class FriendsPage {
     private final String acceptButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Accept']";
     private final String declineButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Decline']";
 
-    public AllPeoplePage allPeopleTabSwitch() {
+    public AllPeoplePage switchToAllPeopleTab() {
         allPeopleTab.click();
         return new AllPeoplePage();
     }
@@ -54,18 +54,18 @@ public class FriendsPage {
         return this;
     }
 
-    public FriendsPage friendExist(String friendName) {
+    public FriendsPage checkFriend(String friendName) {
         friendsTableRows.findBy(text(friendName))
                 .shouldBe(visible);
         return this;
     }
 
-    public FriendsPage friendsEmpty() {
-        friendsTableRows.first().shouldNotBe(exist);
+    public FriendsPage checkFriendsEmpty() {
+        friendsTableRows.first().shouldNot(exist);
         return this;
     }
 
-    public FriendsPage requestExist(String friendName) {
+    public FriendsPage checkRequest(String friendName) {
         requestsTableRows.findBy(text(friendName))
                 .shouldBe(visible);
         return this;
