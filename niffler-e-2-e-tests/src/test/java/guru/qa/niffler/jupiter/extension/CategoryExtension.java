@@ -19,25 +19,27 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
                 User.class
         ).ifPresent(
                 anno -> {
-                    CategoryJson created = spendClient.createCategory(
-                            new CategoryJson(
-                                    null,
-                                    RandomDataUtils.randomCategoryName(),
-                                    anno.username(),
-                                    false
-                            )
-                    );
-                    if (anno.categories()[0].archived()) created = spendClient.updateCategory(
-                            new CategoryJson(
-                                    created.id(),
-                                    created.name(),
-                                    created.username(),
-                                    true
-                            ));
-                    context.getStore(NAMESPACE).put(
-                            context.getUniqueId(),
-                            created
-                    );
+                    if (anno.categories().length > 0) {
+                        CategoryJson created = spendClient.createCategory(
+                                new CategoryJson(
+                                        null,
+                                        RandomDataUtils.randomCategoryName(),
+                                        anno.username(),
+                                        false
+                                )
+                        );
+                        if (anno.categories()[0].archived()) created = spendClient.updateCategory(
+                                new CategoryJson(
+                                        created.id(),
+                                        created.name(),
+                                        created.username(),
+                                        true
+                                ));
+                        context.getStore(NAMESPACE).put(
+                                context.getUniqueId(),
+                                created
+                        );
+                    }
                 }
         );
     }
@@ -55,17 +57,26 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver,
 
     @Override
     public void afterTestExecution(ExtensionContext context) throws Exception {
-        CategoryJson category = context.getStore(NAMESPACE)
-                .get(context.getUniqueId(), CategoryJson.class);
-        category = spendClient
-                .findCategoryByNameAndUsername(category.name(), category.username()).orElseThrow();
-        if (!category.archived())
-            spendClient.updateCategory(
-                    new CategoryJson(
-                            category.id(),
-                            category.name(),
-                            category.username(),
-                            true
-                    ));
+        AnnotationSupport.findAnnotation(
+                context.getRequiredTestMethod(),
+                User.class
+        ).ifPresent(anno -> {
+            if (anno.categories().length > 0) {
+                CategoryJson category = context.getStore(NAMESPACE)
+                        .get(context.getUniqueId(), CategoryJson.class);
+                category = spendClient
+                        .findCategoryByNameAndUsername(category.name(), category.username())
+                        .orElseThrow();
+                if (!category.archived()) {
+                    spendClient.updateCategory(
+                            new CategoryJson(
+                                    category.id(),
+                                    category.name(),
+                                    category.username(),
+                                    true
+                            ));
+                }
+            }
+        });
     }
 }

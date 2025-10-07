@@ -19,12 +19,7 @@ public @interface User {
 
     String password() default "12345";
 
-    Category[] categories() default {@Category()};
+    Category[] categories();
 
-    Spending[] spendings() default {@Spending(
-            category = "Тестовая Категория",
-            amount = 89900,
-            currency = CurrencyValues.RUB,
-            description = "Категория для теста по умолчанию"
-    )};
+    Spending[] spendings();
 }

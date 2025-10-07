@@ -23,27 +23,29 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                 User.class
         ).ifPresent(
                 anno -> {
-                    Spending spending = anno.spendings()[0];
-                    final SpendJson created = spendClient.createSpend(
-                            new SpendJson(
-                                    null,
-                                    new Date(),
-                                    new CategoryJson(
-                                            null,
-                                            spending.category(),
-                                            anno.username(),
-                                            false
-                                    ),
-                                    spending.currency(),
-                                    spending.amount(),
-                                    spending.description(),
-                                    anno.username()
-                            )
-                    );
-                    context.getStore(NAMESPACE).put(
-                            context.getUniqueId(),
-                            created
-                    );
+                    if (anno.spendings().length > 0) {
+                        Spending spending = anno.spendings()[0];
+                        final SpendJson created = spendClient.createSpend(
+                                new SpendJson(
+                                        null,
+                                        new Date(),
+                                        new CategoryJson(
+                                                null,
+                                                spending.category(),
+                                                anno.username(),
+                                                false
+                                        ),
+                                        spending.currency(),
+                                        spending.amount(),
+                                        spending.description(),
+                                        anno.username()
+                                )
+                        );
+                        context.getStore(NAMESPACE).put(
+                                context.getUniqueId(),
+                                created
+                        );
+                    }
                 }
         );
     }

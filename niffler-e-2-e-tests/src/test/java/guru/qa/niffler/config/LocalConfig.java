@@ -24,11 +24,6 @@ enum LocalConfig implements Config {
     }
 
     @Override
-    public String currencyUrl() {
-        return "String userdataUrl();http://localhost:8091/";
-    }
-
-    @Override
     public String spendUrl() {
         return "http://localhost:8093/";
     }
