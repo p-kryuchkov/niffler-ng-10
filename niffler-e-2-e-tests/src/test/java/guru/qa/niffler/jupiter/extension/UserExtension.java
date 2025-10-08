@@ -16,7 +16,7 @@ public class UserExtension implements ParameterResolver {
     }
 
     @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         return AnnotationSupport.findAnnotation(
                         extensionContext.getRequiredTestMethod(),
                         User.class

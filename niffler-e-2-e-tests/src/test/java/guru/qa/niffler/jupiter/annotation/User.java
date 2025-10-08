@@ -19,7 +19,7 @@ public @interface User {
 
     String password() default "12345";
 
-    Category[] categories();
+    Category[] categories() default {};
 
-    Spending[] spendings();
+    Spending[] spendings() default {};
 }
