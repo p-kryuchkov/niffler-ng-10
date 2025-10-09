@@ -1,5 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
+import guru.qa.niffler.model.StaticUser;
 import guru.qa.niffler.jupiter.annotation.UserType;
 import io.qameta.allure.Allure;
 import org.apache.commons.lang3.time.StopWatch;
@@ -16,9 +17,6 @@ public class UsersQueueExtension implements
         ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UsersQueueExtension.class);
-
-    public record StaticUser(String username, String password, String friend, String outcome, String income) {
-    }
 
     private static final Queue<StaticUser> EMPTY_USERS = new ConcurrentLinkedQueue<>();
     private static final Queue<StaticUser> WITH_FRIEND_USERS = new ConcurrentLinkedQueue<>();
