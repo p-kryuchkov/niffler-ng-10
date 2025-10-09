@@ -18,7 +18,7 @@ public class FriendsTest {
     private static final Config CFG = Config.getInstance();
 
     @Test
-    void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) UsersQueueExtension.StaticUser user) {
+    void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .goToFriendsPage()
@@ -26,7 +26,7 @@ public class FriendsTest {
     }
 
     @Test
-    void friendsTableShouldBeEmptyForNewUser(@UserType(WITHOUT_FRIEND) UsersQueueExtension.StaticUser user) {
+    void friendsTableShouldBeEmptyForNewUser(@UserType(WITHOUT_FRIEND) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .goToFriendsPage()
@@ -34,7 +34,7 @@ public class FriendsTest {
     }
 
     @Test
-    void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) UsersQueueExtension.StaticUser user) {
+    void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .goToFriendsPage()
@@ -42,7 +42,7 @@ public class FriendsTest {
     }
 
     @Test
-    void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) UsersQueueExtension.StaticUser user) {
+    void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .goToAllPeoplePage()
