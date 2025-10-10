@@ -68,7 +68,23 @@ public class CategoryDaoJdbc implements CategoryDao {
 
     @Override
     public CategoryEntity update(CategoryEntity categoryEntity) {
-        throw new UnsupportedOperationException();
+        try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "UPDATE category SET username = ?, name = ?, archived = ? WHERE id = ?"
+            )) {
+                ps.setString(1, categoryEntity.getUsername());
+                ps.setString(2, categoryEntity.getName());
+                ps.setBoolean(3, categoryEntity.isArchived());
+                ps.setObject(4, categoryEntity.getId());
+
+                int count = ps.executeUpdate();
+                if (count == 0) throw new SQLException("Can`t find category by id");
+                return findCategoryById(categoryEntity.getId())
+                        .orElseThrow(() -> new SQLException("Can`t find updated category"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -76,7 +92,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "SELECT * FROM category " +
-                            "WHERE username = ?" +
+                            "WHERE username = ? " +
                             "AND name = ?"
             )) {
                 ps.setObject(1, username);

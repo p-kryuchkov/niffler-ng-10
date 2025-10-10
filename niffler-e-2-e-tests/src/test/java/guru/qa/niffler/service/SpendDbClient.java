@@ -10,47 +10,49 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class SpendDbClient implements SpendClient {
 
-  private static final Config CFG = Config.getInstance();
+    private static final Config CFG = Config.getInstance();
 
-  private final SpendDao spendDao = new SpendDaoJdbc();
-  private final CategoryDao categoryDao = new CategoryDaoJdbc();
+    private final SpendDao spendDao = new SpendDaoJdbc();
+    private final CategoryDao categoryDao = new CategoryDaoJdbc();
 
-  @Override
-  public SpendJson createSpend(SpendJson spend) {
-    SpendEntity spendEntity = SpendEntity.fromJson(spend);
-    if (spendEntity.getCategory().getId() == null) {
-      CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
-      spendEntity.setCategory(categoryEntity);
+    @Override
+    public SpendJson createSpend(SpendJson spend) {
+        SpendEntity spendEntity = SpendEntity.fromJson(spend);
+        if (spendEntity.getCategory().getId() == null) {
+            CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
+            spendEntity.setCategory(categoryEntity);
+        }
+        return SpendJson.fromEntity(
+                spendDao.create(spendEntity)
+        );
     }
-    return SpendJson.fromEntity(
-            spendDao.create(spendEntity)
-    );
-  }
 
-  @Override
-  public CategoryJson createCategory(CategoryJson category) {
-    return CategoryJson.fromEntity(
-            categoryDao.create(
-                    CategoryEntity.fromJson(category)
-            )
-    );
-  }
+    @Override
+    public CategoryJson createCategory(CategoryJson category) {
+        return CategoryJson.fromEntity(
+                categoryDao.create(
+                        CategoryEntity.fromJson(category)
+                )
+        );
+    }
 
-  @Override
-  public CategoryJson updateCategory(CategoryJson category) {
-    return CategoryJson.fromEntity(
-            categoryDao.update(
-                    CategoryEntity.fromJson(category)
-            )
-    );
-  }
+    @Override
+    public CategoryJson updateCategory(CategoryJson category) {
+        return CategoryJson.fromEntity(
+                categoryDao.update(
+                        CategoryEntity.fromJson(category)
+                )
+        );
+    }
 
-  @Override
-  public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
-    return Optional.empty();
-  }
+    @Override
+    public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
+        return categoryDao.findCategoryByUsernameAndCategoryName(username, categoryName)
+                .map(entity -> CategoryJson.fromEntity(entity));
+    }
 }
