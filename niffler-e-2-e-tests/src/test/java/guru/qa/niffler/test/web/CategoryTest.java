@@ -35,7 +35,6 @@ public class CategoryTest {
             ))
     @Test
     public void unArchiveCathegoryTest(CategoryJson categoryJson, StaticUser user) {
-
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.password())
                 .editProfile()
