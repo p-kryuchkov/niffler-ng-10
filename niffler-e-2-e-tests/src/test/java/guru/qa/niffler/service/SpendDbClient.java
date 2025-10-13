@@ -12,6 +12,7 @@ import guru.qa.niffler.model.SpendJson;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SpendDbClient implements SpendClient {
 
@@ -54,5 +55,22 @@ public class SpendDbClient implements SpendClient {
     public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
         return categoryDao.findCategoryByUsernameAndCategoryName(username, categoryName)
                 .map(entity -> CategoryJson.fromEntity(entity));
+    }
+
+    public Optional<CategoryJson> findCategoryById(UUID id) {
+        return categoryDao.findCategoryById(id)
+                .map(entity -> CategoryJson.fromEntity(entity));
+
+    }
+
+    private SpendEntity enrichSpend(SpendEntity spend) {
+        if (spend.getCategory() != null && spend.getCategory().getId() != null) {
+            CategoryEntity category = categoryDao.findCategoryById(spend.getCategory().getId())
+                    .orElseThrow(() -> new NoSuchElementException(
+                            "Category not found by id: " + spend.getCategory().getId()
+                    ));
+            spend.setCategory(category);
+        }
+        return spend;
     }
 }
