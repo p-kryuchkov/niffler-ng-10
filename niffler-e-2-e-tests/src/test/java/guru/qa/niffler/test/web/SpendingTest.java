@@ -18,17 +18,15 @@ public class SpendingTest {
 
     @User(
             spendings = @Spending(
-                    category = "Учеба",
                     amount = 89900,
-                    currency = CurrencyValues.RUB,
-                    description = "Обучение Niffler 2.0 юбилейный поток!"
+                    currency = CurrencyValues.RUB
             ))
     @Test
     void spendingDescriptionShouldBeEditedByTableAction(SpendJson spending) {
         final String newDescription = "Обучение Niffler Next Generation";
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login("duck", "12345")
+                .login("TestDefaultUser", "12345")
                 .editSpending(spending.description())
                 .setNewSpendingDescription(newDescription)
                 .save()
