@@ -4,7 +4,6 @@ import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.service.SpendClient;
 import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.utils.RandomDataUtils;
@@ -19,7 +18,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
     private final SpendClient spendClient = new SpendDbClient();
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeEach(ExtensionContext context){
         AnnotationSupport.findAnnotation(
                 context.getRequiredTestMethod(),
                 User.class
@@ -33,7 +32,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                                         new Date(),
                                         new CategoryJson(
                                                 null,
-                                                RandomDataUtils.randomCategoryName(),
+                                                spending.category(),
                                                 anno.username(),
                                                 false
                                         ),

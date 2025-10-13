@@ -113,16 +113,9 @@ public class SpendDaoJdbc implements SpendDao {
         spendEntity.setDescription(rs.getString("description"));
         spendEntity.setSpendDate(rs.getDate("spend_date"));
         spendEntity.setAmount(rs.getDouble("amount"));
-
-        UUID categoryId = rs.getObject("category_id", UUID.class);
-        if (categoryId != null) {
-            CategoryDaoJdbc categoryDao = new CategoryDaoJdbc();
-            CategoryEntity category = categoryDao.findCategoryById(categoryId)
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Category not found for id: " + categoryId
-                    ));
-            spendEntity.setCategory(category);
-        }
+        CategoryEntity category = new CategoryEntity();
+        category.setId(rs.getObject("category_id", UUID.class));
+        spendEntity.setCategory(category);
         return spendEntity;
     }
 }
