@@ -1,15 +1,17 @@
 package guru.qa.niffler.data;
 
 import com.atomikos.icatch.jta.UserTransactionImp;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
-import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,10 +29,11 @@ public class Databases {
     public record XaConsumer(Consumer<Connection> function, String jdbcUrl) {
     }
 
-    public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
+    public static <T> T transaction(Function<Connection, T> function, String jdbcUrl, TransactionIsolationLevel isolationLevel) {
         Connection connection = null;
         try {
             connection = connection(jdbcUrl);
+            connection.setTransactionIsolation(isolationLevel.getLevel());
             connection.setAutoCommit(false);
             T result = function.apply(connection);
             connection.commit();
@@ -49,13 +52,15 @@ public class Databases {
         }
     }
 
-    public static <T> T xaTransaction(XaFunction<T>... actions) {
+    public static <T> T xaTransaction(TransactionIsolationLevel isolationLevel, XaFunction<T>... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
             ut.begin();
             T result = null;
             for (XaFunction<T> action : actions) {
-                result = action.function.apply(connection(action.jdbcUrl));
+                Connection connection = connection(action.jdbcUrl);
+                connection.setTransactionIsolation(isolationLevel.getLevel());
+                result = action.function.apply(connection);
             }
             ut.commit();
             return result;
@@ -69,10 +74,11 @@ public class Databases {
         }
     }
 
-    public static void transaction(Consumer<Connection> consumer, String jdbcUrl) {
+    public static void transaction(Consumer<Connection> consumer, String jdbcUrl, TransactionIsolationLevel isolationLevel) {
         Connection connection = null;
         try {
             connection = connection(jdbcUrl);
+            connection.setTransactionIsolation(isolationLevel.getLevel());
             connection.setAutoCommit(false);
             consumer.accept(connection);
             connection.commit();
@@ -90,12 +96,14 @@ public class Databases {
         }
     }
 
-    public static void xaTransaction(XaConsumer... actions) {
+    public static void xaTransaction(TransactionIsolationLevel isolationLevel, XaConsumer... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
             ut.begin();
             for (XaConsumer action : actions) {
-                action.function.accept(connection(action.jdbcUrl));
+                Connection connection = connection(action.jdbcUrl);
+                connection.setTransactionIsolation(isolationLevel.getLevel());
+                action.function.accept(connection);
             }
             ut.commit();
         } catch (Exception e) {
@@ -112,11 +120,17 @@ public class Databases {
         return dataSources.computeIfAbsent(
                 jdbcUrl,
                 key -> {
-                    PGSimpleDataSource ds = new PGSimpleDataSource();
-                    ds.setUser("postgres");
-                    ds.setPassword("secret");
-                    ds.setUrl(key);
-                    return ds;
+                    AtomikosDataSourceBean dsBean = new AtomikosDataSourceBean();
+                    final String uniqId = StringUtils.substringAfter(jdbcUrl, "5432/");
+                    dsBean.setUniqueResourceName(uniqId);
+                    dsBean.setXaDataSourceClassName("org.postgresql.xa.PGXADataSource");
+                    Properties props = new Properties();
+                    props.put("URL", jdbcUrl);
+                    props.put("user", "postgres");
+                    props.put("password", "secret");
+                    dsBean.setXaProperties(props);
+                    dsBean.setMaxPoolSize(10);
+                    return dsBean;
                 }
         );
     }

@@ -1,6 +1,7 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.TransactionIsolationLevel;
 import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.dao.impl.SpendDaoJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
@@ -27,35 +28,35 @@ public class SpendDbClient implements SpendClient {
                 spendEntity.setCategory(categoryEntity);
             }
             return SpendJson.fromEntity(new SpendDaoJdbc(connection).create(spendEntity));
-        }, CFG.spendJdbcUrl());
+        }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     @Override
     public CategoryJson createCategory(CategoryJson category) {
         return transaction(connection -> {
             return CategoryJson.fromEntity(new CategoryDaoJdbc(connection).create(CategoryEntity.fromJson(category)));
-        }, CFG.spendJdbcUrl());
+        }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     @Override
     public CategoryJson updateCategory(CategoryJson category) {
         return transaction(connection -> {
             return CategoryJson.fromEntity(new CategoryDaoJdbc(connection).update(CategoryEntity.fromJson(category)));
-        }, CFG.spendJdbcUrl());
+        }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     @Override
     public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
         return transaction(connection -> {
             return new CategoryDaoJdbc(connection).findCategoryByUsernameAndCategoryName(username, categoryName).map(entity -> CategoryJson.fromEntity(entity));
-        }, CFG.spendJdbcUrl());
+        }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     public Optional<CategoryJson> findCategoryById(UUID id) {
         return transaction(connection -> {
             return new CategoryDaoJdbc(connection).findCategoryById(id).map(entity -> CategoryJson.fromEntity(entity));
 
-        }, CFG.spendJdbcUrl());
+        }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     private SpendEntity enrichSpend(SpendEntity spend) {
@@ -65,6 +66,6 @@ public class SpendDbClient implements SpendClient {
                 spend.setCategory(category);
             }
             return spend;
-        }, CFG.spendJdbcUrl());
+        }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 }
