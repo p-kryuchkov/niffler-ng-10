@@ -71,8 +71,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
                 return ps;
             });
             if (count == 0) throw new SQLException("Can`t find category by id");
-            return findCategoryById(categoryEntity.getId())
-                    .orElseThrow(() -> new SQLException("Can`t find updated category"));
+            return categoryEntity;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

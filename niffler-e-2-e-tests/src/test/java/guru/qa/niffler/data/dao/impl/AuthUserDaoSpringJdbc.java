@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.UserAuthEntity;
-import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
+import guru.qa.niffler.data.mapper.UserAuthEntityRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,9 +56,18 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
                         "SELECT * FROM \"user\" WHERE id = ?",
-                        AuthUserEntityRowMapper.instance,
+                        UserAuthEntityRowMapper.instance,
                         id
                 )
+        );
+    }
+
+    @Override
+    public List<UserAuthEntity> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return jdbcTemplate.query(
+                "SELECT * FROM \"user\"",
+                UserAuthEntityRowMapper.instance
         );
     }
 
@@ -68,6 +78,6 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     @Override
     public void delete(UserAuthEntity user) {
-
+        throw new UnsupportedOperationException();
     }
 }

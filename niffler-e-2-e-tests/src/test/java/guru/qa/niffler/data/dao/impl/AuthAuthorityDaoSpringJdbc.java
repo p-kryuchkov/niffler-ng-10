@@ -51,6 +51,6 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
     @Override
     public void delete(AuthorityEntity authority) {
-
+        throw new UnsupportedOperationException();
     }
 }
