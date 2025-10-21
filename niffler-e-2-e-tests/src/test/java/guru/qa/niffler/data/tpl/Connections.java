@@ -1,5 +1,10 @@
 package guru.qa.niffler.data.tpl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Connections {
     private Connections() {
     }
