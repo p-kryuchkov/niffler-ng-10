@@ -1,17 +1,15 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.user.UserEntity;
-import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.mapper.UserEntityRowMapper;
-import guru.qa.niffler.model.CurrencyValues;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,7 +63,16 @@ public class UserDaoSpringJdbc implements UserDao {
     }
 
     @Override
-    public void delete(UserEntity user) {
+    public List<UserEntity> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return jdbcTemplate.query(
+                "SELECT * FROM \"user\"",
+                UserEntityRowMapper.instance
+        );
+    }
 
+    @Override
+    public void delete(UserEntity user) {
+        throw new UnsupportedOperationException();
     }
 }
