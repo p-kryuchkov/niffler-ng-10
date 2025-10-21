@@ -1,8 +1,6 @@
 package guru.qa.niffler.test.db;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.Databases;
-import guru.qa.niffler.data.TransactionIsolationLevel;
 import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoJdbc;
 import guru.qa.niffler.data.dao.impl.AuthUserDaoJdbc;
 import guru.qa.niffler.data.dao.impl.UserDaoJdbc;
@@ -10,17 +8,21 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.auth.UserAuthEntity;
 import guru.qa.niffler.data.entity.user.UserEntity;
+import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.transaction.ChainedTransactionManager;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import static guru.qa.niffler.data.Databases.xaTransaction;
+import java.sql.Connection;
 
 public class TransactionTest {
     private static final Config CFG = Config.getInstance();
 
     @Test
-    public void succesTransactionTest() {
+    public void successTransactionTest() {
         UserAuthEntity userAuthEntity = new UserAuthEntity();
         userAuthEntity.setEnabled(true);
         userAuthEntity.setCredentialsNonExpired(true);
@@ -38,23 +40,30 @@ public class TransactionTest {
         userData.setSurname("Testovii");
         userData.setUsername(userAuthEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
+        DataSourceTransactionManager authManager = new DataSourceTransactionManager(
+                DataSources.dataSource(CFG.authJdbcUrl())
+        );
+        DataSourceTransactionManager userManager = new DataSourceTransactionManager(
+                DataSources.dataSource(CFG.userdataJdbcUrl())
+        );
+        ChainedTransactionManager chainedTxManager = new ChainedTransactionManager(authManager, userManager);
+        TransactionTemplate txTemplate = new TransactionTemplate(chainedTxManager);
 
-        xaTransaction(TransactionIsolationLevel.REPEATABLE_READ, new Databases.XaFunction<>(connection -> {
-                    userAuthEntity.setId(new AuthUserDaoJdbc(connection).createUser(userAuthEntity).getId());
-                    System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
-                    return null;
-                }, CFG.authJdbcUrl()),
-                new Databases.XaFunction<>(connection -> {
-                    authority.setUser(userAuthEntity);
-                    new AuthAuthorityDaoJdbc(connection).create(authority);
-                    System.out.println("Создали authority в auth");
-                    return null;
-                }, CFG.authJdbcUrl()),
-                new Databases.XaFunction<>(connection -> {
-                    new UserDaoJdbc(connection).createUser(userData);
-                    System.out.println("Создали Юзера в userdata");
-                    return null;
-                }, CFG.userdataJdbcUrl()));
+        txTemplate.execute(status -> {
+            try (Connection authConn = authManager.getDataSource().getConnection();
+                 Connection userConn = userManager.getDataSource().getConnection()) {
+                new AuthUserDaoJdbc(authConn).createUser(userAuthEntity);
+                System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+                new UserDaoJdbc(userConn).createUser(userData);
+                System.out.println("Создали юзера в userdata");
+                authority.setUser(userAuthEntity);
+                new AuthAuthorityDaoJdbc(authConn).create(authority);
+                System.out.println("Создали authority в auth");
+                return null;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
@@ -76,22 +85,29 @@ public class TransactionTest {
         userData.setSurname("Testovii");
         userData.setUsername(userAuthEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
+        DataSourceTransactionManager authManager = new DataSourceTransactionManager(
+                DataSources.dataSource(CFG.authJdbcUrl())
+        );
+        DataSourceTransactionManager userManager = new DataSourceTransactionManager(
+                DataSources.dataSource(CFG.userdataJdbcUrl())
+        );
+        ChainedTransactionManager chainedTxManager = new ChainedTransactionManager(authManager, userManager);
+        TransactionTemplate txTemplate = new TransactionTemplate(chainedTxManager);
 
-        xaTransaction(TransactionIsolationLevel.REPEATABLE_READ, new Databases.XaFunction<>(connection -> {
-                    userAuthEntity.setId(new AuthUserDaoJdbc(connection).createUser(userAuthEntity).getId());
-                    System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
-                    return null;
-                }, CFG.authJdbcUrl()),
-                new Databases.XaFunction<>(connection -> {
-                    authority.setUser(userAuthEntity);
-                    new AuthAuthorityDaoJdbc(connection).create(authority);
-                    System.out.println("Создали authority в auth");
-                    return null;
-                }, CFG.authJdbcUrl()),
-                new Databases.XaFunction<>(connection -> {
-                    new UserDaoJdbc(connection).createUser(userData);
-                    System.out.println("Создали Юзера в userdata");
-                    return null;
-                }, "нет такого урла"));
+        txTemplate.execute(status -> {
+            try (Connection authConn = authManager.getDataSource().getConnection();
+                 Connection userConn = userManager.getDataSource().getConnection()) {
+                new AuthUserDaoJdbc(authConn).createUser(userAuthEntity);
+                System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+                new UserDaoJdbc(userConn).createUser(userData);
+                System.out.println("Создали юзера в userdata");
+                authority.setUser(new UserAuthEntity());
+                new AuthAuthorityDaoJdbc(authConn).create(authority);
+                System.out.println("Создали authority в auth");
+                return null;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
