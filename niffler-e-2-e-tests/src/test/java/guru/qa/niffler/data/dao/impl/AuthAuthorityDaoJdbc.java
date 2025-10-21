@@ -19,30 +19,30 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public AuthorityEntity create(AuthorityEntity authority) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO authority (authority, user_id) " +
-                        "VALUES (?, ?)",
-                Statement.RETURN_GENERATED_KEYS
-        )) {
-            ps.setString(1, authority.getAuthority().name());
-            ps.setObject(2, authority.getUser().getId());
+    public void create(AuthorityEntity... authorities) {
+       for (AuthorityEntity authority : authorities) {
+           try (PreparedStatement ps = connection.prepareStatement(
+                   "INSERT INTO authority (authority, user_id) " +
+                           "VALUES (?, ?)",
+                   Statement.RETURN_GENERATED_KEYS
+           )) {
+               ps.setString(1, authority.getAuthority().name());
+               ps.setObject(2, authority.getUser().getId());
 
-            ps.executeUpdate();
+               ps.executeUpdate();
 
-            final UUID generatedKey;
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    generatedKey = rs.getObject("id", UUID.class);
-                } else {
-                    throw new SQLException("Can`t find id in ResultSet");
-                }
-            }
-            authority.setId(generatedKey);
-            return authority;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+               final UUID generatedKey;
+               try (ResultSet rs = ps.getGeneratedKeys()) {
+                   if (rs.next()) {
+                       generatedKey = rs.getObject("id", UUID.class);
+                   } else {
+                       throw new SQLException("Can`t find id in ResultSet");
+                   }
+               }
+           } catch (SQLException e) {
+               throw new RuntimeException(e);
+           }
+       }
     }
 
     @Override
