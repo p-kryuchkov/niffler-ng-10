@@ -18,7 +18,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.Connection;
 
-public class TransactionTest {
+public class ChainedTransactionTest {
     private static final Config CFG = Config.getInstance();
 
     @Test
