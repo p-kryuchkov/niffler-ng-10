@@ -28,11 +28,6 @@ public class JdbcOrSpringTest {
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    private final AuthUserDao authUserSpringDao = new AuthUserDaoSpringJdbc();
-    private final AuthAuthorityDao authAuthoritySpringDao = new AuthAuthorityDaoSpringJdbc();
-    private final UserDao udUserSpringDao = new UserDaoSpringJdbc();
-
-
     @Test
     public void jdbcWithoutTransactionTest() {
         UserAuthEntity userAuthEntity = new UserAuthEntity();
@@ -56,20 +51,20 @@ public class JdbcOrSpringTest {
 
         try (Connection authConn = DataSources.dataSource(CFG.authJdbcUrl()).getConnection();
              Connection userConn = DataSources.dataSource(CFG.userdataJdbcUrl()).getConnection()) {
-            userAuthEntity = new AuthUserDaoJdbc(authConn).createUser(userAuthEntity);
+            userAuthEntity = new AuthUserDaoJdbc().createUser(userAuthEntity);
             System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
-            userData = new UserDaoJdbc(userConn).createUser(userData);
+            userData = new UserDaoJdbc().createUser(userData);
             System.out.println("Создали юзера в userdata");
             authority.setUser(null);
-            new AuthAuthorityDaoJdbc(authConn).create(authority);
+            new AuthAuthorityDaoJdbc().create(authority);
             System.out.println("Создали authority в auth");
         } catch (Exception e) {
             try (Connection authConn = DataSources.dataSource(CFG.authJdbcUrl()).getConnection();
                  Connection userConn = DataSources.dataSource(CFG.userdataJdbcUrl()).getConnection()) {
-                System.out.println("В базе auth лежит юзер " + new AuthUserDaoJdbc(authConn).findById(userAuthEntity.getId()).map(user -> {
+                System.out.println("В базе auth лежит юзер " + new AuthUserDaoJdbc().findById(userAuthEntity.getId()).map(user -> {
                     return user.getUsername();
                 }));
-                System.out.println("В базе userdata лежит юзер " + new UserDaoJdbc(userConn).findById(userData.getId()).map(user -> {
+                System.out.println("В базе userdata лежит юзер " + new UserDaoJdbc().findById(userData.getId()).map(user -> {
                     return user.getUsername();
                 }));
             } catch (SQLException ex) {
@@ -99,18 +94,18 @@ public class JdbcOrSpringTest {
         userData.setUsername(userAuthEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
         xaTransaction(TransactionIsolationLevel.REPEATABLE_READ, new Databases.XaFunction<>(connection -> {
-                    userAuthEntity.setId(new AuthUserDaoJdbc(connection).createUser(userAuthEntity).getId());
+                    userAuthEntity.setId(new AuthUserDaoJdbc().createUser(userAuthEntity).getId());
                     System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
                     return null;
                 }, CFG.authJdbcUrl()),
                 new Databases.XaFunction<>(connection -> {
-                    new UserDaoJdbc(connection).createUser(userData);
+                    new UserDaoJdbc().createUser(userData);
                     System.out.println("Создали Юзера в userdata");
                     return null;
                 }, CFG.userdataJdbcUrl()),
                 new Databases.XaFunction<>(connection -> {
                     authority.setUser(userAuthEntity);
-                    new AuthAuthorityDaoJdbc(connection).create(authority);
+                    new AuthAuthorityDaoJdbc().create(authority);
                     System.out.println("Создали authority в auth");
                     return null;
                 }, "нет такого урл"));

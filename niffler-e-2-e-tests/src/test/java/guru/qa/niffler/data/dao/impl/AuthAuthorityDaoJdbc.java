@@ -1,5 +1,6 @@
 package guru.qa.niffler.data.dao.impl;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
@@ -11,12 +12,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
-    private final Connection connection;
+import static guru.qa.niffler.data.tpl.Connections.holder;
 
-    public AuthAuthorityDaoJdbc(Connection connection) {
-        this.connection = connection;
-    }
+public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
+    private static final Config CFG = Config.getInstance();
+    private final Connection connection = holder(CFG.authJdbcUrl()).connection();
 
     @Override
     public void create(AuthorityEntity... authorities) {

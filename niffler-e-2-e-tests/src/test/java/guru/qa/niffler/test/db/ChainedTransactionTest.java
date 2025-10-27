@@ -1,9 +1,7 @@
 package guru.qa.niffler.test.db;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoJdbc;
-import guru.qa.niffler.data.dao.impl.AuthUserDaoJdbc;
-import guru.qa.niffler.data.dao.impl.UserDaoJdbc;
+import guru.qa.niffler.data.dao.impl.*;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.auth.UserAuthEntity;
@@ -52,12 +50,12 @@ public class ChainedTransactionTest {
         txTemplate.execute(status -> {
             try (Connection authConn = authManager.getDataSource().getConnection();
                  Connection userConn = userManager.getDataSource().getConnection()) {
-                new AuthUserDaoJdbc(authConn).createUser(userAuthEntity);
+                new AuthUserDaoJdbc().createUser(userAuthEntity);
                 System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
-                new UserDaoJdbc(userConn).createUser(userData);
+                new UserDaoJdbc().createUser(userData);
                 System.out.println("Создали юзера в userdata");
                 authority.setUser(userAuthEntity);
-                new AuthAuthorityDaoJdbc(authConn).create(authority);
+                new AuthAuthorityDaoJdbc().create(authority);
                 System.out.println("Создали authority в auth");
                 return null;
             } catch (Exception e) {
@@ -97,12 +95,12 @@ public class ChainedTransactionTest {
         txTemplate.execute(status -> {
             try (Connection authConn = authManager.getDataSource().getConnection();
                  Connection userConn = userManager.getDataSource().getConnection()) {
-                new AuthUserDaoJdbc(authConn).createUser(userAuthEntity);
+                new AuthUserDaoSpringJdbc().createUser(userAuthEntity);
                 System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
-                new UserDaoJdbc(userConn).createUser(userData);
+                new UserDaoSpringJdbc().createUser(userData);
                 System.out.println("Создали юзера в userdata");
                 authority.setUser(new UserAuthEntity());
-                new AuthAuthorityDaoJdbc(authConn).create(authority);
+                new AuthAuthorityDaoSpringJdbc().create(authority);
                 System.out.println("Создали authority в auth");
                 return null;
             } catch (Exception e) {

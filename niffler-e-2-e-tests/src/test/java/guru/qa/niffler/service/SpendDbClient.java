@@ -24,37 +24,37 @@ public class SpendDbClient implements SpendClient {
         return transaction(connection -> {
             SpendEntity spendEntity = SpendEntity.fromJson(spend);
             if (spendEntity.getCategory().getId() == null) {
-                CategoryEntity categoryEntity = new CategoryDaoJdbc(connection).create(spendEntity.getCategory());
+                CategoryEntity categoryEntity = new CategoryDaoJdbc().create(spendEntity.getCategory());
                 spendEntity.setCategory(categoryEntity);
             }
-            return SpendJson.fromEntity(new SpendDaoJdbc(connection).create(spendEntity));
+            return SpendJson.fromEntity(new SpendDaoJdbc().create(spendEntity));
         }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     @Override
     public CategoryJson createCategory(CategoryJson category) {
         return transaction(connection -> {
-            return CategoryJson.fromEntity(new CategoryDaoJdbc(connection).create(CategoryEntity.fromJson(category)));
+            return CategoryJson.fromEntity(new CategoryDaoJdbc().create(CategoryEntity.fromJson(category)));
         }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     @Override
     public CategoryJson updateCategory(CategoryJson category) {
         return transaction(connection -> {
-            return CategoryJson.fromEntity(new CategoryDaoJdbc(connection).update(CategoryEntity.fromJson(category)));
+            return CategoryJson.fromEntity(new CategoryDaoJdbc().update(CategoryEntity.fromJson(category)));
         }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     @Override
     public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
         return transaction(connection -> {
-            return new CategoryDaoJdbc(connection).findCategoryByUsernameAndCategoryName(username, categoryName).map(entity -> CategoryJson.fromEntity(entity));
+            return new CategoryDaoJdbc().findCategoryByUsernameAndCategoryName(username, categoryName).map(entity -> CategoryJson.fromEntity(entity));
         }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
 
     public Optional<CategoryJson> findCategoryById(UUID id) {
         return transaction(connection -> {
-            return new CategoryDaoJdbc(connection).findCategoryById(id).map(entity -> CategoryJson.fromEntity(entity));
+            return new CategoryDaoJdbc().findCategoryById(id).map(entity -> CategoryJson.fromEntity(entity));
 
         }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
     }
@@ -62,7 +62,7 @@ public class SpendDbClient implements SpendClient {
     private SpendEntity enrichSpend(SpendEntity spend) {
         return transaction(connection -> {
             if (spend.getCategory() != null && spend.getCategory().getId() != null) {
-                CategoryEntity category = new CategoryDaoJdbc(connection).findCategoryById(spend.getCategory().getId()).orElseThrow(() -> new NoSuchElementException("Category not found by id: " + spend.getCategory().getId()));
+                CategoryEntity category = new CategoryDaoJdbc().findCategoryById(spend.getCategory().getId()).orElseThrow(() -> new NoSuchElementException("Category not found by id: " + spend.getCategory().getId()));
                 spend.setCategory(category);
             }
             return spend;
