@@ -90,7 +90,9 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public List<UserEntity> findAll() {
         List<UserEntity> users = new ArrayList<>();
+
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+
                 "SELECT * FROM \"user\""
         )) {
             ps.execute();
