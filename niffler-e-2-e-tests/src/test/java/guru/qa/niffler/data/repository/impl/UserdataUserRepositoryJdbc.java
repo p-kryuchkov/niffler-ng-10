@@ -191,10 +191,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
     public List<FriendshipEntity> getFriendshipRequests(UserEntity user) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM \"user\" " +
-                        "JOIN friendship " +
-                        "ON id = requester_id " +
-                        "WHERE id = ?"
+                "SELECT * FROM friendship WHERE requester_id = ?"
         )) {
             ps.setObject(1, user.getId());
             ps.execute();
@@ -208,10 +205,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
     public List<FriendshipEntity> getFriendshipAddressee(UserEntity user) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM \"user\" " +
-                        "JOIN friendship " +
-                        "ON id = addressee_id " +
-                        "WHERE id = ?"
+                "SELECT * FROM friendship WHERE addressee = ?"
         )) {
             ps.setObject(1, user.getId());
             ps.execute();
