@@ -179,11 +179,11 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
                      "DELETE FROM friendship WHERE requester_id = ? " +
                              "OR addressee_id  = ?");
         ) {
-            ps.setObject(1, user.getId());
-            ps.executeUpdate();
             friendshipPs.setObject(1, user.getId());
             friendshipPs.setObject(2, user.getId());
             friendshipPs.executeUpdate();
+            ps.setObject(1, user.getId());
+            ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException();
         }
@@ -205,7 +205,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
     public List<FriendshipEntity> getFriendshipAddressee(UserEntity user) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM friendship WHERE addressee = ?"
+                "SELECT * FROM friendship WHERE addressee_id = ?"
         )) {
             ps.setObject(1, user.getId());
             ps.execute();
@@ -234,11 +234,15 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     private FriendshipEntity getFriendship(ResultSet rs) throws SQLException {
         FriendshipEntity friendship = new FriendshipEntity();
 
-        UUID addresseeId = rs.getObject("addressee_id", UUID.class);
-        UUID requesterId = rs.getObject("requester_id", UUID.class);
+        UserEntity requester = new UserEntity();
+        UserEntity addressee = new UserEntity();
 
-        friendship.setAddressee(findById(addresseeId).orElse(null));
-        friendship.setRequester(findById(requesterId).orElse(null));
+        requester.setId(rs.getObject("requester_id", UUID.class));
+
+        addressee.setId(rs.getObject("addressee_id", UUID.class));
+
+        friendship.setAddressee(addressee);
+        friendship.setRequester(requester);
         friendship.setStatus(FriendshipStatus.valueOf(rs.getString("status")));
         return friendship;
     }
