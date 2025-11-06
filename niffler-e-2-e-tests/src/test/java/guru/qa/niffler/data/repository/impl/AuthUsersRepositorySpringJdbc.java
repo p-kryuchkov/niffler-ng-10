@@ -42,24 +42,24 @@ public class AuthUsersRepositorySpringJdbc implements AuthUserRepository {
 
         final UUID generatedKey = (UUID) kh.getKeys().get("id");
         user.setId(generatedKey);
-        for (AuthorityEntity authority : user.getAuthorities()) {
-            jdbcTemplate.batchUpdate(
-                    "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)",
-                    new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            AuthorityEntity authority = user.getAuthorities().get(i);
-                            ps.setObject(1, user.getId());
-                            ps.setString(2, authority.getAuthority().name());
-                        }
 
-                        @Override
-                        public int getBatchSize() {
-                            return user.getAuthorities().size();
-                        }
+        AuthorityEntity[] authority = user.getAuthorities().toArray(AuthorityEntity[]::new);
+
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO authority (user_id, authority) VALUES (? , ?)",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setObject(1, generatedKey);
+                        ps.setString(2, authority[i].getAuthority().name());
                     }
-            );
-        }
+
+                    @Override
+                    public int getBatchSize() {
+                        return authority.length;
+                    }
+                }
+        );
         return user;
     }
 

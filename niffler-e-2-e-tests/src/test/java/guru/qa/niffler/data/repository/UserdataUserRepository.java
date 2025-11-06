@@ -7,9 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserdataUserRepository {
-    default UserEntity create(UserEntity user) {
-        return null;
-    }
+    UserEntity create(UserEntity user);
 
     Optional<UserEntity> findById(UUID id);
 

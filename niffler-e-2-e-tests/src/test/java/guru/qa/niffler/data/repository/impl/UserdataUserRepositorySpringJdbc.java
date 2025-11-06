@@ -17,6 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,51 +48,27 @@ public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository 
 
         final UUID generatedKey = (UUID) kh.getKeys().get("id");
         user.setId(generatedKey);
-        for (FriendshipEntity friendship : user.getFriendshipRequests()) {
-            jdbcTemplate.batchUpdate(
-                    "INSERT INTO friendship (requester_id, addressee_id, status) " +
-                            "VALUES (?, ?, ?) " +
-                            "ON CONFLICT (requester_id, addressee_id) " +
-                            "DO UPDATE SET status = ? ",
-                    new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            ps.setObject(1, friendship.getRequester().getId());
-                            ps.setObject(2, friendship.getAddressee().getId());
-                            ps.setString(3, friendship.getStatus().name());
-                            ps.setString(4, friendship.getStatus().name());
-                        }
+        List<FriendshipEntity> all = new ArrayList<>();
+        all.addAll(user.getFriendshipRequests());
+        all.addAll(user.getFriendshipAddressees());
 
-                        @Override
-                        public int getBatchSize() {
-                            return user.getFriendshipRequests().size();
-                        }
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO friendship (requester_id, addressee_id, status) " +
+                        "VALUES (?, ?, ?) " +
+                        "ON CONFLICT (requester_id, addressee_id) DO UPDATE SET status = ?",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        FriendshipEntity fr = all.get(i);
+                        ps.setObject(1, fr.getRequester().getId());
+                        ps.setObject(2, fr.getAddressee().getId());
+                        ps.setString(3, fr.getStatus().name());
+                        ps.setString(4, fr.getStatus().name());
                     }
-            );
-        }
+                    @Override public int getBatchSize() { return all.size(); }
+                }
+        );
 
-        for (FriendshipEntity friendship : user.getFriendshipAddressees()) {
-            jdbcTemplate.batchUpdate(
-                    "INSERT INTO friendship (requester_id, addressee_id, status) " +
-                            "VALUES (?, ?, ?) " +
-                            "ON CONFLICT (requester_id, addressee_id) " +
-                            "DO UPDATE SET status = ? ",
-                    new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            ps.setObject(1, friendship.getRequester().getId());
-                            ps.setObject(2, friendship.getAddressee().getId());
-                            ps.setString(3, friendship.getStatus().name());
-                            ps.setString(4, friendship.getStatus().name());
-                        }
-
-                        @Override
-                        public int getBatchSize() {
-                            return user.getFriendshipAddressees().size();
-                        }
-                    }
-            );
-        }
         return user;
     }
 
