@@ -1,14 +1,14 @@
 package guru.qa.niffler.data.repository;
 
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public interface AuthUserRepository {
-    UserAuthEntity createUser(UserAuthEntity user);
+    AuthUserEntity createUser(AuthUserEntity user);
 
-    Optional<UserAuthEntity> findById(UUID id);
+    Optional<AuthUserEntity> findById(UUID id);
 
-    Optional<UserAuthEntity> findByUsername(String username);
+    Optional<AuthUserEntity> findByUsername(String username);
 }

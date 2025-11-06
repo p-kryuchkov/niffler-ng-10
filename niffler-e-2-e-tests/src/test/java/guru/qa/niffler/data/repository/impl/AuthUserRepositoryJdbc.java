@@ -3,7 +3,7 @@ package guru.qa.niffler.data.repository.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.UserAuthEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 
@@ -23,7 +23,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     private static final String URL = CFG.authJdbcUrl();
 
     @Override
-    public UserAuthEntity createUser(UserAuthEntity user) {
+    public AuthUserEntity createUser(AuthUserEntity user) {
         try (PreparedStatement userPs = holder(URL).connection().prepareStatement(
                 "INSERT INTO \"user\" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) " +
                         "VALUES (?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
@@ -62,7 +62,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
 
     @Override
-    public Optional<UserAuthEntity> findById(UUID id) {
+    public Optional<AuthUserEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 "select * from \"user\" u join authority a on u.id = a.user_id where u.id = ?"
         )) {
@@ -71,7 +71,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
             ps.execute();
 
             try (ResultSet rs = ps.getResultSet()) {
-                UserAuthEntity user = null;
+                AuthUserEntity user = null;
                 List<AuthorityEntity> authorityEntities = new ArrayList<>();
                 while (rs.next()) {
                     if (user == null) {
@@ -97,7 +97,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
 
     @Override
-    public Optional<UserAuthEntity> findByUsername(String username) {
+    public Optional<AuthUserEntity> findByUsername(String username) {
         try (PreparedStatement ps = holder(URL).connection().prepareStatement(
                 "select * from \"user\" u join authority a on u.id = a.user_id where u.username = ?"
         )) {
@@ -106,7 +106,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
             ps.execute();
 
             try (ResultSet rs = ps.getResultSet()) {
-                UserAuthEntity user = null;
+                AuthUserEntity user = null;
                 List<AuthorityEntity> authorityEntities = new ArrayList<>();
                 while (rs.next()) {
                     if (user == null) {

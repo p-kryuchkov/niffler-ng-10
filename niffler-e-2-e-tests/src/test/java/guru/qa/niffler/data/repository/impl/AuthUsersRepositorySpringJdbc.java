@@ -2,9 +2,8 @@ package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.UserAuthSetExtractor;
-import guru.qa.niffler.data.mapper.UserdataSetExtractor;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -22,7 +21,7 @@ public class AuthUsersRepositorySpringJdbc implements AuthUserRepository {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public UserAuthEntity createUser(UserAuthEntity user) {
+    public AuthUserEntity createUser(AuthUserEntity user) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -64,7 +63,7 @@ public class AuthUsersRepositorySpringJdbc implements AuthUserRepository {
     }
 
     @Override
-    public Optional<UserAuthEntity> findById(UUID id) {
+    public Optional<AuthUserEntity> findById(UUID id) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.query(
@@ -83,7 +82,7 @@ public class AuthUsersRepositorySpringJdbc implements AuthUserRepository {
     }
 
     @Override
-    public Optional<UserAuthEntity> findByUsername(String username) {
+    public Optional<AuthUserEntity> findByUsername(String username) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.query(
