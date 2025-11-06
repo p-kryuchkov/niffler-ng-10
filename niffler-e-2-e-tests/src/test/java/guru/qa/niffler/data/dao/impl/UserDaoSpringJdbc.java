@@ -1,5 +1,6 @@
 package guru.qa.niffler.data.dao.impl;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.mapper.UserEntityRowMapper;
@@ -10,7 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import javax.sql.DataSource;
+
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
@@ -65,9 +66,7 @@ public class UserDaoSpringJdbc implements UserDao {
 
     @Override
     public List<UserEntity> findAll() {
-
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-
         return jdbcTemplate.query(
                 "SELECT * FROM \"user\"",
                 UserEntityRowMapper.instance
