@@ -21,10 +21,16 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     private final EntityManager entityManager = em(CFG.userdataJdbcUrl());
 
     @Override
-    public UserEntity create(UserEntity user) {
+    public UserEntity createUser(UserEntity user) {
         entityManager.joinTransaction();
         entityManager.persist(user);
         return user;
+    }
+
+    @Override
+    public UserEntity updateUser(UserEntity user) {
+        entityManager.joinTransaction();
+        return entityManager.merge(user);
     }
 
     @Override
@@ -38,7 +44,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     public Optional<UserEntity> findByUsername(String username) {
         try {
             return Optional.of(
-                    entityManager.createQuery("select u from UserEntity u where u.username =: username", UserEntity.class)
+                    entityManager.createQuery("select u from UserEntity u where u.username = :username", UserEntity.class)
                             .setParameter("username", username)
                             .getSingleResult()
             );
@@ -48,15 +54,9 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     }
 
     @Override
-    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
+    public void sendInvitation(UserEntity requester, UserEntity addressee) {
         entityManager.joinTransaction();
         addressee.addFriends(FriendshipStatus.PENDING, requester);
-    }
-
-    @Override
-    public void addOutcomeInvitation(UserEntity requester, UserEntity addressee) {
-        entityManager.joinTransaction();
-        requester.addFriends(FriendshipStatus.PENDING, addressee);
     }
 
     @Override
@@ -68,11 +68,13 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
 
     @Override
     public List<UserEntity> findAll() {
-        return List.of();
+        return entityManager.createQuery("SELECT u FROM UserEntity u", UserEntity.class)
+                .getResultList();
     }
 
     @Override
     public void delete(UserEntity user) {
-
+        entityManager.joinTransaction();
+        entityManager.remove(user);
     }
 }

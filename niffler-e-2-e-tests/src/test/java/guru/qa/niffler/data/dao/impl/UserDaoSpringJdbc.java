@@ -4,15 +4,14 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.mapper.UserEntityRowMapper;
-
 import guru.qa.niffler.data.tpl.DataSources;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,6 +47,35 @@ public class UserDaoSpringJdbc implements UserDao {
     }
 
     @Override
+    public UserEntity updateUser(UserEntity user) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        try {
+            int count = jdbcTemplate.update(con -> {
+                PreparedStatement usersPs = con.prepareStatement(
+                        "UPDATE \"user\" " +
+                                "SET currency = ?, " +
+                                "firstname   = ?, " +
+                                "surname     = ?, " +
+                                "photo       = ?, " +
+                                "photo_small = ? " +
+                                "WHERE id = ?"
+                );
+                usersPs.setString(1, user.getCurrency().name());
+                usersPs.setString(2, user.getFirstname());
+                usersPs.setString(3, user.getSurname());
+                usersPs.setBytes(4, user.getPhoto());
+                usersPs.setBytes(5, user.getPhotoSmall());
+                usersPs.setObject(6, user.getId());
+                return usersPs;
+            });
+            if (count == 0) throw new SQLException("Can`t find category by id");
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public Optional<UserEntity> findById(UUID id) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
         return Optional.ofNullable(
@@ -61,7 +89,14 @@ public class UserDaoSpringJdbc implements UserDao {
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-        return Optional.empty();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM \"user\" WHERE username = ? ",
+                        UserEntityRowMapper.instance,
+                        username
+                )
+        );
     }
 
     @Override
@@ -75,6 +110,10 @@ public class UserDaoSpringJdbc implements UserDao {
 
     @Override
     public void delete(UserEntity user) {
-        throw new UnsupportedOperationException();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+        jdbcTemplate.update(
+                "DELETE FROM \"user\" WHERE id = ?",
+                user.getId()
+        );
     }
 }

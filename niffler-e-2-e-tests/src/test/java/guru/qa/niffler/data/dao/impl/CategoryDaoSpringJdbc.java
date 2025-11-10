@@ -58,7 +58,6 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     @Override
     public CategoryEntity update(CategoryEntity categoryEntity) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        KeyHolder kh = new GeneratedKeyHolder();
         try {
             int count = jdbcTemplate.update(con -> {
                 PreparedStatement ps = con.prepareStatement(
