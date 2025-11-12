@@ -27,7 +27,16 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
     @Override
     public UserEntity createUser(UserEntity user) {
-        return userDao.createUser(user);
+        return xaTransactionTemplate.execute(() -> {
+            UserEntity result = userDao.createUser(user);
+            for (FriendshipEntity friendship : user.getFriendshipAddressees()) {
+                friendshipDao.createFriendship(friendship);
+            }
+            for (FriendshipEntity friendship : user.getFriendshipRequests()) {
+                friendshipDao.createFriendship(friendship);
+            }
+            return result;
+        });
     }
 
     @Override
@@ -43,7 +52,6 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
             return userEntity;
         });
     }
-
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
@@ -62,7 +70,6 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
         friendship.setStatus(FriendshipStatus.PENDING);
         friendshipDao.createFriendship(friendship);
     }
-
 
     @Override
     public void addFriend(UserEntity requester, UserEntity addressee) {
