@@ -1,14 +1,14 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.UserDao;
-import guru.qa.niffler.data.dao.impl.UserDaoSpringJdbc;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
@@ -24,7 +24,7 @@ public class UsersDbClient implements UsersClient {
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
-    private final UserDao udUserDao = new UserDaoSpringJdbc();
+    private final UserdataUserRepository udUserRepository = new UserdataUserRepositoryHibernate();
 
     private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
             CFG.authJdbcUrl(),
@@ -60,11 +60,49 @@ public class UsersDbClient implements UsersClient {
                     userdataUser.setCurrency(CurrencyValues.RUB);
 
                     return UserJson.fromEntity(
-                            udUserDao.createUser(userdataUser),
+                            udUserRepository.createUser(userdataUser),
                             null
                     );
-
                 }
         );
+    }
+
+    @Override
+    public UserJson updateUser(UserJson userJson) {
+        UserEntity userdataUser = UserEntity.fromJson(userJson);
+        return UserJson.fromEntity(udUserRepository.updateUser(userdataUser), null);
+    }
+
+    @Override
+    public void deleteUser(UserJson userJson) {
+        xaTransactionTemplate.execute(() -> {
+            udUserRepository.delete(UserEntity.fromJson(userJson));
+            authUserRepository.delete(authUserRepository.findByUsername(userJson.username()).get());
+            return null;
+        });
+    }
+
+    @Override
+    public void createIncomeInvitations(UserJson targetUser, int count) {
+        for (int i = 0; i<count; i++){
+            UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
+            udUserRepository.sendInvitation(UserEntity.fromJson(friend), UserEntity.fromJson(targetUser));
+        }
+    }
+
+    @Override
+    public void createOutcomeInvitations(UserJson targetUser, int count) {
+        for (int i = 0; i<count; i++){
+            UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
+            udUserRepository.sendInvitation(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
+        }
+    }
+
+    @Override
+    public void createFriends(UserJson targetUser, int count) {
+        for (int i = 0; i<count; i++){
+            UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
+            udUserRepository.addFriend(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
+        }
     }
 }
