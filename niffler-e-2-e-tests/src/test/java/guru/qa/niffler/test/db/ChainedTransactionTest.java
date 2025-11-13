@@ -4,7 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.impl.*;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.model.CurrencyValues;
@@ -21,13 +21,13 @@ public class ChainedTransactionTest {
 
     @Test
     public void successTransactionTest() {
-        UserAuthEntity userAuthEntity = new UserAuthEntity();
-        userAuthEntity.setEnabled(true);
-        userAuthEntity.setCredentialsNonExpired(true);
-        userAuthEntity.setAccountNonLocked(true);
-        userAuthEntity.setAccountNonExpired(true);
-        userAuthEntity.setUsername(RandomDataUtils.randomUsername());
-        userAuthEntity.setPassword("12345");
+        AuthUserEntity authUserEntity = new AuthUserEntity();
+        authUserEntity.setEnabled(true);
+        authUserEntity.setCredentialsNonExpired(true);
+        authUserEntity.setAccountNonLocked(true);
+        authUserEntity.setAccountNonExpired(true);
+        authUserEntity.setUsername(RandomDataUtils.randomUsername());
+        authUserEntity.setPassword("12345");
 
         AuthorityEntity authority = new AuthorityEntity();
         authority.setAuthority(Authority.read);
@@ -36,7 +36,7 @@ public class ChainedTransactionTest {
         userData.setFullname("Testovii Test Testovitch");
         userData.setFirstname("Test");
         userData.setSurname("Testovii");
-        userData.setUsername(userAuthEntity.getUsername());
+        userData.setUsername(authUserEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
         DataSourceTransactionManager authManager = new DataSourceTransactionManager(
                 DataSources.dataSource(CFG.authJdbcUrl())
@@ -50,11 +50,11 @@ public class ChainedTransactionTest {
         txTemplate.execute(status -> {
             try (Connection authConn = authManager.getDataSource().getConnection();
                  Connection userConn = userManager.getDataSource().getConnection()) {
-                new AuthUserDaoJdbc().createUser(userAuthEntity);
-                System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+                new AuthUserDaoJdbc().createUser(authUserEntity);
+                System.out.println("Создали юзера в auth " + authUserEntity.getUsername());
                 new UserDaoJdbc().createUser(userData);
                 System.out.println("Создали юзера в userdata");
-                authority.setUser(userAuthEntity);
+                authority.setUser(authUserEntity);
                 new AuthAuthorityDaoJdbc().create(authority);
                 System.out.println("Создали authority в auth");
                 return null;
@@ -66,13 +66,13 @@ public class ChainedTransactionTest {
 
     @Test
     public void failTransactionTest() {
-        UserAuthEntity userAuthEntity = new UserAuthEntity();
-        userAuthEntity.setEnabled(true);
-        userAuthEntity.setCredentialsNonExpired(true);
-        userAuthEntity.setAccountNonLocked(true);
-        userAuthEntity.setAccountNonExpired(true);
-        userAuthEntity.setUsername(RandomDataUtils.randomUsername());
-        userAuthEntity.setPassword("12345");
+        AuthUserEntity authUserEntity = new AuthUserEntity();
+        authUserEntity.setEnabled(true);
+        authUserEntity.setCredentialsNonExpired(true);
+        authUserEntity.setAccountNonLocked(true);
+        authUserEntity.setAccountNonExpired(true);
+        authUserEntity.setUsername(RandomDataUtils.randomUsername());
+        authUserEntity.setPassword("12345");
 
         AuthorityEntity authority = new AuthorityEntity();
         authority.setAuthority(Authority.read);
@@ -81,7 +81,7 @@ public class ChainedTransactionTest {
         userData.setFullname("Testovii Test Testovitch");
         userData.setFirstname("Test");
         userData.setSurname("Testovii");
-        userData.setUsername(userAuthEntity.getUsername());
+        userData.setUsername(authUserEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
         DataSourceTransactionManager authManager = new DataSourceTransactionManager(
                 DataSources.dataSource(CFG.authJdbcUrl())
@@ -95,11 +95,11 @@ public class ChainedTransactionTest {
         txTemplate.execute(status -> {
             try (Connection authConn = authManager.getDataSource().getConnection();
                  Connection userConn = userManager.getDataSource().getConnection()) {
-                new AuthUserDaoSpringJdbc().createUser(userAuthEntity);
-                System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+                new AuthUserDaoSpringJdbc().createUser(authUserEntity);
+                System.out.println("Создали юзера в auth " + authUserEntity.getUsername());
                 new UserDaoSpringJdbc().createUser(userData);
                 System.out.println("Создали юзера в userdata");
-                authority.setUser(new UserAuthEntity());
+                authority.setUser(new AuthUserEntity());
                 new AuthAuthorityDaoSpringJdbc().create(authority);
                 System.out.println("Создали authority в auth");
                 return null;

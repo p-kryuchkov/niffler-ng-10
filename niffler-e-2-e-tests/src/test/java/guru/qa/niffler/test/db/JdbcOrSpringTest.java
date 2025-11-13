@@ -9,7 +9,7 @@ import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.dao.impl.*;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
@@ -30,14 +30,14 @@ public class JdbcOrSpringTest {
 
     @Test
     public void jdbcWithoutTransactionTest() {
-        UserAuthEntity userAuthEntity = new UserAuthEntity();
+        AuthUserEntity authUserEntity = new AuthUserEntity();
 
-        userAuthEntity.setEnabled(true);
-        userAuthEntity.setCredentialsNonExpired(true);
-        userAuthEntity.setAccountNonLocked(true);
-        userAuthEntity.setAccountNonExpired(true);
-        userAuthEntity.setUsername(RandomDataUtils.randomUsername());
-        userAuthEntity.setPassword("12345");
+        authUserEntity.setEnabled(true);
+        authUserEntity.setCredentialsNonExpired(true);
+        authUserEntity.setAccountNonLocked(true);
+        authUserEntity.setAccountNonExpired(true);
+        authUserEntity.setUsername(RandomDataUtils.randomUsername());
+        authUserEntity.setPassword("12345");
 
         AuthorityEntity authority = new AuthorityEntity();
         authority.setAuthority(Authority.read);
@@ -46,13 +46,13 @@ public class JdbcOrSpringTest {
         userData.setFullname("Testovii Test Testovitch");
         userData.setFirstname("Test");
         userData.setSurname("Testovii");
-        userData.setUsername(userAuthEntity.getUsername());
+        userData.setUsername(authUserEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
 
         try (Connection authConn = DataSources.dataSource(CFG.authJdbcUrl()).getConnection();
              Connection userConn = DataSources.dataSource(CFG.userdataJdbcUrl()).getConnection()) {
-            userAuthEntity = new AuthUserDaoJdbc().createUser(userAuthEntity);
-            System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+            authUserEntity = new AuthUserDaoJdbc().createUser(authUserEntity);
+            System.out.println("Создали юзера в auth " + authUserEntity.getUsername());
             userData = new UserDaoJdbc().createUser(userData);
             System.out.println("Создали юзера в userdata");
             authority.setUser(null);
@@ -61,7 +61,7 @@ public class JdbcOrSpringTest {
         } catch (Exception e) {
             try (Connection authConn = DataSources.dataSource(CFG.authJdbcUrl()).getConnection();
                  Connection userConn = DataSources.dataSource(CFG.userdataJdbcUrl()).getConnection()) {
-                System.out.println("В базе auth лежит юзер " + new AuthUserDaoJdbc().findById(userAuthEntity.getId()).map(user -> {
+                System.out.println("В базе auth лежит юзер " + new AuthUserDaoJdbc().findById(authUserEntity.getId()).map(user -> {
                     return user.getUsername();
                 }));
                 System.out.println("В базе userdata лежит юзер " + new UserDaoJdbc().findById(userData.getId()).map(user -> {
@@ -75,14 +75,14 @@ public class JdbcOrSpringTest {
 
     @Test
     public void jdbcWithTransactionTest() {
-        UserAuthEntity userAuthEntity = new UserAuthEntity();
+        AuthUserEntity authUserEntity = new AuthUserEntity();
 
-        userAuthEntity.setEnabled(true);
-        userAuthEntity.setCredentialsNonExpired(true);
-        userAuthEntity.setAccountNonLocked(true);
-        userAuthEntity.setAccountNonExpired(true);
-        userAuthEntity.setUsername(RandomDataUtils.randomUsername());
-        userAuthEntity.setPassword("12345");
+        authUserEntity.setEnabled(true);
+        authUserEntity.setCredentialsNonExpired(true);
+        authUserEntity.setAccountNonLocked(true);
+        authUserEntity.setAccountNonExpired(true);
+        authUserEntity.setUsername(RandomDataUtils.randomUsername());
+        authUserEntity.setPassword("12345");
 
         AuthorityEntity authority = new AuthorityEntity();
         authority.setAuthority(Authority.read);
@@ -91,11 +91,11 @@ public class JdbcOrSpringTest {
         userData.setFullname("Testovii Test Testovitch");
         userData.setFirstname("Test");
         userData.setSurname("Testovii");
-        userData.setUsername(userAuthEntity.getUsername());
+        userData.setUsername(authUserEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
         xaTransaction(TransactionIsolationLevel.REPEATABLE_READ, new Databases.XaFunction<>(connection -> {
-                    userAuthEntity.setId(new AuthUserDaoJdbc().createUser(userAuthEntity).getId());
-                    System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+                    authUserEntity.setId(new AuthUserDaoJdbc().createUser(authUserEntity).getId());
+                    System.out.println("Создали юзера в auth " + authUserEntity.getUsername());
                     return null;
                 }, CFG.authJdbcUrl()),
                 new Databases.XaFunction<>(connection -> {
@@ -104,7 +104,7 @@ public class JdbcOrSpringTest {
                     return null;
                 }, CFG.userdataJdbcUrl()),
                 new Databases.XaFunction<>(connection -> {
-                    authority.setUser(userAuthEntity);
+                    authority.setUser(authUserEntity);
                     new AuthAuthorityDaoJdbc().create(authority);
                     System.out.println("Создали authority в auth");
                     return null;
@@ -113,14 +113,14 @@ public class JdbcOrSpringTest {
 
     @Test
     public void springWithoutTransactionTest() {
-        UserAuthEntity userAuthEntity = new UserAuthEntity();
+        AuthUserEntity authUserEntity = new AuthUserEntity();
 
-        userAuthEntity.setEnabled(true);
-        userAuthEntity.setCredentialsNonExpired(true);
-        userAuthEntity.setAccountNonLocked(true);
-        userAuthEntity.setAccountNonExpired(true);
-        userAuthEntity.setUsername(RandomDataUtils.randomUsername());
-        userAuthEntity.setPassword("12345");
+        authUserEntity.setEnabled(true);
+        authUserEntity.setCredentialsNonExpired(true);
+        authUserEntity.setAccountNonLocked(true);
+        authUserEntity.setAccountNonExpired(true);
+        authUserEntity.setUsername(RandomDataUtils.randomUsername());
+        authUserEntity.setPassword("12345");
 
         AuthorityEntity authority = new AuthorityEntity();
         authority.setAuthority(Authority.read);
@@ -129,7 +129,7 @@ public class JdbcOrSpringTest {
         userData.setFullname("Testovii Test Testovitch");
         userData.setFirstname("Test");
         userData.setSurname("Testovii");
-        userData.setUsername(userAuthEntity.getUsername());
+        userData.setUsername(authUserEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
 
         XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
@@ -139,14 +139,14 @@ public class JdbcOrSpringTest {
         AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
         UserDao udUserDao = new UserDaoSpringJdbc();
         try {
-            userAuthEntity = authUserDao.createUser(userAuthEntity);
-            System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+            authUserEntity = authUserDao.createUser(authUserEntity);
+            System.out.println("Создали юзера в auth " + authUserEntity.getUsername());
             udUserDao.createUser(userData);
             System.out.println("Создали юзера в userdata");
             authAuthorityDao.create(authority);
             System.out.println("Создали authority в auth");
         } catch (Exception e) {
-            System.out.println("В базе auth лежит юзер " + authUserDao.findById(userAuthEntity.getId()).map(user -> {
+            System.out.println("В базе auth лежит юзер " + authUserDao.findById(authUserEntity.getId()).map(user -> {
                 return user.getUsername();
             }));
             System.out.println("В базе userdata лежит юзер " + udUserDao.findById(userData.getId()).map(user -> {
@@ -157,14 +157,14 @@ public class JdbcOrSpringTest {
 
     @Test
     public void springWithTransactionTest() {
-        UserAuthEntity userAuthEntity = new UserAuthEntity();
+        AuthUserEntity authUserEntity = new AuthUserEntity();
 
-        userAuthEntity.setEnabled(true);
-        userAuthEntity.setCredentialsNonExpired(true);
-        userAuthEntity.setAccountNonLocked(true);
-        userAuthEntity.setAccountNonExpired(true);
-        userAuthEntity.setUsername(RandomDataUtils.randomUsername());
-        userAuthEntity.setPassword("12345");
+        authUserEntity.setEnabled(true);
+        authUserEntity.setCredentialsNonExpired(true);
+        authUserEntity.setAccountNonLocked(true);
+        authUserEntity.setAccountNonExpired(true);
+        authUserEntity.setUsername(RandomDataUtils.randomUsername());
+        authUserEntity.setPassword("12345");
 
         AuthorityEntity authority = new AuthorityEntity();
         authority.setAuthority(Authority.read);
@@ -173,7 +173,7 @@ public class JdbcOrSpringTest {
         userData.setFullname("Testovii Test Testovitch");
         userData.setFirstname("Test");
         userData.setSurname("Testovii");
-        userData.setUsername(userAuthEntity.getUsername());
+        userData.setUsername(authUserEntity.getUsername());
         userData.setCurrency(CurrencyValues.RUB);
 
         XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
@@ -183,8 +183,8 @@ public class JdbcOrSpringTest {
         AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
         UserDao udUserDao = new UserDaoSpringJdbc();
         xaTransactionTemplate.execute(() -> {
-            authUserDao.createUser(userAuthEntity);
-            System.out.println("Создали юзера в auth " + userAuthEntity.getUsername());
+            authUserDao.createUser(authUserEntity);
+            System.out.println("Создали юзера в auth " + authUserEntity.getUsername());
             udUserDao.createUser(userData);
             System.out.println("Создали юзера в userdata");
             authAuthorityDao.create(authority);

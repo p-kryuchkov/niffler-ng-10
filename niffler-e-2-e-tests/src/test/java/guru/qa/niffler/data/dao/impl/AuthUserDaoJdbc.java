@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -19,7 +19,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     private static PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Override
-    public UserAuthEntity createUser(UserAuthEntity user) {
+    public AuthUserEntity createUser(AuthUserEntity user) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"user\" (username, account_non_expired, account_non_locked, credentials_non_expired, enabled, password) " +
                         "VALUES (?, ?, ?, ?, ?, ?)",
@@ -50,7 +50,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
 
     @Override
-    public UserAuthEntity updateUser(UserAuthEntity user) {
+    public AuthUserEntity updateUser(AuthUserEntity user) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "UPDATE \"user\" SET username = ?, " +
                         "account_non_expired = ?, " +
@@ -78,7 +78,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
 
     @Override
-    public Optional<UserAuthEntity> findById(UUID id) {
+    public Optional<AuthUserEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM \"user\" WHERE id = ?"
         )) {
@@ -97,8 +97,8 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
 
     @Override
-    public List<UserAuthEntity> findAll() {
-        List<UserAuthEntity> users = new ArrayList<>();
+    public List<AuthUserEntity> findAll() {
+        List<AuthUserEntity> users = new ArrayList<>();
 
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
 
@@ -117,7 +117,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
 
     @Override
-    public Optional<UserAuthEntity> findByUsername(String username) {
+    public Optional<AuthUserEntity> findByUsername(String username) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM \"user\" WHERE username = ?"
         )) {
@@ -136,7 +136,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
 
     @Override
-    public void delete(UserAuthEntity user) {
+    public void delete(AuthUserEntity user) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM \"user\" WHERE id = ?"
         )) {
@@ -147,8 +147,8 @@ public class AuthUserDaoJdbc implements AuthUserDao {
         }
     }
 
-    private UserAuthEntity getUser(ResultSet rs) throws SQLException {
-        UserAuthEntity user = new UserAuthEntity();
+    private AuthUserEntity getUser(ResultSet rs) throws SQLException {
+        AuthUserEntity user = new AuthUserEntity();
         user.setId(rs.getObject("id", UUID.class));
         user.setUsername(rs.getString("username"));
         user.setAccountNonExpired(rs.getBoolean("account_non_expired"));

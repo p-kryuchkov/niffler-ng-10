@@ -25,7 +25,7 @@ public class AuthorityEntity implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "user_id")
-  private UserAuthEntity user;
+  private AuthUserEntity user;
 
   @Override
   public final boolean equals(Object o) {

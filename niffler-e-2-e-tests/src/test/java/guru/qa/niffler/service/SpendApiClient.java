@@ -41,6 +41,16 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
+    public SpendJson updateSpend(SpendJson spend) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteSpend(SpendJson spend) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public CategoryJson createCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
@@ -50,6 +60,11 @@ public class SpendApiClient implements SpendClient {
         }
         assertEquals(200, response.code());
         return response.body();
+    }
+
+    @Override
+    public void deleteCategory(CategoryJson category) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

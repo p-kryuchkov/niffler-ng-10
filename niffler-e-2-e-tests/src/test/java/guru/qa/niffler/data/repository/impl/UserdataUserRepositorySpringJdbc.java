@@ -1,23 +1,16 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.FriendshipDao;
+import guru.qa.niffler.data.dao.UserDao;
+import guru.qa.niffler.data.dao.impl.FriendshipDaoSpringJdbc;
+import guru.qa.niffler.data.dao.impl.UserDaoSpringJdbc;
 import guru.qa.niffler.data.entity.user.FriendshipEntity;
 import guru.qa.niffler.data.entity.user.FriendshipStatus;
 import guru.qa.niffler.data.entity.user.UserEntity;
-import guru.qa.niffler.data.mapper.FriendshipEntityRowMapper;
-import guru.qa.niffler.data.mapper.UserEntityRowMapper;
-import guru.qa.niffler.data.mapper.UserdataSetExtractor;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
-import guru.qa.niffler.data.tpl.DataSources;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,161 +18,97 @@ import java.util.UUID;
 public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository {
     private static final Config CFG = Config.getInstance();
 
+    private static final UserDao userDao = new UserDaoSpringJdbc();
+    private static final FriendshipDao friendshipDao = new FriendshipDaoSpringJdbc();
+
+    private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
+            CFG.userdataJdbcUrl()
+    );
+
     @Override
-    public UserEntity create(UserEntity user) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-        KeyHolder kh = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement userPs = con.prepareStatement(
-                    "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name) " +
-                            "VALUES (?,?,?,?,?,?,?)",
-                    Statement.RETURN_GENERATED_KEYS
-            );
+    public UserEntity createUser(UserEntity user) {
+        return xaTransactionTemplate.execute(() -> {
+            UserEntity result = userDao.createUser(user);
+            for (FriendshipEntity friendship : user.getFriendshipAddressees()) {
+                friendshipDao.createFriendship(friendship);
+            }
+            for (FriendshipEntity friendship : user.getFriendshipRequests()) {
+                friendshipDao.createFriendship(friendship);
+            }
+            return result;
+        });
+    }
 
-            userPs.setString(1, user.getUsername());
-            userPs.setString(2, user.getCurrency().name());
-            userPs.setString(3, user.getFirstname());
-            userPs.setString(4, user.getSurname());
-            userPs.setBytes(5, user.getPhoto());
-            userPs.setBytes(6, user.getPhotoSmall());
-            userPs.setString(7, user.getFullname());
-            return userPs;
-        }, kh);
-
-        final UUID generatedKey = (UUID) kh.getKeys().get("id");
-        user.setId(generatedKey);
-        List<FriendshipEntity> all = new ArrayList<>();
-        all.addAll(user.getFriendshipRequests());
-        all.addAll(user.getFriendshipAddressees());
-
-        jdbcTemplate.batchUpdate(
-                "INSERT INTO friendship (requester_id, addressee_id, status) " +
-                        "VALUES (?, ?, ?) " +
-                        "ON CONFLICT (requester_id, addressee_id) DO UPDATE SET status = ?",
-                new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        FriendshipEntity fr = all.get(i);
-                        ps.setObject(1, fr.getRequester().getId());
-                        ps.setObject(2, fr.getAddressee().getId());
-                        ps.setString(3, fr.getStatus().name());
-                        ps.setString(4, fr.getStatus().name());
-                    }
-                    @Override public int getBatchSize() { return all.size(); }
-                }
-        );
-
-        return user;
+    @Override
+    public UserEntity updateUser(UserEntity user) {
+        return userDao.updateUser(user);
     }
 
     @Override
     public Optional<UserEntity> findById(UUID id) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-        return Optional.ofNullable(
-                jdbcTemplate.query(
-                        "SELECT * FROM \"user\" u " +
-                                "JOIN friendship fr " +
-                                "ON u.id = fr.requester_id " +
-                                "JOIN friendship fa " +
-                                "ON u.id = fa.addressee_id " +
-                                "WHERE u.id = ?",
-                        UserdataSetExtractor.instance,
-                        id));
+        return userDao.findById(id).map(userEntity -> {
+            userEntity.setFriendshipAddressees(friendshipDao.findByAddresseeId(id));
+            userEntity.setFriendshipRequests(friendshipDao.findByRequesterId(id));
+            return userEntity;
+        });
     }
+
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-        return Optional.ofNullable(
-                jdbcTemplate.query(
-                        "SELECT * FROM \"user\" u " +
-                                "JOIN friendship fr " +
-                                "ON u.id = fr.requester_id " +
-                                "JOIN friendship fa " +
-                                "ON u.id = fa.addressee_id " +
-                                "WHERE u.username = ?",
-                        UserdataSetExtractor.instance,
-                        username));
+        return userDao.findByUsername(username).map(userEntity -> {
+            userEntity.setFriendshipAddressees(friendshipDao.findByAddresseeId(userEntity.getId()));
+            userEntity.setFriendshipRequests(friendshipDao.findByRequesterId(userEntity.getId()));
+            return userEntity;
+        });
     }
 
     @Override
-    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
-        createFriendshipRow(requester, addressee, FriendshipStatus.PENDING);
+    public void sendInvitation(UserEntity requester, UserEntity addressee) {
+        FriendshipEntity friendship = new FriendshipEntity();
+        friendship.setAddressee(addressee);
+        friendship.setRequester(requester);
+        friendship.setStatus(FriendshipStatus.PENDING);
+        friendshipDao.createFriendship(friendship);
     }
 
-    @Override
-    public void addOutcomeInvitation(UserEntity requester, UserEntity addressee) {
-        createFriendshipRow(requester, addressee, FriendshipStatus.PENDING);
-    }
 
     @Override
     public void addFriend(UserEntity requester, UserEntity addressee) {
-        createFriendshipRow(requester, addressee, FriendshipStatus.ACCEPTED);
-        createFriendshipRow(addressee, requester, FriendshipStatus.ACCEPTED);
+        xaTransactionTemplate.execute(() -> {
+            FriendshipEntity friendshipIncome = new FriendshipEntity();
+            friendshipIncome.setAddressee(addressee);
+            friendshipIncome.setRequester(requester);
+            friendshipIncome.setStatus(FriendshipStatus.ACCEPTED);
+
+            FriendshipEntity friendshipOutcome = new FriendshipEntity();
+            friendshipOutcome.setAddressee(requester);
+            friendshipOutcome.setRequester(addressee);
+            friendshipOutcome.setStatus(FriendshipStatus.ACCEPTED);
+
+            friendshipDao.createFriendship(friendshipIncome);
+            friendshipDao.createFriendship(friendshipOutcome);
+            return null;
+        });
     }
 
     @Override
     public List<UserEntity> findAll() {
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-
-        return jdbcTemplate.query(
-                "SELECT * FROM \"user\"",
-                UserEntityRowMapper.instance
-        );
+        return userDao.findAll();
     }
 
     @Override
     public void delete(UserEntity user) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-        jdbcTemplate.update(con -> {
-            PreparedStatement userPs = con.prepareStatement(
-                    "DELETE FROM \"user\" WHERE id = ?");
-            PreparedStatement friendshipPs = con.prepareStatement(
-                    "DELETE FROM friendship WHERE requester_id = ? " +
-                            "OR addressee_id  = ?");
-            userPs.setObject(1, user.getId());
-            friendshipPs.setObject(1, user.getId());
-            friendshipPs.setObject(2, user.getId());
-            friendshipPs.executeUpdate();
-            return userPs;
-        });
-    }
-
-    public List<FriendshipEntity> getFriendshipRequests(UserEntity user) {
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-
-        return jdbcTemplate.query(
-                "SELECT * FROM friendship WHERE requester_id = ?",
-                FriendshipEntityRowMapper.instance
+        xaTransactionTemplate.execute(() -> {
+                    for (FriendshipEntity friendship : user.getFriendshipAddressees()) {
+                        friendshipDao.deleteFriendship(friendship);
+                    }
+                    for (FriendshipEntity friendship : user.getFriendshipRequests()) {
+                        friendshipDao.deleteFriendship(friendship);
+                    }
+                    userDao.delete(user);
+                    return null;
+                }
         );
-    }
-
-    public List<FriendshipEntity> getFriendshipAddressee(UserEntity user) {
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-
-        return jdbcTemplate.query(
-                "SELECT * FROM friendship WHERE addressee = ?",
-                FriendshipEntityRowMapper.instance
-        );
-    }
-
-    private void createFriendshipRow(UserEntity requester, UserEntity addressee, FriendshipStatus status) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-        jdbcTemplate.update(con -> {
-            PreparedStatement friendshipPs = con.prepareStatement(
-                    "INSERT INTO friendship (requester_id, addressee_id, status) " +
-                            "VALUES (?, ?, ?) " +
-                            "ON CONFLICT (requester_id, addressee_id) " +
-                            "DO UPDATE SET status = ? "
-            );
-            friendshipPs.setObject(1, requester.getId());
-            friendshipPs.setObject(2, addressee.getId());
-            friendshipPs.setString(3, status.name());
-            friendshipPs.setString(4, status.name());
-            return friendshipPs;
-        });
     }
 }

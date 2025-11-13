@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.UserAuthEntityRowMapper;
 
 import guru.qa.niffler.data.tpl.DataSources;
@@ -22,7 +22,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public UserAuthEntity createUser(UserAuthEntity user) {
+    public AuthUserEntity createUser(AuthUserEntity user) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -46,12 +46,12 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     }
 
     @Override
-    public UserAuthEntity updateUser(UserAuthEntity user) {
+    public AuthUserEntity updateUser(AuthUserEntity user) {
         return null;
     }
 
     @Override
-    public Optional<UserAuthEntity> findById(UUID id) {
+    public Optional<AuthUserEntity> findById(UUID id) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
@@ -63,7 +63,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     }
 
     @Override
-    public List<UserAuthEntity> findAll() {
+    public List<AuthUserEntity> findAll() {
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
 
@@ -74,12 +74,12 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     }
 
     @Override
-    public Optional<UserAuthEntity> findByUsername(String username) {
+    public Optional<AuthUserEntity> findByUsername(String username) {
         return Optional.empty();
     }
 
     @Override
-    public void delete(UserAuthEntity user) {
+    public void delete(AuthUserEntity user) {
         throw new UnsupportedOperationException();
     }
 }
