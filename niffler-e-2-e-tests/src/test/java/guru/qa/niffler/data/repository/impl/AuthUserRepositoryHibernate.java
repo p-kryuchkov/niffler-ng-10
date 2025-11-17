@@ -41,7 +41,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     @Override
     public List<AuthUserEntity> findAll() {
         entityManager.joinTransaction();
-        return entityManager.createQuery("SELECT u FROM AuthUserEntity u", AuthUserEntity.class)
+        return entityManager.createQuery("select u from AuthUserEntity u", AuthUserEntity.class)
                 .getResultList();
     }
 
@@ -61,6 +61,9 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     @Override
     public void delete(AuthUserEntity user) {
         entityManager.joinTransaction();
+        if (!entityManager.contains(user)) {
+            user = entityManager.merge(user);
+        }
         entityManager.remove(user);
     }
 }

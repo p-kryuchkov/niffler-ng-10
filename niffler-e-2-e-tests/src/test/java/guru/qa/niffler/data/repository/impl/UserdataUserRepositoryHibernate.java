@@ -68,13 +68,16 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
 
     @Override
     public List<UserEntity> findAll() {
-        return entityManager.createQuery("SELECT u FROM UserEntity u", UserEntity.class)
+        return entityManager.createQuery("select u from UserEntity u", UserEntity.class)
                 .getResultList();
     }
 
     @Override
     public void delete(UserEntity user) {
         entityManager.joinTransaction();
+        if (!entityManager.contains(user)) {
+            user = entityManager.merge(user);
+        }
         entityManager.remove(user);
     }
 }
