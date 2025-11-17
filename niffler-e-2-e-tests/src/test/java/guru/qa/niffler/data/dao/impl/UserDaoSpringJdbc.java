@@ -68,7 +68,7 @@ public class UserDaoSpringJdbc implements UserDao {
                 usersPs.setObject(6, user.getId());
                 return usersPs;
             });
-            if (count == 0) throw new SQLException("Can`t find category by id");
+            if (count == 0) throw new SQLException("Can`t find user by id");
             return user;
         } catch (SQLException e) {
             throw new RuntimeException(e);
