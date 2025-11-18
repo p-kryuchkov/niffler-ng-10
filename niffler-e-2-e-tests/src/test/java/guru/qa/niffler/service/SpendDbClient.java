@@ -46,6 +46,11 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
+    public CategoryJson updateCategory(CategoryJson category) {
+        return CategoryJson.fromEntity(spendRepository.updateCategory(CategoryEntity.fromJson(category)));
+    }
+
+    @Override
     public void deleteCategory(CategoryJson category) {
         spendRepository.deleteCategory(CategoryEntity.fromJson(category));
     }
