@@ -42,7 +42,8 @@ public class SpendDbClient implements SpendClient {
 
     @Override
     public CategoryJson createCategory(CategoryJson category) {
-        return CategoryJson.fromEntity(spendRepository.createCategory(CategoryEntity.fromJson(category)));
+        return xaTransactionTemplate.execute(() ->{return CategoryJson.fromEntity(spendRepository.createCategory(CategoryEntity.fromJson(category)));
+        });
     }
 
     @Override
@@ -57,8 +58,6 @@ public class SpendDbClient implements SpendClient {
 
     @Override
     public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
-        return transaction(connection -> {
-            return new CategoryDaoJdbc().findCategoryByUsernameAndCategoryName(username, categoryName).map(entity -> CategoryJson.fromEntity(entity));
-        }, CFG.spendJdbcUrl(), TransactionIsolationLevel.REPEATABLE_READ);
+        return Optional.of(CategoryJson.fromEntity(spendRepository.findCategoryByUsernameAndCategoryName(categoryName, username).get()));
     }
 }
