@@ -69,8 +69,10 @@ public class UsersDbClient implements UsersClient {
 
     @Override
     public UserJson updateUser(UserJson userJson) {
-        UserEntity userdataUser = UserEntity.fromJson(userJson);
-        return UserJson.fromEntity(udUserRepository.updateUser(userdataUser), null);
+        return xaTransactionTemplate.execute(() -> {
+            UserEntity userdataUser = UserEntity.fromJson(userJson);
+            return UserJson.fromEntity(udUserRepository.updateUser(userdataUser), null);
+        });
     }
 
     @Override
@@ -84,25 +86,34 @@ public class UsersDbClient implements UsersClient {
 
     @Override
     public void createIncomeInvitations(UserJson targetUser, int count) {
-        for (int i = 0; i<count; i++){
-            UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
-            udUserRepository.sendInvitation(UserEntity.fromJson(friend), UserEntity.fromJson(targetUser));
-        }
+        xaTransactionTemplate.execute(() -> {
+            for (int i = 0; i < count; i++) {
+                UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
+                udUserRepository.sendInvitation(UserEntity.fromJson(friend), UserEntity.fromJson(targetUser));
+            }
+            return null;
+        });
     }
 
     @Override
     public void createOutcomeInvitations(UserJson targetUser, int count) {
-        for (int i = 0; i<count; i++){
-            UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
-            udUserRepository.sendInvitation(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
-        }
+        xaTransactionTemplate.execute(() -> {
+            for (int i = 0; i < count; i++) {
+                UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
+                udUserRepository.sendInvitation(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
+            }
+            return null;
+        });
     }
 
     @Override
     public void createFriends(UserJson targetUser, int count) {
-        for (int i = 0; i<count; i++){
-            UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
-            udUserRepository.addFriend(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
-        }
+        xaTransactionTemplate.execute(() -> {
+            for (int i = 0; i < count; i++) {
+                UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
+                udUserRepository.addFriend(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
+            }
+            return null;
+        });
     }
 }
