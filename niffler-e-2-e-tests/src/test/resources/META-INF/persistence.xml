@@ -16,8 +16,9 @@
 
     <persistence-unit name="jdbc:postgresql://localhost:5432/niffler-userdata" transaction-type="JTA">
         <jta-data-source>java:comp/env/jdbc/niffler-userdata</jta-data-source>
-        <class>guru.qa.niffler.data.entity.userdata.UserEntity</class>
-        <class>guru.qa.niffler.data.entity.userdata.FriendshipEntity</class>
+        <class>guru.qa.niffler.data.entity.user.UserEntity</class>
+        <class>guru.qa.niffler.data.entity.user.FriendshipEntity</class>
+        <class>guru.qa.niffler.data.entity.user.PushTokenEntity</class>
 
         <properties>
             <property name="hibernate.transaction.jta.platform" value="com.atomikos.icatch.jta.hibernate4.AtomikosPlatform"/>

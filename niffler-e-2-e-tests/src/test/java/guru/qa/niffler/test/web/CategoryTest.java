@@ -7,6 +7,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.StaticUser;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,13 +21,13 @@ public class CategoryTest {
                     archived = false
             ))
     @Test
-    public void archiveCategoryTest(CategoryJson categoryJson, StaticUser user) {
+    public void archiveCategoryTest(UserJson user){
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), "12345")
                 .editProfile()
-                .archiveCategory(categoryJson.name())
+                .archiveCategory(user.testData().categories().getFirst().name())
                 .checkShowArchivedCategories()
-                .isCategoryExists(categoryJson.name());
+                .isCategoryExists(user.testData().categories().getFirst().name());
     }
 
     @User(
@@ -34,13 +35,13 @@ public class CategoryTest {
                     archived = true
             ))
     @Test
-    public void unArchiveCathegoryTest(CategoryJson categoryJson, StaticUser user) {
+    public void unArchiveCathegoryTest(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.password())
+                .login(user.username(), "12345")
                 .editProfile()
                 .checkShowArchivedCategories()
-                .unArchiveCategory(categoryJson.name())
+                .unArchiveCategory(user.testData().categories().getFirst().name())
                 .uncheckShowArchivedCategories()
-                .isCategoryExists(categoryJson.name());
+                .isCategoryExists(user.testData().categories().getFirst().name());
     }
 }

@@ -16,7 +16,9 @@ import guru.qa.niffler.utils.RandomDataUtils;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class UsersDbClient implements UsersClient {
 
@@ -85,35 +87,46 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public void createIncomeInvitations(UserJson targetUser, int count) {
+    public List<UserJson> createIncomeInvitations(UserJson targetUser, int count) {
+        List<UserJson> result = new ArrayList<>();
         xaTransactionTemplate.execute(() -> {
             for (int i = 0; i < count; i++) {
                 UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
+                friend.friendshipStatus();
                 udUserRepository.sendInvitation(UserEntity.fromJson(friend), UserEntity.fromJson(targetUser));
+                result.add(friend);
             }
             return null;
         });
+        return null;
     }
 
     @Override
-    public void createOutcomeInvitations(UserJson targetUser, int count) {
+    public List<UserJson> createOutcomeInvitations(UserJson targetUser, int count) {
+        List<UserJson> result = new ArrayList<>();
         xaTransactionTemplate.execute(() -> {
             for (int i = 0; i < count; i++) {
                 UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
-                udUserRepository.sendInvitation(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
+                friend.friendshipStatus();
+                udUserRepository.sendInvitation(UserEntity.fromJson(friend), UserEntity.fromJson(targetUser));
+                result.add(friend);
             }
             return null;
         });
+        return null;
     }
 
     @Override
-    public void createFriends(UserJson targetUser, int count) {
+    public List<UserJson> createFriends(UserJson targetUser, int count) {
+        List<UserJson> result = new ArrayList<>();
         xaTransactionTemplate.execute(() -> {
             for (int i = 0; i < count; i++) {
                 UserJson friend = createUser(RandomDataUtils.randomUsername(), "12345");
                 udUserRepository.addFriend(UserEntity.fromJson(targetUser), UserEntity.fromJson(friend));
+                result.add(friend);
             }
             return null;
         });
+        return null;
     }
 }
