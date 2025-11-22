@@ -49,6 +49,7 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                                 );
                             }
                         }
+                        //Todo ока работает только с созданием нового юзера
                 );
     }
 

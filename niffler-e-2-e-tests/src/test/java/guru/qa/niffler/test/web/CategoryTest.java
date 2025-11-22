@@ -5,8 +5,6 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
-import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.StaticUser;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
@@ -16,12 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class CategoryTest {
     private static final Config CFG = Config.getInstance();
 
-    @User(
-            categories = @Category(
-                    archived = false
-            ))
+    @User(categories = @Category(
+            archived = false
+    ))
     @Test
-    public void archiveCategoryTest(UserJson user){
+    public void archiveCategoryTest(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), "12345")
                 .editProfile()
@@ -30,7 +27,7 @@ public class CategoryTest {
                 .isCategoryExists(user.testData().categories().getFirst().name());
     }
 
-    @User(
+    @User(username = "TestDefaultUser",
             categories = @Category(
                     archived = true
             ))
