@@ -47,7 +47,13 @@ public class SpendApiClient implements SpendClient {
 
     @Override
     public void deleteSpend(SpendJson spend) {
-        throw new UnsupportedOperationException();
+        final Response<SpendJson> response;
+        try {
+            spendApi.deleteSpend(spend.username(), List.of(String.valueOf(spend.id())))
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override

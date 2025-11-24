@@ -2,6 +2,7 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.model.UserJson;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UsersClient {
