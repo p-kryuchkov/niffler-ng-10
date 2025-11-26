@@ -7,27 +7,27 @@ import retrofit2.http.*;
 import java.util.List;
 
 public interface UserDataApi {
-    @GET("/internal/users/current")
+    @GET("internal/users/current")
     Call<UserJson> current(
             @Query("username") String username
     );
 
-    @GET("/internal/users/all")
+    @GET("internal/users/all")
     Call<List<UserJson>> all(
             @Query("username") String username,
             @Query("searchQuery") String searchQuery
     );
 
-    @POST("/internal/users/update")
+    @POST("internal/users/update")
     Call<UserJson> update(@Body UserJson user);
 
-    @GET("/internal/friends/all")
+    @GET("internal/friends/all")
     Call<List<UserJson>> getFriends(
             @Query("username") String username,
             @Query("searchQuery") String searchQuery
     );
 
-    @DELETE("/internal/friends/remove")
+    @DELETE("internal/friends/remove")
     Call<List<UserJson>> removeFriend(
             @Query("username") String username,
             @Query("targetUsername") String targetUsername

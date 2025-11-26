@@ -103,7 +103,7 @@ public class UsersDbClient implements UsersClient {
                     authUserRepository.createUser(authUser);
                     UserEntity friend = udUserRepository.createUser(userEntity(username));
                     udUserRepository.sendInvitation(targetEntity, friend);
-                    result.add(UserJson.fromEntity(friend, FriendshipStatus.FRIEND));
+                    result.add(UserJson.fromEntity(friend, FriendshipStatus.INVITE_RECEIVED));
                     return null;
                 });
             }
@@ -125,7 +125,7 @@ public class UsersDbClient implements UsersClient {
                     authUserRepository.createUser(authUser);
                     UserEntity friend = udUserRepository.createUser(userEntity(username));
                     udUserRepository.sendInvitation(friend, targetEntity);
-                    result.add(UserJson.fromEntity(friend, FriendshipStatus.FRIEND));
+                    result.add(UserJson.fromEntity(friend, FriendshipStatus.INVITE_SENT));
                     return null;
                 });
             }

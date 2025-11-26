@@ -49,15 +49,6 @@ public class CategoryExtension implements
                             );
                             CategoryJson created = spendClient.createCategory(category);
 
-                            if (categoryAnno.archived()) {
-                                CategoryJson archivedCategory = new CategoryJson(
-                                        created.id(),
-                                        created.name(),
-                                        created.username(),
-                                        true
-                                );
-                                created = spendClient.updateCategory(archivedCategory);
-                            }
                             result.add(created);
                         }
 
@@ -87,7 +78,7 @@ public class CategoryExtension implements
                             category.username(),
                             true
                     );
-                    spendClient.updateCategory(archivedCategory);
+                    spendClient.deleteCategory(archivedCategory);
                 }
             }
         }
