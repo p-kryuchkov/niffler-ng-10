@@ -9,13 +9,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@ParametersAreNonnullByDefault
 public class SpendApiClient implements SpendClient {
 
     private static final Config CFG = Config.getInstance();
@@ -28,7 +32,7 @@ public class SpendApiClient implements SpendClient {
     private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
     @Override
-    public SpendJson createSpend(SpendJson spend) {
+    public @Nullable SpendJson createSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
             response = spendApi.createSpend(spend)
@@ -57,7 +61,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
-    public CategoryJson createCategory(CategoryJson category) {
+    public @Nullable CategoryJson createCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
             response = spendApi.addCategory(category).execute();
@@ -87,7 +91,7 @@ public class SpendApiClient implements SpendClient {
                 .findFirst();
     }
 
-    public SpendJson findSpendByUsernameAndId(String username, String id) {
+    public @Nullable SpendJson findSpendByUsernameAndId(String username, String id) {
         final Response<SpendJson> response;
         try {
             response = spendApi.getSpendById(username, id)
@@ -99,7 +103,7 @@ public class SpendApiClient implements SpendClient {
         return response.body();
     }
 
-    public List<SpendJson> getAllSpends(String username, CurrencyValues filterCurrency, Date from, Date to) {
+    public @Nonnull List<SpendJson> getAllSpends(String username, @Nullable CurrencyValues filterCurrency, @Nullable Date from, @Nullable Date to) {
         final Response<List<SpendJson>> response;
         try {
             response = spendApi.getAllSpends(username, filterCurrency, from, to).execute();
@@ -107,10 +111,12 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(200, response.code());
-        return response.body();
+        return response.body() != null
+                ? response.body()
+                : Collections.emptyList();
     }
 
-    public SpendJson editSpend(SpendJson spend) {
+    public @Nullable SpendJson editSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
             response = spendApi.editSpend(spend).execute();
@@ -131,7 +137,7 @@ public class SpendApiClient implements SpendClient {
         assertEquals(200, response.code());
     }
 
-    public CategoryJson updateCategory(CategoryJson category) {
+    public @Nullable CategoryJson updateCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
             response = spendApi.updateCategory(category).execute();
