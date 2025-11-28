@@ -6,6 +6,9 @@ import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,7 +18,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
+@ParametersAreNonnullByDefault
 public class Databases {
     private Databases() {
     }
@@ -29,10 +32,12 @@ public class Databases {
     public record XaConsumer(Consumer<Connection> function, String jdbcUrl) {
     }
 
+    @Nonnull
     public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
         return transaction(function, jdbcUrl, TransactionIsolationLevel.READ_COMMITTED);
     }
 
+    @Nonnull
     public static <T> T transaction(Function<Connection, T> function, String jdbcUrl, TransactionIsolationLevel isolationLevel) {
         Connection connection = null;
         try {
@@ -56,12 +61,12 @@ public class Databases {
         }
     }
 
+    @Nullable
     public static <T> T xaTransaction(XaFunction<T>... actions) {
         return xaTransaction(TransactionIsolationLevel.READ_COMMITTED, actions);
     }
 
-    ;
-
+    @Nullable
     public static <T> T xaTransaction(TransactionIsolationLevel isolationLevel, XaFunction<T>... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
@@ -114,6 +119,7 @@ public class Databases {
         xaTransaction(TransactionIsolationLevel.READ_COMMITTED, actions);
     }
 
+    @Nonnull
     public static void xaTransaction(TransactionIsolationLevel isolationLevel, XaConsumer... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
@@ -134,6 +140,7 @@ public class Databases {
         }
     }
 
+    @Nonnull
     private static DataSource dataSource(String jdbcUrl) {
         return dataSources.computeIfAbsent(jdbcUrl, key -> {
             AtomikosDataSourceBean dsBean = new AtomikosDataSourceBean();
@@ -150,6 +157,7 @@ public class Databases {
         });
     }
 
+    @Nonnull
     private static Connection connection(String jdbcUrl) throws SQLException {
         return threadConnections.computeIfAbsent(Thread.currentThread().threadId(), key -> {
             try {

@@ -1,21 +1,33 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.model.UserJson;
+import io.qameta.allure.Step;
 
-import java.io.IOException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface UsersClient {
+    @Step("Create new user: {username}")
+    @Nullable
+    UserJson createUser(@Nonnull String username, @Nonnull String password);
 
-    UserJson createUser(String username, String password);
+    @Step("Update user: {user.username}")
+    @Nullable
+    UserJson updateUser(@Nonnull UserJson user);
 
-    UserJson updateUser(UserJson user);
+    @Step("Delete user: {user.username}")
+    void deleteUser(@Nonnull UserJson user);
 
-    void deleteUser(UserJson user);
+    @Step("Create new Income Invitations: {user.username}, {count}")
+    @Nonnull
+    List<UserJson> createIncomeInvitations(@Nonnull UserJson targetUser, int count);
 
-    List<UserJson> createIncomeInvitations(UserJson targetUser, int count);
+    @Step("Create new Outcome Invitations: {user.username}, {count}")
+    @Nonnull
+    List<UserJson> createOutcomeInvitations(@Nonnull UserJson targetUser, int count);
 
-    List<UserJson> createOutcomeInvitations(UserJson targetUser, int count);
-
-    List<UserJson> createFriends(UserJson targetUser, int count);
+    @Step("Create new Friends: {user.username}, {count}")
+    @Nonnull
+    List<UserJson> createFriends(@Nonnull UserJson targetUser, int count);
 }

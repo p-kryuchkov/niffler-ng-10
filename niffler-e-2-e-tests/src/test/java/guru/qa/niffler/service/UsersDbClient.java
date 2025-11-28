@@ -14,9 +14,12 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
 import jaxb.userdata.FriendshipStatus;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +40,7 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
-    public UserJson createUser(String username, String password) {
+    public @Nullable UserJson createUser(@NotNull String username, @NotNull String password) {
         return xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = new AuthUserEntity();
                     authUser.setUsername(username);
@@ -73,7 +76,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public UserJson updateUser(UserJson userJson) {
+    public @Nullable UserJson updateUser(@NotNull UserJson userJson) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userdataUser = UserEntity.fromJson(userJson);
             return UserJson.fromEntity(udUserRepository.updateUser(userdataUser), null);
@@ -81,7 +84,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public void deleteUser(UserJson userJson) {
+    public void deleteUser(@Nonnull UserJson userJson) {
         xaTransactionTemplate.execute(() -> {
             udUserRepository.delete(UserEntity.fromJson(userJson));
             authUserRepository.delete(authUserRepository.findByUsername(userJson.username()).get());
@@ -89,8 +92,9 @@ public class UsersDbClient implements UsersClient {
         });
     }
 
+    @NotNull
     @Override
-    public List<UserJson> createIncomeInvitations(UserJson targetUser, int count) {
+    public List<UserJson> createIncomeInvitations(@Nonnull UserJson targetUser, @Nonnull int count) {
         List<UserJson> result = new ArrayList<>();
         if (count > 0) {
             UserEntity targetEntity = udUserRepository.findById(
@@ -112,7 +116,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public List<UserJson> createOutcomeInvitations(UserJson targetUser, int count) {
+    public @Nonnull List<UserJson> createOutcomeInvitations(@Nonnull UserJson targetUser, int count) {
         List<UserJson> result = new ArrayList<>();
         if (count > 0) {
             UserEntity targetEntity = udUserRepository.findById(
@@ -133,8 +137,9 @@ public class UsersDbClient implements UsersClient {
         return result;
     }
 
+    @NotNull
     @Override
-    public List<UserJson> createFriends(UserJson targetUser, int count) {
+    public List<UserJson> createFriends(@NotNull UserJson targetUser, int count) {
         List<UserJson> result = new ArrayList<>();
 
         if (count > 0) {

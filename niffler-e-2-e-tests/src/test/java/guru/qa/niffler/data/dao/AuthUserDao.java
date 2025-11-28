@@ -2,20 +2,21 @@ package guru.qa.niffler.data.dao;
 
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface AuthUserDao {
-    AuthUserEntity createUser(AuthUserEntity user);
+    @Nonnull AuthUserEntity createUser(@Nonnull AuthUserEntity user);
 
-    AuthUserEntity updateUser(AuthUserEntity user);
+    @Nonnull  AuthUserEntity updateUser(@Nonnull AuthUserEntity user);
 
-    Optional<AuthUserEntity> findById(UUID id);
+    @Nonnull Optional<AuthUserEntity> findById(@Nonnull UUID id);
 
-    List<AuthUserEntity> findAll();
+    @Nonnull List<AuthUserEntity> findAll();
 
-    Optional<AuthUserEntity> findByUsername(String username);
+    @Nonnull Optional<AuthUserEntity> findByUsername(@Nonnull String username);
 
-    void delete(AuthUserEntity user);
+    void delete(@Nonnull AuthUserEntity user);
 }

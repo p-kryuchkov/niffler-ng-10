@@ -7,6 +7,7 @@ import guru.qa.niffler.model.CurrencyValues;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import javax.annotation.Nonnull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -22,7 +23,8 @@ public class UserdataSetExtractor implements ResultSetExtractor<UserEntity> {
     }
 
     @Override
-    public UserEntity extractData(ResultSet rs) throws SQLException, DataAccessException {
+    @Nonnull
+    public UserEntity extractData(@Nonnull ResultSet rs) throws SQLException, DataAccessException {
         Map<UUID, UserEntity> users = new ConcurrentHashMap<>();
         UserEntity user = null;
 

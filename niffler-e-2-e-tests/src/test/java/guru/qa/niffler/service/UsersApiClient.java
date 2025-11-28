@@ -7,10 +7,13 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -41,7 +44,7 @@ public class UsersApiClient implements UsersClient {
     private final UserDataApi userDataApi = userdataRetrofit.create(UserDataApi.class);
 
     @Override
-    public UserJson createUser(String username, String password) {
+    public @Nullable UserJson createUser(@NotNull String username, @NotNull String password) {
         try {
             authApi.requestRegisterForm().execute();
             authApi.register(
@@ -70,7 +73,7 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
-    public UserJson updateUser(UserJson user) {
+    public @Nullable UserJson updateUser(@NotNull UserJson user) {
         final Response<UserJson> response;
         try {
             response = userDataApi.update(user)
@@ -82,12 +85,13 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
-    public void deleteUser(UserJson user) {
+    public void deleteUser(@Nonnull UserJson user) {
         throw new UnsupportedOperationException();
     }
 
+    @NotNull
     @Override
-    public List<UserJson> createIncomeInvitations(UserJson targetUser, int count) {
+    public List<UserJson> createIncomeInvitations(@Nonnull UserJson targetUser, @Nonnull int count) {
         List<UserJson> resultList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             try {
@@ -102,7 +106,7 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
-    public List<UserJson> createOutcomeInvitations(UserJson targetUser, int count) {
+    public @Nonnull List<UserJson> createOutcomeInvitations(@Nonnull UserJson targetUser, int count) {
         List<UserJson> resultList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             try {
@@ -116,8 +120,9 @@ public class UsersApiClient implements UsersClient {
         return resultList;
     }
 
+    @NotNull
     @Override
-    public List<UserJson> createFriends(UserJson targetUser, int count) {
+    public List<UserJson> createFriends(@NotNull UserJson targetUser, int count) {
         List<UserJson> resultList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             try {
