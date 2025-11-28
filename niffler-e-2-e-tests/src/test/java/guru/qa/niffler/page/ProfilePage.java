@@ -3,6 +3,7 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ClickOptions;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Header;
+import io.qameta.allure.Step;
 
 import java.io.File;
 
@@ -24,68 +25,81 @@ public class ProfilePage {
     private final SelenideElement submitUnArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unarchive']");
     private final Header header = new Header();
 
+    @Step("Find category element: {category}")
     private SelenideElement findCategory(String category) {
         return $x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
     }
 
+    @Step("Find edit button for category: {category}")
     private SelenideElement editCategoryButton(String category) {
         return findCategory(category).find("[aria-label=\"Edit category\"]");
     }
 
+    @Step("Find archive button for category: {category}")
     private SelenideElement archiveCategoryButton(String category) {
         return findCategory(category).find("[aria-label=\"Archive category\"]");
     }
 
+    @Step("Find unarchive button for category: {category}")
     private SelenideElement unArchiveCategoryButton(String category) {
         return findCategory(category).find("[aria-label=\"Unarchive category\"]");
     }
 
+    @Step("Upload profile picture: {imageFile}")
     public ProfilePage uploadPicture(File imageFile) {
         uploadPictureButton.uploadFile(imageFile);
         return this;
     }
 
+    @Step("Click 'Register PassKey' button")
     public ProfilePage clickRegisterPassKey() {
         registerPassKey.click();
-        // не очень понятно что дальше
         return this;
     }
 
+    @Step("Check that username input contains value: {value}")
     public ProfilePage checkUserNameInputValue(String value) {
         usernameInput.shouldHave(text(value));
         return this;
     }
 
+    @Step("Verify that username field is visible")
     public ProfilePage isUsernameFieldVisible() {
         usernameInput.shouldBe(visible);
         return this;
     }
 
+    @Step("Set name to: {name}")
     public ProfilePage setName(String name) {
         nameInput.val(name);
         return this;
     }
 
+    @Step("Clear name input field")
     public ProfilePage clearName() {
         nameInput.clear();
         return this;
     }
 
+    @Step("Check that name input value equals: {value}")
     public ProfilePage checkNameInputValue(String value) {
         assertEquals(nameInput.val(), value);
         return this;
     }
 
+    @Step("Verify that name field is visible")
     public ProfilePage isNameFieldVisible() {
         nameInput.shouldBe(visible);
         return this;
     }
 
+    @Step("Click 'Save changes' button")
     public ProfilePage clickSaveChanges() {
         saveChangesButton.click();
         return this;
     }
 
+    @Step("Ensure 'Show archived categories' is checked")
     public ProfilePage checkShowArchivedCategories() {
         if (!showArchivedCategoriesCheckbox.isSelected()) {
             showArchivedCategoriesCheckbox.click(ClickOptions.usingJavaScript());
@@ -93,6 +107,7 @@ public class ProfilePage {
         return this;
     }
 
+    @Step("Ensure 'Show archived categories' is unchecked")
     public ProfilePage uncheckShowArchivedCategories() {
         if (showArchivedCategoriesCheckbox.isSelected()) {
             showArchivedCategoriesCheckbox.click(ClickOptions.usingJavaScript());
@@ -100,63 +115,75 @@ public class ProfilePage {
         return this;
     }
 
+    @Step("Toggle 'Show archived categories' checkbox")
     public ProfilePage toggleShowArchivedCategories() {
         showArchivedCategoriesCheckbox.shouldBe(clickable).click();
         return this;
     }
 
+    @Step("Verify that 'Show archived categories' is checked")
     public ProfilePage isShowArchivedCategoriesChecked() {
         showArchivedCategoriesCheckbox.shouldBe(selected);
         return this;
     }
 
+    @Step("Set new category name: {categoryName}")
     public ProfilePage setNewCategoryName(String categoryName) {
         addNewCategoryInput.val(categoryName);
         return this;
     }
 
+    @Step("Add new category: {categoryName}")
     public ProfilePage addNewCategory(String categoryName) {
         setNewCategoryName(categoryName).pressEnterOnNewCategory();
         return this;
     }
 
+    @Step("Clear new category input field")
     public ProfilePage clearNewCategoryInput() {
         addNewCategoryInput.clear();
         return this;
     }
 
+    @Step("Press Enter in new category input field")
     public ProfilePage pressEnterOnNewCategory() {
         addNewCategoryInput.pressEnter();
         return this;
     }
 
+    @Step("Check new category input value equals: {value}")
     public ProfilePage checkNewCategoryInputValue(String value) {
         addNewCategoryInput.shouldHave(text(value));
         return this;
     }
 
+    @Step("Click edit button for category: {category}")
     public ProfilePage clickEditCategoryButton(String category) {
-        editCategoryButton(category);
+        editCategoryButton(category).click();
         return this;
     }
 
+    @Step("Archive category: {category}")
     public ProfilePage archiveCategory(String category) {
         archiveCategoryButton(category).click();
         submitArchive.click();
         return this;
     }
 
+    @Step("Unarchive category: {category}")
     public ProfilePage unArchiveCategory(String category) {
         unArchiveCategoryButton(category).click();
         submitUnArchive.click();
         return this;
     }
 
+    @Step("Verify that category exists: {category}")
     public ProfilePage isCategoryExists(String category) {
         findCategory(category).shouldBe(exist);
         return this;
     }
 
+    @Step("Go to main page")
     public MainPage goToMainPage() {
         return header.toMainPage();
     }

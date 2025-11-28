@@ -3,6 +3,7 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.SearchField;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -24,11 +25,13 @@ public class AllPeoplePage {
         return new FriendsPage();
     }
 
+    @Step("Search value {searchValue}")
     public AllPeoplePage search(String searchValue) {
         searchInput.clearIfNotEmpty().search(searchValue);
         return this;
     }
 
+    @Step("Add friend {username}")
     public AllPeoplePage addFriend(String userName) {
         search(userName);
         peopleTableRows.findBy(text(userName))
@@ -44,6 +47,7 @@ public class AllPeoplePage {
         return this;
     }
 
+    @Step("Check outcome invitation {userName}")
     public AllPeoplePage checkUserWaiting(String userName) {
         search(userName);
         peopleTableRows.findBy(text(userName))

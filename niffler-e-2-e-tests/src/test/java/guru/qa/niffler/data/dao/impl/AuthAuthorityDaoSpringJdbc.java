@@ -4,9 +4,11 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.tpl.DataSources;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -18,7 +20,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public void create(AuthorityEntity... authority) {
+    public @Nonnull void create(@NotNull AuthorityEntity... authority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.batchUpdate(
                 "INSERT INTO authority (user_id, authority) VALUES (? , ?)",
@@ -38,17 +40,17 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public List<AuthorityEntity> findAuthoritiesByUserId(UUID id) {
+    public @Nonnull List<AuthorityEntity> findAuthoritiesByUserId(@NotNull UUID id) {
         return List.of();
     }
 
     @Override
-    public Optional<AuthorityEntity> findById(UUID id) {
+    public @Nonnull Optional<AuthorityEntity> findById(@NotNull UUID id) {
         return Optional.empty();
     }
 
     @Override
-    public void delete(AuthorityEntity authority) {
+    public void delete(@NotNull AuthorityEntity authority) {
         throw new UnsupportedOperationException();
     }
 }

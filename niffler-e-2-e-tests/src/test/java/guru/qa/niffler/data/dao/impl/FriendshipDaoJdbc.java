@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.user.FriendshipEntity;
 import guru.qa.niffler.data.entity.user.FriendshipStatus;
 import guru.qa.niffler.data.entity.user.UserEntity;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +20,7 @@ public class FriendshipDaoJdbc implements FriendshipDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public void createFriendship(FriendshipEntity friendship) {
+    public void createFriendship(@Nonnull FriendshipEntity friendship) {
         try (PreparedStatement friendshipPs = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO friendship (requester_id, addressee_id, status) " +
                         "VALUES (?, ?, ?) " +
@@ -37,7 +38,7 @@ public class FriendshipDaoJdbc implements FriendshipDao {
     }
 
     @Override
-    public void deleteFriendship(FriendshipEntity friendship) {
+    public void deleteFriendship(@Nonnull FriendshipEntity friendship) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM friendship WHERE requester_id = ? AND addressee_id = ?"
         )) {
@@ -50,7 +51,7 @@ public class FriendshipDaoJdbc implements FriendshipDao {
     }
 
     @Override
-    public List<FriendshipEntity> findByRequesterId(UUID requesterId) {
+    public @Nonnull List<FriendshipEntity> findByRequesterId(@Nonnull UUID requesterId) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM friendship WHERE requester_id = ?"
         )) {
@@ -65,7 +66,7 @@ public class FriendshipDaoJdbc implements FriendshipDao {
     }
 
     @Override
-    public List<FriendshipEntity> findByAddresseeId(UUID addresseeId) {
+    public @Nonnull List<FriendshipEntity> findByAddresseeId(@Nonnull UUID addresseeId) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM friendship WHERE addressee_id = ?"
         )) {

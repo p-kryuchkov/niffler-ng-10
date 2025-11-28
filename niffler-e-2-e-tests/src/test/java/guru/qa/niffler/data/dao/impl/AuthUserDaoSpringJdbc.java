@@ -7,10 +7,12 @@ import guru.qa.niffler.data.mapper.UserAuthEntityRowMapper;
 
 import guru.qa.niffler.data.tpl.DataSources;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -21,8 +23,9 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     private static final Config CFG = Config.getInstance();
 
+    @NotNull
     @Override
-    public AuthUserEntity createUser(AuthUserEntity user) {
+    public AuthUserEntity createUser(@Nonnull AuthUserEntity user) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -46,12 +49,12 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     }
 
     @Override
-    public AuthUserEntity updateUser(AuthUserEntity user) {
+    public @Nonnull AuthUserEntity updateUser(@Nonnull AuthUserEntity user) {
         return null;
     }
 
     @Override
-    public Optional<AuthUserEntity> findById(UUID id) {
+    public @Nonnull Optional<AuthUserEntity> findById(@Nonnull UUID id) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
@@ -63,7 +66,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     }
 
     @Override
-    public List<AuthUserEntity> findAll() {
+    public @Nonnull List<AuthUserEntity> findAll() {
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
 
@@ -74,7 +77,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     }
 
     @Override
-    public Optional<AuthUserEntity> findByUsername(String username) {
+    public @Nonnull Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
         return Optional.empty();
     }
 

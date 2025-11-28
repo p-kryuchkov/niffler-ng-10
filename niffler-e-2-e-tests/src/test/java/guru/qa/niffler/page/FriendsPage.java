@@ -3,6 +3,7 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.SearchField;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byXpath;
@@ -21,16 +22,19 @@ public class FriendsPage {
     private final String acceptButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Accept']";
     private final String declineButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Decline']";
 
+    @Step("Switch to 'All People' tab")
     public AllPeoplePage switchToAllPeopleTab() {
         allPeopleTab.click();
         return new AllPeoplePage();
     }
 
+    @Step("Search for: {searchValue}")
     public FriendsPage search(String searchValue) {
         searchInput.clearIfNotEmpty().search(searchValue);
         return this;
     }
 
+    @Step("Unfriend user: {friendName}")
     public FriendsPage unfriend(String friendName) {
         friendsTableRows.findBy(text(friendName))
                 .shouldBe(visible)
@@ -39,6 +43,7 @@ public class FriendsPage {
         return this;
     }
 
+    @Step("Accept friend request from: {friendName}")
     public FriendsPage acceptRequest(String friendName) {
         search(friendName);
         requestsTableRows.findBy(text(friendName))
@@ -48,6 +53,7 @@ public class FriendsPage {
         return this;
     }
 
+    @Step("Decline friend request from: {friendName}")
     public FriendsPage declineRequest(String friendName) {
         search(friendName);
         requestsTableRows.findBy(text(friendName))
@@ -57,6 +63,7 @@ public class FriendsPage {
         return this;
     }
 
+    @Step("Check that user '{friendName}' is in friends list")
     public FriendsPage checkFriend(String friendName) {
         search(friendName);
         friendsTableRows.findBy(text(friendName))
@@ -64,11 +71,13 @@ public class FriendsPage {
         return this;
     }
 
+    @Step("Check that friends list is empty")
     public FriendsPage checkFriendsEmpty() {
         friendsTableRows.first().shouldNot(exist);
         return this;
     }
 
+    @Step("Check that request from '{friendName}' exists")
     public FriendsPage checkRequest(String friendName) {
         searchInput.clearIfNotEmpty().search(friendName);
         requestsTableRows.findBy(text(friendName))
@@ -76,11 +85,13 @@ public class FriendsPage {
         return this;
     }
 
+    @Step("Go to next page")
     public FriendsPage nextPage() {
         pageNextButton.click();
         return this;
     }
 
+    @Step("Go to previous page")
     public FriendsPage previousPage() {
         pagePreviousButton.click();
         return this;
