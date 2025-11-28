@@ -49,4 +49,24 @@ public class FriendsTest {
                 .goToAllPeoplePage()
                 .checkUserWaiting(user.testData().outcomeInvitations().getFirst().username());
     }
+
+    @User(incomeInvitations = 1)
+    @Test
+    void acceptInvitationTest(UserJson user){
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .goToFriendsPage()
+                .acceptRequest(user.testData().incomeInvitations().getFirst().username())
+                .checkFriend(user.testData().incomeInvitations().getFirst().username());
+    }
+
+    @User(incomeInvitations = 1)
+    @Test
+    void declineInvitationTest(UserJson user){
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .goToFriendsPage()
+                .declineRequest(user.testData().incomeInvitations().getFirst().username())
+                .checkFriendsEmpty();
+    }
 }

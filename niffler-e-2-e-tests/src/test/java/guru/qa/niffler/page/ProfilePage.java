@@ -2,11 +2,14 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ClickOptions;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.component.Header;
 
 import java.io.File;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProfilePage {
 
@@ -14,12 +17,12 @@ public class ProfilePage {
     private final SelenideElement registerPassKey = $("#:r11:");
     private final SelenideElement usernameInput = $("#username");
     private final SelenideElement nameInput = $("#name");
-    private final SelenideElement saveChangesButton = $("#:r12:");
+    private final SelenideElement saveChangesButton = $("[type=submit]");
     private final SelenideElement showArchivedCategoriesCheckbox = $x("//span[contains(text(),'Show archived')]/..//input[@type='checkbox']");
     private final SelenideElement addNewCategoryInput = $("#category");
     private final SelenideElement submitArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Archive']");
     private final SelenideElement submitUnArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unarchive']");
-
+    private final Header header = new Header();
 
     private SelenideElement findCategory(String category) {
         return $x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
@@ -69,7 +72,7 @@ public class ProfilePage {
     }
 
     public ProfilePage checkNameInputValue(String value) {
-        nameInput.shouldHave(text(value));
+        assertEquals(nameInput.val(), value);
         return this;
     }
 
@@ -152,5 +155,9 @@ public class ProfilePage {
     public ProfilePage isCategoryExists(String category) {
         findCategory(category).shouldBe(exist);
         return this;
+    }
+
+    public MainPage goToMainPage() {
+        return header.toMainPage();
     }
 }

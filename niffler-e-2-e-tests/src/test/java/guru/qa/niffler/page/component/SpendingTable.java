@@ -15,12 +15,10 @@ public class SpendingTable {
     private final SelenideElement self = $("#spendings");
     private final SelenideElement searchField = self.$("[aria-label='search']");
     private final SelenideElement periodSelector = self.$("#period");
-    private final SelenideElement currencySelector = self.$("#currency");
+    private final CurrencySelector currencySelector = new CurrencySelector();
     private final SelenideElement deleteButton = self.$("#delete");
     private final ElementsCollection spendingRows = self.$$("tr");
     private final ElementsCollection periodRows = self.$(":rb:").$$("li");
-    private final ElementsCollection currencyRows = self.$(":rd:").$$("li");
-
 
     public SpendingTable selectPeriod(DataFilterValues period) {
         periodSelector.shouldBe(visible).click();

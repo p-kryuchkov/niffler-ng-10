@@ -2,7 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.Keys;
+import guru.qa.niffler.page.component.SearchField;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byXpath;
@@ -11,7 +11,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class FriendsPage {
     private final SelenideElement allPeopleTab = $("a[href='/people/all']");
-    private final SelenideElement searchInput = $("[aria-label=\"search\"]");
+    private final SearchField searchInput = new SearchField();
     private final ElementsCollection friendsTableRows = $$("#friends tr");
     private final ElementsCollection requestsTableRows = $$("#requests tr");
     private final SelenideElement pageNextButton = $("#page-next");
@@ -27,7 +27,7 @@ public class FriendsPage {
     }
 
     public FriendsPage search(String searchValue) {
-        searchInput.val(searchValue);
+        searchInput.clearIfNotEmpty().search(searchValue);
         return this;
     }
 
@@ -40,7 +40,8 @@ public class FriendsPage {
     }
 
     public FriendsPage acceptRequest(String friendName) {
-        friendsTableRows.findBy(text(friendName))
+        search(friendName);
+        requestsTableRows.findBy(text(friendName))
                 .shouldBe(visible)
                 .find(byXpath(acceptButtonXpath))
                 .click();
@@ -48,7 +49,8 @@ public class FriendsPage {
     }
 
     public FriendsPage declineRequest(String friendName) {
-        friendsTableRows.findBy(text(friendName))
+        search(friendName);
+        requestsTableRows.findBy(text(friendName))
                 .shouldBe(visible)
                 .find(byXpath(declineButtonXpath))
                 .click();
@@ -56,7 +58,7 @@ public class FriendsPage {
     }
 
     public FriendsPage checkFriend(String friendName) {
-        searchInput.val(friendName).sendKeys(Keys.ENTER);
+        search(friendName);
         friendsTableRows.findBy(text(friendName))
                 .shouldBe(visible);
         return this;
@@ -68,7 +70,7 @@ public class FriendsPage {
     }
 
     public FriendsPage checkRequest(String friendName) {
-        searchInput.val(friendName).sendKeys(Keys.ENTER);
+        searchInput.clearIfNotEmpty().search(friendName);
         requestsTableRows.findBy(text(friendName))
                 .shouldBe(visible);
         return this;

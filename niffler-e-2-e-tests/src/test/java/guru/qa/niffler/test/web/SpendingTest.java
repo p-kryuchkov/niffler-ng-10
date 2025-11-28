@@ -12,6 +12,10 @@ import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
 @ExtendWith(BrowserExtension.class)
 public class SpendingTest {
 
@@ -32,5 +36,27 @@ public class SpendingTest {
                 .setNewSpendingDescription(newDescription)
                 .save()
                 .checkThatTableContains(newDescription);
+    }
+
+    @User()
+    @Test
+    void createNewSpendingTest(UserJson user){
+        Date spendingDate = Date.from(LocalDate.of(2025, 12, 11)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant());
+        String categoryName = "Тестовая категория";
+        String description = "Обучение Niffler Next Generation";
+        String amount = "3453";
+
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .addSpending()
+                .addNewCategory(categoryName)
+                .setCurrency(CurrencyValues.RUB)
+                .setAmount(amount)
+                .setDate(spendingDate)
+                .setNewSpendingDescription(description)
+                .save()
+                .checkThatTableContains(description, categoryName, amount);
     }
 }

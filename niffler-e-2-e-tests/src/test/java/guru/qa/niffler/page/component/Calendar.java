@@ -10,6 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.$;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Calendar {
     private final SelenideElement self;
@@ -17,6 +19,8 @@ public class Calendar {
     private final SelenideElement switchToYearViewButton;
     private final SelenideElement arrowLeftButton;
     private final SelenideElement arrowRightButton;
+    private final SelenideElement dateField;
+
     private final ElementsCollection dayButtons;
     private final ElementsCollection yearButtons;
 
@@ -29,12 +33,14 @@ public class Calendar {
         this.arrowRightButton = self.$("[data-testid='ArrowRightIcon']");
         this.dayButtons = self.$$("button.MuiButtonBase-root");
         this.yearButtons = self.$$("button.MuiPickersYear-yearButton");
+        this.dateField = $("input[name='date']");
     }
 
     public Calendar selectDateInCalendar(@Nonnull Date date) {
         String displayed = currentMonthAndYear.getText();
         LocalDate currentDate = LocalDate.parse("01 " + displayed, DateTimeFormatter.ofPattern("dd MMMM yyyy"));
         LocalDate targetDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        targetDate = targetDate.isAfter(LocalDate.now() )? LocalDate.now() : targetDate;
         if (targetDate.getYear() != currentDate.getYear()) {
             switchToYearViewButton.click();
             yearButtons.findBy(text(String.valueOf(targetDate.getYear()))).scrollTo().click();
@@ -49,6 +55,10 @@ public class Calendar {
             displayed = currentMonthAndYear.getText();
             currentDate = LocalDate.parse("01 " + displayed, DateTimeFormatter.ofPattern("dd MMMM yyyy"));
         }
+        dayButtons.findBy(text(String.valueOf(targetDate.getDayOfMonth()))).click();
+        displayed = dateField.val();
+        currentDate = LocalDate.parse(displayed, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+        assertEquals(targetDate, currentDate, "Date invalid");
         return this;
     }
 

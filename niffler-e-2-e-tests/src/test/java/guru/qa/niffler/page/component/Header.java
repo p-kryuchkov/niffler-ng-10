@@ -9,8 +9,8 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class Header {
     private final SelenideElement self = $("#root header");
-    private final SelenideElement mainPageButton = self.$("a[href='/main]");
-    private final SelenideElement addSpendingButton = self.$("a[href='/spending]");
+    private final SelenideElement mainPageButton = self.$("a[href='/main']");
+    private final SelenideElement addSpendingButton = self.$("a[href='/spending']");
     private final SelenideElement personIcon = self.$("[data-testid='PersonIcon']");
     private final SelenideElement menu = $("[role='menu']");
     private final SelenideElement profileButton = menu.$("a[href='/profile']");
@@ -51,4 +51,5 @@ public class Header {
         mainPageButton.shouldBe(visible).click();
         return new MainPage();
     }
+
 }
