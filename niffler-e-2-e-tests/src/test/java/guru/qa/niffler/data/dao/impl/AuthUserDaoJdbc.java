@@ -20,7 +20,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     private static final Config CFG = Config.getInstance();
     private static PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    @NotNull
+    @Nonnull
     @Override
     public AuthUserEntity createUser(@Nonnull AuthUserEntity user) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(

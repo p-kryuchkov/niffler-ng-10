@@ -27,7 +27,7 @@ public class AllPeoplePage {
 
     @Step("Search value {searchValue}")
     public AllPeoplePage search(String searchValue) {
-        searchInput.clearIfNotEmpty().search(searchValue);
+        searchInput.search(searchValue);
         return this;
     }
 

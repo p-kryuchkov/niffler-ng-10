@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SpendingTable {
     private final SelenideElement self = $("#spendings");
-    private final SelenideElement searchField = self.$("[aria-label='search']");
+    private final SearchField searchField = new SearchField();
     private final SelenideElement periodSelector = self.$("#period");
     private final CurrencySelector currencySelector = new CurrencySelector();
     private final SelenideElement deleteButton = self.$("#delete");
@@ -38,12 +38,12 @@ public class SpendingTable {
     }
 
     public SpendingTable searchSpendingByDescription(String description) {
-        searchField.val(description).sendKeys(Keys.ENTER);
+        searchField.search(description);
         return this;
     }
 
-    public SpendingTable checkTableContains(String... expectedSpends) {
-        for (String description : expectedSpends) {
+    public SpendingTable checkTableContains(String... expectedValues) {
+        for (String description : expectedValues) {
             spendingRows.findBy(text(description)).should(visible);
         }
         return this;

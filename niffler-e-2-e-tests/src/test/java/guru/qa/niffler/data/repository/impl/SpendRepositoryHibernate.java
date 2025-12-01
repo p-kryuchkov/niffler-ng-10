@@ -34,9 +34,9 @@ public class SpendRepositoryHibernate implements SpendRepository {
         return spend;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public Optional<SpendEntity> findSpendById(@NotNull UUID id) {
+    public Optional<SpendEntity> findSpendById(@Nonnull UUID id) {
         return Optional.ofNullable(entityManager.find(SpendEntity.class, id));
     }
 

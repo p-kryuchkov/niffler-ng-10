@@ -28,7 +28,7 @@ public class SpendDbClient implements SpendClient {
     @Step("Create spend: {spend}")
     @Nullable
     @Override
-    public SpendJson createSpend(@NotNull SpendJson spend) {
+    public SpendJson createSpend(@Nonnull SpendJson spend) {
         return xaTransactionTemplate.execute(() ->
                 SpendJson.fromEntity(spendRepository.create(SpendEntity.fromJson(spend)))
         );
@@ -37,7 +37,7 @@ public class SpendDbClient implements SpendClient {
     @Step("Update spend: {spend}")
     @Nullable
     @Override
-    public SpendJson updateSpend(@NotNull SpendJson spend) {
+    public SpendJson updateSpend(@Nonnull SpendJson spend) {
         return xaTransactionTemplate.execute(() ->
                 SpendJson.fromEntity(spendRepository.update(SpendEntity.fromJson(spend)))
         );

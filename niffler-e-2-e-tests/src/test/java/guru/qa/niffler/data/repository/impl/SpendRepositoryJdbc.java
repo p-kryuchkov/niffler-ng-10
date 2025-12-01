@@ -42,9 +42,9 @@ public class SpendRepositoryJdbc implements SpendRepository {
         return spendDao.update(spend);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public Optional<SpendEntity> findSpendById(@NotNull UUID id) {
+    public Optional<SpendEntity> findSpendById(@Nonnull UUID id) {
         return spendDao.findSpendById(id).map(spendEntity -> {
             spendEntity.setCategory(categoryDao.findCategoryById(spendEntity.getCategory().getId()).get());
             return spendEntity;

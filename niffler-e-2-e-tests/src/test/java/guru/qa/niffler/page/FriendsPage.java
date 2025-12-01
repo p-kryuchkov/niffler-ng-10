@@ -30,7 +30,7 @@ public class FriendsPage {
 
     @Step("Search for: {searchValue}")
     public FriendsPage search(String searchValue) {
-        searchInput.clearIfNotEmpty().search(searchValue);
+        searchInput.search(searchValue);
         return this;
     }
 
@@ -79,7 +79,7 @@ public class FriendsPage {
 
     @Step("Check that request from '{friendName}' exists")
     public FriendsPage checkRequest(String friendName) {
-        searchInput.clearIfNotEmpty().search(friendName);
+        searchInput.search(friendName);
         requestsTableRows.findBy(text(friendName))
                 .shouldBe(visible);
         return this;

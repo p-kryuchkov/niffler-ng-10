@@ -27,22 +27,22 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
         return user;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public AuthUserEntity updateUser(@NotNull AuthUserEntity user) {
+    public AuthUserEntity updateUser(@Nonnull AuthUserEntity user) {
         entityManager.joinTransaction();
         return entityManager.merge(user);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public Optional<AuthUserEntity> findById(@NotNull UUID id) {
+    public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
         return Optional.ofNullable(
                 entityManager.find(AuthUserEntity.class, id)
         );
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<AuthUserEntity> findAll() {
         entityManager.joinTransaction();
@@ -50,9 +50,9 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
                 .getResultList();
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public Optional<AuthUserEntity> findByUsername(@NotNull String username) {
+    public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
         try {
             return Optional.of(
                     entityManager.createQuery("select u from UserEntity u where u.username = :username", AuthUserEntity.class)

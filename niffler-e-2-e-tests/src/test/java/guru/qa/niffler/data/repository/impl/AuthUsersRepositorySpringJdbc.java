@@ -36,30 +36,30 @@ public class AuthUsersRepositorySpringJdbc implements AuthUserRepository {
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public AuthUserEntity updateUser(@NotNull AuthUserEntity user) {
+    public AuthUserEntity updateUser(@Nonnull AuthUserEntity user) {
         return authUserDao.updateUser(user);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public Optional<AuthUserEntity> findById(@NotNull UUID id) {
+    public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
         return authUserDao.findById(id).map(userEntity -> {
             userEntity.setAuthorities(authorityDao.findAuthoritiesByUserId((id)));
             return userEntity;
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<AuthUserEntity> findAll() {
         return authUserDao.findAll();
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public Optional<AuthUserEntity> findByUsername(@NotNull String username) {
+    public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
         return authUserDao.findByUsername(username).map(userEntity -> {
             userEntity.setAuthorities(authorityDao.findAuthoritiesByUserId((userEntity.getId())));
             return userEntity;

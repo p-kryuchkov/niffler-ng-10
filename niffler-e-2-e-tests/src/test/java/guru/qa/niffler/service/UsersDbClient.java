@@ -40,7 +40,7 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
-    public @Nullable UserJson createUser(@NotNull String username, @NotNull String password) {
+    public @Nullable UserJson createUser(@Nonnull String username, @Nonnull String password) {
         return xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = new AuthUserEntity();
                     authUser.setUsername(username);
@@ -76,7 +76,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public @Nullable UserJson updateUser(@NotNull UserJson userJson) {
+    public @Nullable UserJson updateUser(@Nonnull UserJson userJson) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userdataUser = UserEntity.fromJson(userJson);
             return UserJson.fromEntity(udUserRepository.updateUser(userdataUser), null);
@@ -92,7 +92,7 @@ public class UsersDbClient implements UsersClient {
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<UserJson> createIncomeInvitations(@Nonnull UserJson targetUser, @Nonnull int count) {
         List<UserJson> result = new ArrayList<>();
@@ -137,9 +137,9 @@ public class UsersDbClient implements UsersClient {
         return result;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public List<UserJson> createFriends(@NotNull UserJson targetUser, int count) {
+    public List<UserJson> createFriends(@Nonnull UserJson targetUser, int count) {
         List<UserJson> result = new ArrayList<>();
 
         if (count > 0) {

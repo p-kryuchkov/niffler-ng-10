@@ -44,7 +44,7 @@ public class UsersApiClient implements UsersClient {
     private final UserDataApi userDataApi = userdataRetrofit.create(UserDataApi.class);
 
     @Override
-    public @Nullable UserJson createUser(@NotNull String username, @NotNull String password) {
+    public @Nullable UserJson createUser(@Nonnull String username, @Nonnull String password) {
         try {
             authApi.requestRegisterForm().execute();
             authApi.register(
@@ -73,7 +73,7 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
-    public @Nullable UserJson updateUser(@NotNull UserJson user) {
+    public @Nullable UserJson updateUser(@Nonnull UserJson user) {
         final Response<UserJson> response;
         try {
             response = userDataApi.update(user)
@@ -89,7 +89,7 @@ public class UsersApiClient implements UsersClient {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<UserJson> createIncomeInvitations(@Nonnull UserJson targetUser, @Nonnull int count) {
         List<UserJson> resultList = new ArrayList<>();
@@ -120,9 +120,9 @@ public class UsersApiClient implements UsersClient {
         return resultList;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public List<UserJson> createFriends(@NotNull UserJson targetUser, int count) {
+    public List<UserJson> createFriends(@Nonnull UserJson targetUser, int count) {
         List<UserJson> resultList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             try {

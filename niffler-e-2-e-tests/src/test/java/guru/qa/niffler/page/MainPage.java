@@ -22,7 +22,7 @@ public class MainPage {
 
     @Step("Open spending editor for spending with description: {description}")
     public EditSpendingPage editSpending(String description) {
-        searchInput.clearIfNotEmpty().search(description);
+        searchInput.search(description);
         tableRows.find(text(description)).$$("td").get(5).click();
         return new EditSpendingPage();
     }

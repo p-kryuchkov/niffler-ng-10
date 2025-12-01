@@ -47,7 +47,7 @@ public class SpendApiClient implements SpendClient {
         return response.body();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public SpendJson updateSpend(SpendJson spend) {
         throw new UnsupportedOperationException();
@@ -81,7 +81,7 @@ public class SpendApiClient implements SpendClient {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Optional<CategoryJson> findCategoryByNameAndUsername(@Nonnull String categoryName,
                                                                 @Nonnull String username) {

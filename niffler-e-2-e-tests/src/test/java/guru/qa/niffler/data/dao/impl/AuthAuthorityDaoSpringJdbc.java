@@ -20,7 +20,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public @Nonnull void create(@NotNull AuthorityEntity... authority) {
+    public @Nonnull void create(@Nonnull AuthorityEntity... authority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.batchUpdate(
                 "INSERT INTO authority (user_id, authority) VALUES (? , ?)",
@@ -40,17 +40,17 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public @Nonnull List<AuthorityEntity> findAuthoritiesByUserId(@NotNull UUID id) {
+    public @Nonnull List<AuthorityEntity> findAuthoritiesByUserId(@Nonnull UUID id) {
         return List.of();
     }
 
     @Override
-    public @Nonnull Optional<AuthorityEntity> findById(@NotNull UUID id) {
+    public @Nonnull Optional<AuthorityEntity> findById(@Nonnull UUID id) {
         return Optional.empty();
     }
 
     @Override
-    public void delete(@NotNull AuthorityEntity authority) {
+    public void delete(@Nonnull AuthorityEntity authority) {
         throw new UnsupportedOperationException();
     }
 }

@@ -25,7 +25,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     }
 
     @Override
-    public @Nonnull CategoryEntity create(@NotNull CategoryEntity category) {
+    public @Nonnull CategoryEntity create(@Nonnull CategoryEntity category) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         KeyHolder kh = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {

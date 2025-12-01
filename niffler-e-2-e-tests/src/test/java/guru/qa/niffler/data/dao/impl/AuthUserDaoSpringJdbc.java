@@ -4,10 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.UserAuthEntityRowMapper;
-
 import guru.qa.niffler.data.tpl.DataSources;
-
-import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,7 +20,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     private static final Config CFG = Config.getInstance();
 
-    @NotNull
+    @Nonnull
     @Override
     public AuthUserEntity createUser(@Nonnull AuthUserEntity user) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
@@ -78,7 +75,14 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     @Override
     public @Nonnull Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
-        return Optional.empty();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM \"user\" WHERE username = ?",
+                        UserAuthEntityRowMapper.instance,
+                        username
+                )
+        );
     }
 
     @Override
