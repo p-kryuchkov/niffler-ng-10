@@ -9,7 +9,6 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import io.qameta.allure.Step;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -26,18 +25,16 @@ public class SpendDbClient implements SpendClient {
     );
 
     @Step("Create spend: {spend}")
-    @Nullable
     @Override
-    public SpendJson createSpend(@Nonnull SpendJson spend) {
+    public @Nonnull SpendJson createSpend(@Nonnull SpendJson spend) {
         return xaTransactionTemplate.execute(() ->
                 SpendJson.fromEntity(spendRepository.create(SpendEntity.fromJson(spend)))
         );
     }
 
     @Step("Update spend: {spend}")
-    @Nullable
     @Override
-    public SpendJson updateSpend(@Nonnull SpendJson spend) {
+    public @Nonnull SpendJson updateSpend(@Nonnull SpendJson spend) {
         return xaTransactionTemplate.execute(() ->
                 SpendJson.fromEntity(spendRepository.update(SpendEntity.fromJson(spend)))
         );
@@ -53,9 +50,8 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Step("Create category: {category}")
-    @Nullable
     @Override
-    public CategoryJson createCategory(@Nonnull CategoryJson category) {
+    public @Nonnull CategoryJson createCategory(@Nonnull CategoryJson category) {
         return xaTransactionTemplate.execute(() ->
                 CategoryJson.fromEntity(spendRepository.createCategory(CategoryEntity.fromJson(category)))
         );
@@ -63,7 +59,7 @@ public class SpendDbClient implements SpendClient {
 
     @Step("Update category: {category}")
     @Override
-    public @javax.annotation.Nullable CategoryJson updateCategory(@Nonnull CategoryJson category) {
+    public @Nonnull CategoryJson updateCategory(@Nonnull CategoryJson category) {
         return xaTransactionTemplate.execute(() ->
                 CategoryJson.fromEntity(spendRepository.updateCategory(CategoryEntity.fromJson(category)))
         );

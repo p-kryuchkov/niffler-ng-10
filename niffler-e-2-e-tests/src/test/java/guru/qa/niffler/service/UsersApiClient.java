@@ -20,6 +20,8 @@ import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 public class UsersApiClient implements UsersClient {
     private static final Config CFG = Config.getInstance();
 
@@ -44,7 +46,7 @@ public class UsersApiClient implements UsersClient {
     private final UserDataApi userDataApi = userdataRetrofit.create(UserDataApi.class);
 
     @Override
-    public @Nullable UserJson createUser(@Nonnull String username, @Nonnull String password) {
+    public @Nonnull UserJson createUser(@Nonnull String username, @Nonnull String password) {
         try {
             authApi.requestRegisterForm().execute();
             authApi.register(
@@ -69,11 +71,11 @@ public class UsersApiClient implements UsersClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-        return response.body();
+        return requireNonNull(response.body());
     }
 
     @Override
-    public @Nullable UserJson updateUser(@Nonnull UserJson user) {
+    public @Nonnull UserJson updateUser(@Nonnull UserJson user) {
         final Response<UserJson> response;
         try {
             response = userDataApi.update(user)
@@ -81,7 +83,7 @@ public class UsersApiClient implements UsersClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-        return response.body();
+        return requireNonNull(response.body());
     }
 
     @Override

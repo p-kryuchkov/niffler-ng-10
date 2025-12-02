@@ -10,22 +10,22 @@ import java.util.Optional;
 
 public interface SpendClient {
     @Step("Create new spend: {spend}")
-    @Nullable
+    @Nonnull
     SpendJson createSpend(@Nonnull SpendJson spend);
 
     @Step("Update spend: {spend}")
-    @Nullable
+    @Nonnull
     SpendJson updateSpend(@Nonnull SpendJson spend);
 
     @Step("Delete spend: {spend}")
     void deleteSpend(@Nonnull SpendJson spend);
 
     @Step("Create new category: {category}")
-    @Nullable
+    @Nonnull
     CategoryJson createCategory(@Nonnull CategoryJson category);
 
     @Step("Update category: {category}")
-    @Nullable
+    @Nonnull
     CategoryJson updateCategory(@Nonnull CategoryJson category);
 
     @Step("Create new category: {category}")

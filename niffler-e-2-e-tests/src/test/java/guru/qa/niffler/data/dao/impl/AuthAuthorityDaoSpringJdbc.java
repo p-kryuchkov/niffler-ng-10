@@ -20,7 +20,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public @Nonnull void create(@Nonnull AuthorityEntity... authority) {
+    public void create(@Nonnull AuthorityEntity... authority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.batchUpdate(
                 "INSERT INTO authority (user_id, authority) VALUES (? , ?)",

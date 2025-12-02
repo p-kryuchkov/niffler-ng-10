@@ -40,7 +40,7 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
-    public @Nullable UserJson createUser(@Nonnull String username, @Nonnull String password) {
+    public @Nonnull UserJson createUser(@Nonnull String username, @Nonnull String password) {
         return xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = new AuthUserEntity();
                     authUser.setUsername(username);
@@ -76,7 +76,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public @Nullable UserJson updateUser(@Nonnull UserJson userJson) {
+    public @Nonnull UserJson updateUser(@Nonnull UserJson userJson) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userdataUser = UserEntity.fromJson(userJson);
             return UserJson.fromEntity(udUserRepository.updateUser(userdataUser), null);

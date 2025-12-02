@@ -6,7 +6,6 @@ import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import io.qameta.allure.Step;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -20,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
@@ -34,9 +34,8 @@ public class SpendApiClient implements SpendClient {
 
     private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
-    @Nullable
     @Override
-    public SpendJson createSpend(SpendJson spend) {
+    public @Nonnull SpendJson createSpend(SpendJson spend) {
         final Response<SpendJson> response;
         try {
             response = spendApi.createSpend(spend).execute();
@@ -44,12 +43,11 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(201, response.code());
-        return response.body();
+        return requireNonNull(response.body());
     }
 
-    @Nonnull
     @Override
-    public SpendJson updateSpend(SpendJson spend) {
+    public @Nonnull SpendJson updateSpend(SpendJson spend) {
         throw new UnsupportedOperationException();
     }
 
@@ -65,7 +63,7 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
-    public @Nullable CategoryJson createCategory(@Nonnull CategoryJson category) {
+    public @Nonnull CategoryJson createCategory(@Nonnull CategoryJson category) {
         final Response<CategoryJson> response;
         try {
             response = spendApi.addCategory(category).execute();
@@ -73,7 +71,7 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(200, response.code());
-        return response.body();
+        return requireNonNull(response.body());
     }
 
     @Override
@@ -92,7 +90,7 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(200, response.code());
-        return response.body().stream()
+        return requireNonNull(response.body()).stream()
                 .filter(c -> c.name().equals(categoryName))
                 .findFirst();
     }
@@ -106,7 +104,7 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(200, response.code());
-        return response.body();
+        return requireNonNull(response.body());
     }
 
     @Step("Get all spends for user '{username}' with filters: currency={filterCurrency}, from={from}, to={to}")
@@ -122,7 +120,7 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(200, response.code());
-        return response.body() != null ? response.body() : Collections.emptyList();
+        return requireNonNull(response.body()) != null ? response.body() : Collections.emptyList();
     }
 
     @Step("Edit spend: {spend}")
@@ -135,7 +133,7 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(200, response.code());
-        return response.body();
+        return requireNonNull(response.body());
     }
 
     @Step("Delete spends for user '{username}' with ids={ids}")
@@ -149,7 +147,7 @@ public class SpendApiClient implements SpendClient {
         assertEquals(200, response.code());
     }
 
-    public @Nullable CategoryJson updateCategory(@Nonnull CategoryJson category) {
+    public @Nonnull CategoryJson updateCategory(@Nonnull CategoryJson category) {
         final Response<CategoryJson> response;
         try {
             response = spendApi.updateCategory(category).execute();
@@ -157,6 +155,6 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         assertEquals(200, response.code());
-        return response.body();
+        return requireNonNull(response.body());
     }
 }

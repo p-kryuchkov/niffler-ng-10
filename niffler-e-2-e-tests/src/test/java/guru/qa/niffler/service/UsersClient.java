@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface UsersClient {
     @Step("Create new user: {username}")
-    @Nullable
+    @Nonnull
     UserJson createUser(@Nonnull String username, @Nonnull String password);
 
     @Step("Update user: {user.username}")
-    @Nullable
+    @Nonnull
     UserJson updateUser(@Nonnull UserJson user);
 
     @Step("Delete user: {user.username}")

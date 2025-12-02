@@ -83,7 +83,7 @@ public class ProfilePage {
 
     @Step("Check that name input value equals: {value}")
     public ProfilePage checkNameInputValue(String value) {
-        assertEquals(nameInput.val(), value);
+        nameInput.shouldHave(value(value));
         return this;
     }
 

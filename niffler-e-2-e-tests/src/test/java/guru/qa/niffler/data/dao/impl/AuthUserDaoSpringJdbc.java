@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,32 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     @Override
     public @Nonnull AuthUserEntity updateUser(@Nonnull AuthUserEntity user) {
-        return null;
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+        try {
+            int count = jdbcTemplate.update(con -> {
+                PreparedStatement ps = con.prepareStatement(
+                        "UPDATE category SET username = ?, " +
+                                "password = ?, " +
+                                "enabled = ?, " +
+                                "account_non_expired = ?, " +
+                                "account_non_locked = ?, " +
+                                "credentials_non_expired = ? " +
+                                "WHERE id = ?"
+                );
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword());
+                ps.setBoolean(3, user.getEnabled());
+                ps.setBoolean(4, user.getAccountNonExpired());
+                ps.setBoolean(5, user.getAccountNonLocked());
+                ps.setBoolean(6, user.getCredentialsNonExpired());
+                ps.setObject(7, user.getId());
+                return ps;
+            });
+            if (count == 0) throw new SQLException("Can`t find user by id");
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -86,7 +112,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     }
 
     @Override
-    public void delete(AuthUserEntity user) {
+    public void delete(@Nonnull AuthUserEntity user) {
         throw new UnsupportedOperationException();
     }
 }
