@@ -8,7 +8,10 @@ import guru.qa.niffler.data.repository.impl.SpendRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import io.qameta.allure.Step;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class SpendDbClient implements SpendClient {
@@ -21,52 +24,61 @@ public class SpendDbClient implements SpendClient {
             CFG.spendJdbcUrl()
     );
 
+    @Step("Create spend: {spend}")
     @Override
-    public SpendJson createSpend(SpendJson spend) {
-        return xaTransactionTemplate.execute(() -> {
-            return SpendJson.fromEntity(spendRepository.create(SpendEntity.fromJson(spend)));
-        });
+    public @Nonnull SpendJson createSpend(@Nonnull SpendJson spend) {
+        return xaTransactionTemplate.execute(() ->
+                SpendJson.fromEntity(spendRepository.create(SpendEntity.fromJson(spend)))
+        );
     }
 
+    @Step("Update spend: {spend}")
     @Override
-    public SpendJson updateSpend(SpendJson spend) {
-        return xaTransactionTemplate.execute(() -> {
-            return SpendJson.fromEntity(spendRepository.update(SpendEntity.fromJson(spend)));
-        });
+    public @Nonnull SpendJson updateSpend(@Nonnull SpendJson spend) {
+        return xaTransactionTemplate.execute(() ->
+                SpendJson.fromEntity(spendRepository.update(SpendEntity.fromJson(spend)))
+        );
     }
 
+    @Step("Delete spend: {spend}")
     @Override
-    public void deleteSpend(SpendJson spend) {
+    public void deleteSpend(@Nonnull SpendJson spend) {
         xaTransactionTemplate.execute(() -> {
             spendRepository.deleteSpend(SpendEntity.fromJson(spend));
             return null;
         });
     }
 
+    @Step("Create category: {category}")
     @Override
-    public CategoryJson createCategory(CategoryJson category) {
-        return xaTransactionTemplate.execute(() -> {
-            return CategoryJson.fromEntity(spendRepository.createCategory(CategoryEntity.fromJson(category)));
-        });
+    public @Nonnull CategoryJson createCategory(@Nonnull CategoryJson category) {
+        return xaTransactionTemplate.execute(() ->
+                CategoryJson.fromEntity(spendRepository.createCategory(CategoryEntity.fromJson(category)))
+        );
     }
 
+    @Step("Update category: {category}")
     @Override
-    public CategoryJson updateCategory(CategoryJson category) {
-        return xaTransactionTemplate.execute(() -> {
-            return CategoryJson.fromEntity(spendRepository.updateCategory(CategoryEntity.fromJson(category)));
-        });
+    public @Nonnull CategoryJson updateCategory(@Nonnull CategoryJson category) {
+        return xaTransactionTemplate.execute(() ->
+                CategoryJson.fromEntity(spendRepository.updateCategory(CategoryEntity.fromJson(category)))
+        );
     }
 
+    @Step("Delete category: {category}")
     @Override
-    public void deleteCategory(CategoryJson category) {
+    public void deleteCategory(@Nonnull CategoryJson category) {
         xaTransactionTemplate.execute(() -> {
             spendRepository.deleteCategory(CategoryEntity.fromJson(category));
             return null;
         });
     }
 
+    @Step("Find category '{categoryName}' for username '{username}'")
+    @Nullable
     @Override
-    public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
+    public Optional<CategoryJson> findCategoryByNameAndUsername(@Nonnull String categoryName,
+                                                                @Nonnull String username) {
         return xaTransactionTemplate.execute(() ->
                 spendRepository.findCategoryByUsernameAndCategoryName(username, categoryName)
                         .map(CategoryJson::fromEntity)

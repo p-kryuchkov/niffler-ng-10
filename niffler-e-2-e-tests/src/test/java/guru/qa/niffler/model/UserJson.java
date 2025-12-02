@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import jaxb.userdata.FriendshipStatus;
 
+import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -32,7 +33,8 @@ public record UserJson(
         @JsonIgnore
         TestData testData) {
 
-    public static UserJson fromEntity(UserEntity entity, FriendshipStatus friendshipStatus) {
+    @Nonnull
+    public static UserJson fromEntity(@Nonnull UserEntity entity, @Nonnull FriendshipStatus friendshipStatus) {
         return new UserJson(
                 entity.getId(),
                 entity.getUsername(),

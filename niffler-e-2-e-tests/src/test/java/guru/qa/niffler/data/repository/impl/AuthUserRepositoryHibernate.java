@@ -5,7 +5,9 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,25 +21,28 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     private final EntityManager entityManager = em(CFG.authJdbcUrl());
 
     @Override
-    public AuthUserEntity createUser(AuthUserEntity user) {
+    public @Nonnull AuthUserEntity createUser(@Nonnull AuthUserEntity user) {
         entityManager.joinTransaction();
         entityManager.persist(user);
         return user;
     }
 
+    @Nonnull
     @Override
-    public AuthUserEntity updateUser(AuthUserEntity user) {
+    public AuthUserEntity updateUser(@Nonnull AuthUserEntity user) {
         entityManager.joinTransaction();
         return entityManager.merge(user);
     }
 
+    @Nonnull
     @Override
-    public Optional<AuthUserEntity> findById(UUID id) {
+    public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
         return Optional.ofNullable(
                 entityManager.find(AuthUserEntity.class, id)
         );
     }
 
+    @Nonnull
     @Override
     public List<AuthUserEntity> findAll() {
         entityManager.joinTransaction();
@@ -45,8 +50,9 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
                 .getResultList();
     }
 
+    @Nonnull
     @Override
-    public Optional<AuthUserEntity> findByUsername(String username) {
+    public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
         try {
             return Optional.of(
                     entityManager.createQuery("select u from UserEntity u where u.username = :username", AuthUserEntity.class)
@@ -59,7 +65,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
     }
 
     @Override
-    public void delete(AuthUserEntity user) {
+    public void delete(@Nonnull AuthUserEntity user) {
         entityManager.joinTransaction();
         if (!entityManager.contains(user)) {
             user = entityManager.merge(user);

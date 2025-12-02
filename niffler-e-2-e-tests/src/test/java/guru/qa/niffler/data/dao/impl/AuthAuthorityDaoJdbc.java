@@ -6,6 +6,8 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
+
+import javax.annotation.Nonnull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     private final Connection connection = holder(CFG.authJdbcUrl()).connection();
 
     @Override
-    public void create(AuthorityEntity... authorities) {
+    public void create(@Nonnull AuthorityEntity... authorities) {
        for (AuthorityEntity authority : authorities) {
            try (PreparedStatement ps = connection.prepareStatement(
                    "INSERT INTO authority (authority, user_id) " +
@@ -46,7 +48,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public List<AuthorityEntity> findAuthoritiesByUserId(UUID id) {
+    public @Nonnull List<AuthorityEntity> findAuthoritiesByUserId(@Nonnull UUID id) {
         List<AuthorityEntity> authorities = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM authority WHERE user_id = ?"
@@ -65,7 +67,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public Optional<AuthorityEntity> findById(UUID id) {
+    public @Nonnull Optional<AuthorityEntity> findById(@Nonnull UUID id) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM authority WHERE id = ?"
         )) {
@@ -84,7 +86,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public void delete(AuthorityEntity authority) {
+    public void delete(@Nonnull AuthorityEntity authority) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM authority WHERE id = ?"
         )) {

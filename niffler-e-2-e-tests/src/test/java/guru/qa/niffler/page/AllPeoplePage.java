@@ -2,7 +2,8 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.Keys;
+import guru.qa.niffler.page.component.SearchField;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -12,7 +13,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class AllPeoplePage {
     private final SelenideElement friendsTab = $("a[href='/people/friends']");
-    private final SelenideElement searchInput = $("[aria-label=\"search\"]");
+    private final SearchField searchInput = new SearchField();
     private final ElementsCollection peopleTableRows = $$("#all tr");
     private final SelenideElement pageNextButton = $("#page-next");
     private final SelenideElement pagePreviousButton = $("#page-prev");
@@ -24,12 +25,15 @@ public class AllPeoplePage {
         return new FriendsPage();
     }
 
+    @Step("Search value {searchValue}")
     public AllPeoplePage search(String searchValue) {
-        searchInput.val(searchValue);
+        searchInput.search(searchValue);
         return this;
     }
 
+    @Step("Add friend {username}")
     public AllPeoplePage addFriend(String userName) {
+        search(userName);
         peopleTableRows.findBy(text(userName))
                 .shouldBe(visible)
                 .find(byXpath(addFriendButtonXpath))
@@ -43,8 +47,9 @@ public class AllPeoplePage {
         return this;
     }
 
+    @Step("Check outcome invitation {userName}")
     public AllPeoplePage checkUserWaiting(String userName) {
-        searchInput.val(userName).sendKeys(Keys.ENTER);
+        search(userName);
         peopleTableRows.findBy(text(userName))
                 .shouldHave(text("Waiting..."));
         return this;

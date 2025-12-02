@@ -11,6 +11,7 @@ import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     );
 
     @Override
-    public UserEntity createUser(UserEntity user) {
+    public @Nonnull UserEntity createUser(@Nonnull UserEntity user) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity result = userDao.createUser(user);
             for (FriendshipEntity friendship : user.getFriendshipAddressees()) {
@@ -40,12 +41,12 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public UserEntity updateUser(UserEntity user) {
+    public @Nonnull UserEntity updateUser(@Nonnull UserEntity user) {
         return userDao.updateUser(user);
     }
 
     @Override
-    public Optional<UserEntity> findById(UUID id) {
+    public @Nonnull Optional<UserEntity> findById(@Nonnull UUID id) {
         return userDao.findById(id).map(userEntity -> {
             userEntity.setFriendshipAddressees(friendshipDao.findByAddresseeId(id));
             userEntity.setFriendshipRequests(friendshipDao.findByRequesterId(id));
@@ -54,7 +55,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findByUsername(String username) {
+    public @Nonnull Optional<UserEntity> findByUsername(@Nonnull String username) {
         return userDao.findByUsername(username).map(userEntity -> {
             userEntity.setFriendshipAddressees(friendshipDao.findByAddresseeId(userEntity.getId()));
             userEntity.setFriendshipRequests(friendshipDao.findByRequesterId(userEntity.getId()));
@@ -63,7 +64,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public void sendInvitation(UserEntity requester, UserEntity addressee) {
+    public @Nonnull void sendInvitation(@Nonnull UserEntity requester, @Nonnull UserEntity addressee) {
         FriendshipEntity friendship = new FriendshipEntity();
         friendship.setAddressee(addressee);
         friendship.setRequester(requester);
@@ -72,7 +73,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public void addFriend(UserEntity requester, UserEntity addressee) {
+    public void addFriend(@Nonnull UserEntity requester, @Nonnull UserEntity addressee) {
         xaTransactionTemplate.execute(() -> {
             FriendshipEntity friendshipIncome = new FriendshipEntity();
             friendshipIncome.setAddressee(addressee);
@@ -91,12 +92,12 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public List<UserEntity> findAll() {
+    public @Nonnull List<UserEntity> findAll() {
         return userDao.findAll();
     }
 
     @Override
-    public void delete(UserEntity user) {
+    public void delete(@Nonnull UserEntity user) {
         xaTransactionTemplate.execute(() -> {
                     for (FriendshipEntity friendship : user.getFriendshipAddressees()) {
                         friendshipDao.deleteFriendship(friendship);
