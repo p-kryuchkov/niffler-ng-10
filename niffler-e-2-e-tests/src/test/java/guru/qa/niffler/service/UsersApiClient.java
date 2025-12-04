@@ -2,18 +2,16 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserDataApi;
-import guru.qa.niffler.config.Config;
+import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -22,28 +20,15 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public class UsersApiClient implements UsersClient {
-    private static final Config CFG = Config.getInstance();
+public class UsersApiClient extends RestClient implements UsersClient {
+    private final AuthApi authApi;
+    private final UserDataApi userDataApi;
 
-    private static final CookieManager cm = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
-
-    private final Retrofit authRetrofit = new Retrofit.Builder()
-            .baseUrl(CFG.authUrl())
-            .addConverterFactory(JacksonConverterFactory.create())
-            .client(new OkHttpClient.Builder()
-                    .cookieJar(new JavaNetCookieJar(
-                            cm
-                    ))
-                    .build())
-            .build();
-
-    private final Retrofit userdataRetrofit = new Retrofit.Builder()
-            .baseUrl(CFG.userdataUrl())
-            .addConverterFactory(JacksonConverterFactory.create())
-            .build();
-
-    private final AuthApi authApi = authRetrofit.create(AuthApi.class);
-    private final UserDataApi userDataApi = userdataRetrofit.create(UserDataApi.class);
+    public UsersApiClient() {
+        super(CFG.userdataUrl());
+        this.userDataApi = create(UserDataApi.class);
+        this.authApi = create(AuthApi.class);
+    }
 
     @Override
     public @Nonnull UserJson createUser(@Nonnull String username, @Nonnull String password) {
@@ -53,12 +38,7 @@ public class UsersApiClient implements UsersClient {
                     username,
                     password,
                     password,
-                    cm.getCookieStore().getCookies()
-                            .stream()
-                            .filter(c -> c.getName().equals("XSRF-TOKEN"))
-                            .findFirst()
-                            .get()
-                            .getValue()
+                    ThreadSafeCookieStore.INSTANCE.xsrfCookie()
             ).execute();
         } catch (IOException e) {
             throw new RuntimeException(e);

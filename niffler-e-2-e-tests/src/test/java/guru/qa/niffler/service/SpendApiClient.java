@@ -23,16 +23,13 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
-public class SpendApiClient implements SpendClient {
+public class SpendApiClient extends  RestClient implements SpendClient {
+    private final SpendApi spendApi;
 
-    private static final Config CFG = Config.getInstance();
-
-    private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(CFG.spendUrl())
-            .addConverterFactory(JacksonConverterFactory.create())
-            .build();
-
-    private final SpendApi spendApi = retrofit.create(SpendApi.class);
+    public SpendApiClient() {
+        super(CFG.spendUrl());
+        this.spendApi = create(SpendApi.class);
+    }
 
     @Override
     public @Nonnull SpendJson createSpend(SpendJson spend) {
