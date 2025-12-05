@@ -10,7 +10,7 @@ import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class FriendsPage {
+public class FriendsPage extends BasePage <FriendsPage>{
     private final SelenideElement allPeopleTab = $("a[href='/people/all']");
     private final SearchField searchInput = new SearchField();
     private final ElementsCollection friendsTableRows = $$("#friends tr");

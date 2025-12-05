@@ -11,7 +11,7 @@ import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class AllPeoplePage {
+public class AllPeoplePage extends BasePage <AllPeoplePage>{
     private final SelenideElement friendsTab = $("a[href='/people/friends']");
     private final SearchField searchInput = new SearchField();
     private final ElementsCollection peopleTableRows = $$("#all tr");

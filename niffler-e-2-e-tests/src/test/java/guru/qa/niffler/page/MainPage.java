@@ -12,7 +12,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class MainPage {
+public class MainPage extends BasePage <MainPage>{
     private final ElementsCollection tableRows = $$("#spendings tr");
     private final SelenideElement spendings = $("#spendings");
     private final SelenideElement statistics = $("#stat");
