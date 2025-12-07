@@ -52,21 +52,44 @@ public class FriendsTest {
 
     @User(incomeInvitations = 1)
     @Test
-    void acceptInvitationTest(UserJson user){
+    void acceptInvitationTest(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .acceptRequest(user.testData().incomeInvitations().getFirst().username())
+                .checkSnackbarText(String.format("Invitation of %s", user.testData().incomeInvitations().getFirst().username()))
                 .checkFriend(user.testData().incomeInvitations().getFirst().username());
     }
 
     @User(incomeInvitations = 1)
     @Test
-    void declineInvitationTest(UserJson user){
+    void declineInvitationTest(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .declineRequest(user.testData().incomeInvitations().getFirst().username())
+                .checkSnackbarText(String.format("Invitation of %s is declined", user.testData().incomeInvitations().getFirst().username()))
                 .checkFriendsEmpty();
+    }
+
+    @User(friends = 1)
+    @Test
+    void deleteFriendTest(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .goToFriendsPage()
+                .unfriend(user.testData().friends().getFirst().username())
+                .checkSnackbarText(String.format("Friend %s is deleted", user.testData().friends().getFirst().username()))
+                .checkFriendsEmpty();
+    }
+
+    @User()
+    @Test
+    void createInvitationTest(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .goToAllPeoplePage()
+                .addFriend("TestDefaultUser")
+                .checkSnackbarText("Invitation sent to TestDefaultUser");
     }
 }

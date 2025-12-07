@@ -6,7 +6,6 @@ import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.CurrencyValues;
-import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
@@ -35,12 +34,13 @@ public class SpendingTest {
                 .editSpending(user.testData().spendings().getFirst().description())
                 .setNewSpendingDescription(newDescription)
                 .save()
+                .checkSnackbarText("Spending is edited successfully")
                 .checkThatTableContains(newDescription);
     }
 
     @User()
     @Test
-    void createNewSpendingTest(UserJson user){
+    void createNewSpendingTest(UserJson user) {
         Date spendingDate = Date.from(LocalDate.of(2025, 12, 11)
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant());
@@ -57,6 +57,19 @@ public class SpendingTest {
                 .setDate(spendingDate)
                 .setNewSpendingDescription(description)
                 .save()
+                .checkSnackbarText("New spending is successfully created")
                 .checkThatTableContains(description, categoryName, amount);
+    }
+
+    @User(
+            spendings = @Spending(
+                    amount = 1223
+            ))
+    @Test
+    void deleteSpending(UserJson user) {
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .deleteSpending(user.testData().spendings().getFirst().description())
+                .checkSnackbarText("Spendings succesfully deleted");
     }
 }

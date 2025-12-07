@@ -7,8 +7,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class Header {
-    private final SelenideElement self = $("#root header");
+public class Header extends BaseComponent<Header> {
     private final SelenideElement mainPageButton = self.$("a[href='/main']");
     private final SelenideElement addSpendingButton = self.$("a[href='/spending']");
     private final SelenideElement personIcon = self.$("[data-testid='PersonIcon']");
@@ -17,6 +16,10 @@ public class Header {
     private final SelenideElement friendsButton = menu.$("a[href='/people/friends']");
     private final SelenideElement allPeopleButton = menu.$("a[href='/people/all']");
     private final SelenideElement signOutButton = menu.$(byText("Sign out"));
+
+    public Header() {
+        super($("#root header"));
+    }
 
     public FriendsPage toFriendsPage() {
         personIcon.shouldBe(visible).click();
@@ -51,5 +54,4 @@ public class Header {
         mainPageButton.shouldBe(visible).click();
         return new MainPage();
     }
-
 }

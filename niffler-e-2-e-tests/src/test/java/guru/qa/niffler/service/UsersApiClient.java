@@ -1,22 +1,18 @@
 package guru.qa.niffler.service;
 
+import com.google.common.base.Stopwatch;
 import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserDataApi;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
-import okhttp3.JavaNetCookieJar;
-import okhttp3.OkHttpClient;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Objects.requireNonNull;
 
@@ -44,14 +40,24 @@ public class UsersApiClient extends RestClient implements UsersClient {
             throw new RuntimeException(e);
         }
 
-        final Response<UserJson> response;
-        try {
-            response = userDataApi.current(username)
-                    .execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
+        Stopwatch sw = Stopwatch.createStarted();
+        long maxWaitTime = 10_000;
+
+        while (sw.elapsed(TimeUnit.MILLISECONDS) < maxWaitTime) {
+            try {
+                UserJson userJson = userDataApi.current(username).execute().body();
+                if (userJson != null && userJson.id() != null) {
+                    return userJson;
+                } else {
+                    Thread.sleep(100);
+                }
+            } catch (IOException e) {
+                // ждем
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return requireNonNull(response.body());
+        throw new AssertionError("User was not created in userdata within timeout");
     }
 
     @Override

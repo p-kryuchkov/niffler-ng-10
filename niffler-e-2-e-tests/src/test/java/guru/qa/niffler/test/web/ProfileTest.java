@@ -8,11 +8,8 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.service.UsersApiClient;
 import guru.qa.niffler.service.UsersClient;
-import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith({BrowserExtension.class})
 public class ProfileTest {
@@ -29,6 +26,7 @@ public class ProfileTest {
                 .editProfile()
                 .setName(name)
                 .clickSaveChanges()
+                .checkSnackbarText("Profile successfully updated")
                 .goToMainPage()
                 .editProfile()
                 .checkNameInputValue(name);

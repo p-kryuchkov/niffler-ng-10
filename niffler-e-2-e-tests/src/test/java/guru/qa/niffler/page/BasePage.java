@@ -11,7 +11,7 @@ import static com.codeborne.selenide.Selenide.$;
 @ParametersAreNonnullByDefault
 public abstract class BasePage<T extends BasePage<?>> {
     protected final Header header = new Header();
-    protected final SelenideElement snackbar = $(".MuiAlertMessage");
+    protected final SelenideElement snackbar = $(".MuiAlert-message");
 
     @SuppressWarnings("unchecked")
     public T checkSnackbarText(String text) {
