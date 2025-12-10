@@ -2,6 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.component.AlertDialog;
 import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
 
@@ -10,15 +11,15 @@ import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class FriendsPage {
+public class FriendsPage extends BasePage<FriendsPage> {
     private final SelenideElement allPeopleTab = $("a[href='/people/all']");
     private final SearchField searchInput = new SearchField();
     private final ElementsCollection friendsTableRows = $$("#friends tr");
     private final ElementsCollection requestsTableRows = $$("#requests tr");
     private final SelenideElement pageNextButton = $("#page-next");
     private final SelenideElement pagePreviousButton = $("#page-prev");
-
-    private final String unfriendButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Add friend']";
+    private final AlertDialog alertDialog = new AlertDialog();
+    private final String unfriendButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unfriend']";
     private final String acceptButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Accept']";
     private final String declineButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Decline']";
 
@@ -40,6 +41,7 @@ public class FriendsPage {
                 .shouldBe(visible)
                 .find(byXpath(unfriendButtonXpath))
                 .click();
+        alertDialog.submitDelete();
         return this;
     }
 
@@ -60,6 +62,7 @@ public class FriendsPage {
                 .shouldBe(visible)
                 .find(byXpath(declineButtonXpath))
                 .click();
+        alertDialog.submitDecline();
         return this;
     }
 

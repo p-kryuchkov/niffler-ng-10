@@ -13,8 +13,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Calendar {
-    private final SelenideElement self;
+public class Calendar extends BaseComponent<Calendar> {
     private final SelenideElement currentMonthAndYear;
     private final SelenideElement switchToYearViewButton;
     private final SelenideElement arrowLeftButton;
@@ -26,7 +25,7 @@ public class Calendar {
 
 
     public Calendar(SelenideElement self) {
-        this.self = self;
+        super(self);
         this.currentMonthAndYear = self.$("div.MuiPickersCalendarHeader-label");
         this.switchToYearViewButton = self.$("[aria-label='calendar view is open, switch to year view']");
         this.arrowLeftButton = self.$("[data-testid='ArrowLeftIcon']");
@@ -40,16 +39,16 @@ public class Calendar {
         String displayed = currentMonthAndYear.getText();
         LocalDate currentDate = LocalDate.parse("01 " + displayed, DateTimeFormatter.ofPattern("dd MMMM yyyy"));
         LocalDate targetDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
-        targetDate = targetDate.isAfter(LocalDate.now() )? LocalDate.now() : targetDate;
+        targetDate = targetDate.isAfter(LocalDate.now()) ? LocalDate.now() : targetDate;
         if (targetDate.getYear() != currentDate.getYear()) {
             switchToYearViewButton.click();
             yearButtons.findBy(text(String.valueOf(targetDate.getYear()))).scrollTo().click();
         }
-        while (targetDate.getMonth() != currentDate.getMonth()){
-            if (targetDate.getMonth().getValue() < currentDate.getMonth().getValue()){
+        while (targetDate.getMonth() != currentDate.getMonth()) {
+            if (targetDate.getMonth().getValue() < currentDate.getMonth().getValue()) {
                 arrowLeftButton.click();
             }
-            if (targetDate.getMonth().getValue() > currentDate.getMonth().getValue()){
+            if (targetDate.getMonth().getValue() > currentDate.getMonth().getValue()) {
                 arrowRightButton.click();
             }
             displayed = currentMonthAndYear.getText();
@@ -61,6 +60,4 @@ public class Calendar {
         assertEquals(targetDate, currentDate, "Date invalid");
         return this;
     }
-
-
 }

@@ -11,7 +11,7 @@ import java.util.Date;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-public class EditSpendingPage {
+public class EditSpendingPage extends BasePage <EditSpendingPage>{
     private final SelenideElement descriptionInput = $("#description");
     private final SelenideElement amountInput = $("#amount");
     private final SelenideElement category = $("#category");

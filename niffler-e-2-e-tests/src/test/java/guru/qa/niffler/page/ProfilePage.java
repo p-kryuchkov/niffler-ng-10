@@ -12,7 +12,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
 
     private final SelenideElement uploadPictureButton = $(".image__input-label");
     private final SelenideElement registerPassKey = $("#:r11:");
