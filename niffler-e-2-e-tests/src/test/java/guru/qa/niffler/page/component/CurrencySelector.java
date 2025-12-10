@@ -16,7 +16,7 @@ public class CurrencySelector extends BaseComponent<CurrencySelector> {
     }
 
     public CurrencySelector changeCurrency(CurrencyValues currencyValues) {
-        self.shouldBe(visible).click();
+        self.click();
         currencyRows.findBy(text(currencyValues.name())).shouldBe(visible).click();
         return this;
     }

@@ -15,11 +15,7 @@ import java.lang.annotation.Target;
 public @interface Spending {
     String category() default "TestCategory";
 
-    ;
-
     String description() default "TestDescription";
-
-    ;
 
     double amount();
 
