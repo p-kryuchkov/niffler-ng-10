@@ -37,7 +37,6 @@ public class UserAuthSetExtractor implements ResultSetExtractor<AuthUserEntity> 
                     result.setAccountNonExpired(rs.getBoolean("account_non_expired"));
                     result.setAccountNonLocked(rs.getBoolean("account_non_locked"));
                     result.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
-                    users.put(userId, result);
                     return result;
                 } catch (SQLException e) {
                     throw new RuntimeException(e);

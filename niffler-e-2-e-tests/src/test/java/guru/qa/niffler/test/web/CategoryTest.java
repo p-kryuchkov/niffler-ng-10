@@ -27,10 +27,9 @@ public class CategoryTest {
                 .isCategoryExists(user.testData().categories().getFirst().name());
     }
 
-    @User(username = "TestDefaultUser",
-            categories = @Category(
-                    archived = true
-            ))
+    @User(categories = @Category(
+            archived = true
+    ))
     @Test
     public void unArchiveCathegoryTest(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
@@ -38,6 +37,7 @@ public class CategoryTest {
                 .editProfile()
                 .checkShowArchivedCategories()
                 .unArchiveCategory(user.testData().categories().getFirst().name())
+                .isCategoryExists(user.testData().categories().getFirst().name())
                 .uncheckShowArchivedCategories()
                 .isCategoryExists(user.testData().categories().getFirst().name());
     }
