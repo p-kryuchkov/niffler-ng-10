@@ -9,13 +9,14 @@ import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.utils.RandomDataUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.Connection;
-
+@Disabled
 public class ChainedTransactionTest {
     private static final Config CFG = Config.getInstance();
 

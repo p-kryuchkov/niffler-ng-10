@@ -54,7 +54,8 @@ public class UserdataSetExtractor implements ResultSetExtractor<UserEntity> {
             UserEntity addressee = new UserEntity();
             UUID requesterId = rs.getObject("requester_id", UUID.class);
             UUID addresseeId = rs.getObject("addressee_id", UUID.class);
-            FriendshipStatus status = FriendshipStatus.valueOf(rs.getString("status"));
+            FriendshipStatus status = null;
+            if (rs.getString("status")!= null) status = FriendshipStatus.valueOf(rs.getString("status"));
 
             if (requesterId != null) {
                 requester.setId(requesterId);
@@ -66,8 +67,8 @@ public class UserdataSetExtractor implements ResultSetExtractor<UserEntity> {
             }
             if (status != null) friendship.setStatus(status);
 
-            if (requesterId.equals(userId)) friendshipRequests.add(friendship);
-            if (addresseeId.equals(userId)) friendshipAddressee.add(friendship);
+            if (requesterId != null && requesterId.equals(userId)) friendshipRequests.add(friendship);
+            if (addresseeId != null && addresseeId.equals(userId)) friendshipAddressee.add(friendship);
 
             user.setFriendshipRequests(friendshipRequests);
             user.setFriendshipAddressees(friendshipAddressee);

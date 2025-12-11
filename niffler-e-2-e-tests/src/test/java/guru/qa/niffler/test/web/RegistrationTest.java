@@ -69,7 +69,7 @@ public class RegistrationTest {
     @Test
     @DisplayName("Успешный логин существующего пользователя")
     void mainPageShouldBeDisplayedAfterSuccessLogin() {
-        final String username = "Testuser";
+        final String username = "TestDefaultUser";
         final String password = "12345";
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
