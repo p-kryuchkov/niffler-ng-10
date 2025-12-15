@@ -59,4 +59,10 @@ public class MainPage extends BasePage<MainPage> {
     public EditSpendingPage addSpending() {
         return header.addSpendingPage();
     }
+
+    @Step("Waiting spending diagram load")
+    public MainPage waitingSpendingDiagramLoad() {
+        spendingTable.waitLoadingDiagram();
+        return this;
+    }
 }

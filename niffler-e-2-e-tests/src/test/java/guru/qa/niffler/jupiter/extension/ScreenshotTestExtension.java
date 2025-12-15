@@ -13,9 +13,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 
-public class ScreenshotTestExtension implements ParameterResolver, TestExecutionExceptionHandler {
+public class ScreenshotTestExtension implements ParameterResolver, TestExecutionExceptionHandler, AfterEachCallback {
     public static final ObjectMapper objectMapper = new ObjectMapper();
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ScreenshotTestExtension.class);
 
@@ -28,7 +30,29 @@ public class ScreenshotTestExtension implements ParameterResolver, TestExecution
     @SneakyThrows
     @Override
     public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return ImageIO.read(new ClassPathResource("img/stat.png").getInputStream());
+        return ImageIO.read(new ClassPathResource(
+                extensionContext.getRequiredTestMethod()
+                        .getAnnotation(ScreenshotTest.class)
+                        .value()
+        ).getInputStream());
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) {
+        if (context.getRequiredTestMethod().getAnnotation(ScreenshotTest.class).rewriteExpected()
+                && getActual() != null) {
+            try {
+                Path expected = Paths.get(
+                        "src/test/resources",
+                        context.getRequiredTestMethod()
+                                .getAnnotation(ScreenshotTest.class)
+                                .value()
+                );
+                ImageIO.write(getActual(), "png", expected.toFile());
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot rewrite expected image", e);
+            }
+        }
     }
 
     @Override
@@ -50,7 +74,6 @@ public class ScreenshotTestExtension implements ParameterResolver, TestExecution
 
     public static void setExpected(BufferedImage expected) {
         TestMethodContextExtension.context().getStore(NAMESPACE).put("expected", expected);
-
     }
 
     public static BufferedImage getExpected() {
@@ -59,7 +82,6 @@ public class ScreenshotTestExtension implements ParameterResolver, TestExecution
 
     public static void setActual(BufferedImage actual) {
         TestMethodContextExtension.context().getStore(NAMESPACE).put("actual", actual);
-
     }
 
     public static BufferedImage getActual() {
@@ -68,7 +90,6 @@ public class ScreenshotTestExtension implements ParameterResolver, TestExecution
 
     public static void setDiff(BufferedImage diff) {
         TestMethodContextExtension.context().getStore(NAMESPACE).put("diff", diff);
-
     }
 
     public static BufferedImage getDiff() {

@@ -85,10 +85,11 @@ public class SpendingTest {
             spendings = @Spending(
                     amount = 1223
             ))
-    @ScreenshotTest("img/stat.png")
+    @ScreenshotTest(value = "img/stat.png", rewriteExpected = true)
     void checkStatComponentTest(UserJson user, BufferedImage expected) throws IOException {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.testData().password());
+                .login(user.username(), user.testData().password())
+                .waitingSpendingDiagramLoad();
 
         BufferedImage actual = ImageIO.read($("canvas[role='img']").screenshot());
 
