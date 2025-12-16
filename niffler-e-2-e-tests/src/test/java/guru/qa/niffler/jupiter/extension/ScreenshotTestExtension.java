@@ -7,6 +7,7 @@ import io.qameta.allure.Allure;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.imageio.ImageIO;
@@ -57,18 +58,19 @@ public class ScreenshotTestExtension implements ParameterResolver, TestExecution
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        ScreenDiff screenDiff = new ScreenDiff(
-                "data:image/png;base64,"
-                        + Base64.getEncoder().encodeToString(imageToBytes(getExpected())),
-                "data:image/png;base64,"
-                        + Base64.getEncoder().encodeToString(imageToBytes(getActual())),
-                "data:image/png;base64,"
-                        + Base64.getEncoder().encodeToString(imageToBytes(getDiff())));
+        if (throwable.getClass().isAssignableFrom(AssertionFailedError.class)) {
+            ScreenDiff screenDiff = new ScreenDiff(
+                    "data:image/png;base64,"
+                            + Base64.getEncoder().encodeToString(imageToBytes(getExpected())),
+                    "data:image/png;base64,"
+                            + Base64.getEncoder().encodeToString(imageToBytes(getActual())),
+                    "data:image/png;base64,"
+                            + Base64.getEncoder().encodeToString(imageToBytes(getDiff())));
 
-
-        Allure.addAttachment("Screenshot diff",
-                "application/vnd.allure.image.diff",
-                objectMapper.writeValueAsString(screenDiff));
+            Allure.addAttachment("Screenshot diff",
+                    "application/vnd.allure.image.diff",
+                    objectMapper.writeValueAsString(screenDiff));
+        }
         throw throwable;
     }
 

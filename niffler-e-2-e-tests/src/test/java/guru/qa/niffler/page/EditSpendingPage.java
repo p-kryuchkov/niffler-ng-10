@@ -6,6 +6,7 @@ import guru.qa.niffler.page.component.Calendar;
 import guru.qa.niffler.page.component.CurrencySelector;
 import io.qameta.allure.Step;
 
+import java.io.File;
 import java.util.Date;
 
 import static com.codeborne.selenide.Condition.visible;

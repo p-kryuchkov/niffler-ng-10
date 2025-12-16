@@ -5,6 +5,8 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.DataFilterValues;
 import guru.qa.niffler.page.EditSpendingPage;
 
+import java.io.File;
+
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +20,7 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
     private final AlertDialog alertDialog = new AlertDialog();
     private final ElementsCollection spendingRows = self.$$("tr");
     private final ElementsCollection periodRows = self.$(":rb:").$$("li");
+    private final ElementsCollection legendRows = $("#legend-container").$$("li");
 
     public SpendingTable() {
         super($("#spendings"));
@@ -67,6 +70,20 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
             throw new RuntimeException(e);
         }
         diagram.shouldBe(visible);
+        return this;
+    }
+
+    public File screenshotDiagram(){
+        return diagram.screenshot();
+    }
+
+    public SpendingTable checkLegendContainsCategory(String category){
+        legendRows.findBy(text(category)).should(visible);
+        return this;
+    }
+
+    public SpendingTable checkLegendNotContainsCategory(String category){
+        legendRows.findBy(text(category)).shouldNot(visible);
         return this;
     }
 }

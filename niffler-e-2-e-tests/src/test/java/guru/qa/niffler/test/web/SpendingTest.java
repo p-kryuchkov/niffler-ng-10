@@ -80,19 +80,4 @@ public class SpendingTest {
                 .deleteSpending(user.testData().spendings().getFirst().description())
                 .checkSnackbarText("Spendings succesfully deleted");
     }
-
-    @User(
-            spendings = @Spending(
-                    amount = 1223
-            ))
-    @ScreenshotTest(value = "img/stat.png", rewriteExpected = true)
-    void checkStatComponentTest(UserJson user, BufferedImage expected) throws IOException {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.testData().password())
-                .waitingSpendingDiagramLoad();
-
-        BufferedImage actual = ImageIO.read($("canvas[role='img']").screenshot());
-
-        assertFalse(new ScreenDiffResult(expected, actual));
-    }
 }
