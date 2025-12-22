@@ -8,15 +8,11 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.utils.ScreenDiffResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(BrowserExtension.class)
 public class ScreenshotsTest {
@@ -31,14 +27,11 @@ public class ScreenshotsTest {
         String categoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().getFirst().amount().intValue());
 
-        BufferedImage actual = ImageIO.read(
-                Selenide.open(CFG.frontUrl(), LoginPage.class)
-                        .login(user.username(), user.testData().password())
-                        .waitingSpendingDiagramLoad()
-                        .checkLegendContainsCategory(categoryString)
-                        .screenshotDiagram());
-
-        assertFalse(new ScreenDiffResult(expected, actual));
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .waitingSpendingDiagramLoad()
+                .checkLegendContainsCategory(categoryString)
+                .assertDiagramScreenshotsMatch(expected);
     }
 
     @User(
@@ -56,15 +49,13 @@ public class ScreenshotsTest {
         String secondCategoryString = String.format("%s %s", user.testData().spendings().get(1).category().name(),
                 user.testData().spendings().get(1).amount().intValue());
 
-        BufferedImage actual = ImageIO.read(Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .deleteSpending(user.testData().spendings().getFirst().description())
                 .waitingSpendingDiagramLoad()
                 .checkLegendNotContainsCategory(firstCategoryString)
                 .checkLegendContainsCategory(secondCategoryString)
-                .screenshotDiagram());
-
-        assertFalse(new ScreenDiffResult(expected, actual));
+                .assertDiagramScreenshotsMatch(expected);
     }
 
     @User(
@@ -83,9 +74,7 @@ public class ScreenshotsTest {
         String secondCategoryString = String.format("%s %s", user.testData().spendings().get(1).category().name(),
                 user.testData().spendings().get(1).amount().intValue());
 
-        String categoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
-                user.testData().spendings().getFirst().amount().intValue());
-        BufferedImage actual = ImageIO.read(Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .editSpending(user.testData().spendings().getFirst().description())
                 .setAmount(newAmount)
@@ -93,9 +82,7 @@ public class ScreenshotsTest {
                 .waitingSpendingDiagramLoad()
                 .checkLegendContainsCategory(firstCategoryString)
                 .checkLegendContainsCategory(secondCategoryString)
-                .screenshotDiagram());
-
-        assertFalse(new ScreenDiffResult(expected, actual));
+                .assertDiagramScreenshotsMatch(expected);
     }
 
     @User(
@@ -107,31 +94,24 @@ public class ScreenshotsTest {
     @Test
     @ScreenshotTest(value = "img/archivestat.png", rewriteExpected = false)
     void checkStatComponentArchiveTest(UserJson user, BufferedImage expected) throws IOException {
-        String archiveCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
-                user.testData().spendings().getFirst().amount().intValue() +
-                        user.testData().spendings().get(1).amount().intValue());
-        BufferedImage actual = ImageIO.read(Selenide.open(CFG.frontUrl(), LoginPage.class)
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .editProfile()
                 .archiveCategory(user.testData().spendings().getFirst().category().name())
                 .archiveCategory(user.testData().spendings().get(1).category().name())
                 .goToMainPage()
                 .waitingSpendingDiagramLoad()
-                .screenshotDiagram());
-
-        assertFalse(new ScreenDiffResult(expected, actual));
+                .assertDiagramScreenshotsMatch(expected);
     }
 
     @User()
     @ScreenshotTest(value = "img/avatar.png", rewriteExpected = false)
         //Тест падает всегда из-за того что после загрузки аватара меняется немного цвет, писал в чат ответа не получил
     void checkAvatarTest(UserJson user, BufferedImage expected) throws IOException {
-        BufferedImage actual = ImageIO.read(
-                Selenide.open(CFG.frontUrl(), LoginPage.class)
-                        .login(user.username(), user.testData().password())
-                        .editProfile()
-                        .uploadPicture(expected)
-                        .screenshotAvatar());
-        assertFalse(new ScreenDiffResult(expected, actual));
+        Selenide.open(CFG.frontUrl(), LoginPage.class)
+                .login(user.username(), user.testData().password())
+                .editProfile()
+                .uploadPicture(expected)
+                .assertAvatarScreenshotsMatch(expected);
     }
 }

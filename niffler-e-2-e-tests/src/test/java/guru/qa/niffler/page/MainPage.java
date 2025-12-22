@@ -4,13 +4,17 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.page.component.SearchField;
 import guru.qa.niffler.page.component.SpendingTable;
+import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MainPage extends BasePage<MainPage> {
     private final SelenideElement spendings = $("#spendings");
@@ -70,18 +74,28 @@ public class MainPage extends BasePage<MainPage> {
     }
 
     @Step("Screenshot diagram")
-    public File screenshotDiagram(){
+    public File screenshotDiagram() {
         return spendingTable.screenshotDiagram();
     }
 
+    @Step("Assert diagram screenshots match")
+    public MainPage assertDiagramScreenshotsMatch(BufferedImage expected) {
+        try {
+            assertFalse(new ScreenDiffResult(expected, ImageIO.read(screenshotDiagram())));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return this;
+    }
+
     @Step("Check category in legend")
-    public MainPage checkLegendContainsCategory(String category){
+    public MainPage checkLegendContainsCategory(String category) {
         spendingTable.checkLegendContainsCategory(category);
         return this;
     }
 
     @Step("Check category is not in legend")
-    public MainPage checkLegendNotContainsCategory(String category){
+    public MainPage checkLegendNotContainsCategory(String category) {
         spendingTable.checkLegendNotContainsCategory(category);
         return this;
     }

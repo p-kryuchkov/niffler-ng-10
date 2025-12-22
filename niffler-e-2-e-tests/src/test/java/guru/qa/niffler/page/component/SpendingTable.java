@@ -1,13 +1,15 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.DataFilterValues;
 import guru.qa.niffler.page.EditSpendingPage;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -63,26 +65,22 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
         return this;
     }
 
-    public SpendingTable waitLoadingDiagram(){
-        try {
-            Thread.sleep(4000); // енашел метода проверки заагрузки canvas, чат гпт предлагает какоето трехэтажное решение через JSН
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    public SpendingTable waitLoadingDiagram() {
+        Selenide.sleep(4000);
         diagram.shouldBe(visible);
         return this;
     }
 
-    public File screenshotDiagram(){
+    public File screenshotDiagram() {
         return diagram.screenshot();
     }
 
-    public SpendingTable checkLegendContainsCategory(String category){
+    public SpendingTable checkLegendContainsCategory(String category) {
         legendRows.findBy(text(category)).should(visible);
         return this;
     }
 
-    public SpendingTable checkLegendNotContainsCategory(String category){
+    public SpendingTable checkLegendNotContainsCategory(String category) {
         legendRows.findBy(text(category)).shouldNot(visible);
         return this;
     }
