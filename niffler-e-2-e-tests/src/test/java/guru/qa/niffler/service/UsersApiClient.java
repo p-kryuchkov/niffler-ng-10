@@ -6,6 +6,7 @@ import guru.qa.niffler.api.UserDataApi;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
+import io.qameta.allure.Step;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
@@ -27,6 +28,7 @@ public class UsersApiClient extends RestClient implements UsersClient {
     }
 
     @Override
+    @Step("Create user by API")
     public @Nonnull UserJson createUser(@Nonnull String username, @Nonnull String password) {
         try {
             authApi.requestRegisterForm().execute();
