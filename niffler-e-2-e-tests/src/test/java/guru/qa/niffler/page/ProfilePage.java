@@ -3,18 +3,22 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ClickOptions;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Header;
+import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ProfilePage extends BasePage<ProfilePage> {
-
-    private final SelenideElement uploadPictureButton = $(".image__input-label");
+    private final SelenideElement avatar = $(".MuiAvatar-img");
+    private final SelenideElement uploadPictureButton = $("input[type='file']");
     private final SelenideElement registerPassKey = $("#:r11:");
     private final SelenideElement usernameInput = $("#username");
     private final SelenideElement nameInput = $("#name");
@@ -45,9 +49,37 @@ public class ProfilePage extends BasePage<ProfilePage> {
         return findCategory(category).find("[aria-label=\"Unarchive category\"]");
     }
 
+    @Step("Screenshot avatar")
+    public File screenshotAvatar() {
+        return avatar.screenshot();
+    }
+
+    @Step("Assert avatar screenshots match")
+    public ProfilePage assertAvatarScreenshotsMatch(BufferedImage expected) {
+        try {
+            assertFalse(new ScreenDiffResult(expected, ImageIO.read(screenshotAvatar())));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return this;
+    }
+
     @Step("Upload profile picture: {imageFile}")
     public ProfilePage uploadPicture(File imageFile) {
         uploadPictureButton.uploadFile(imageFile);
+        return this;
+    }
+
+    @Step("Upload profile picture: {imageFile}")
+    public ProfilePage uploadPicture(BufferedImage imageFile) {
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("img-", ".png");
+            ImageIO.write(imageFile, "png", tempFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        uploadPicture(tempFile);
         return this;
     }
 
