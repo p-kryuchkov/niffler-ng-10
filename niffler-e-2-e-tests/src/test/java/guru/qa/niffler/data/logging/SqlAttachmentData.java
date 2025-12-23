@@ -12,9 +12,4 @@ public class SqlAttachmentData implements AttachmentData {
         this.name = name;
         this.sql = sql;
     }
-
-    @Override
-    public String getName() {
-        return "";
-    }
 }

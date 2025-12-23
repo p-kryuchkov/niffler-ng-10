@@ -24,6 +24,5 @@ public class AllureAppender extends StdoutLogger {
             attachmentProcessor.addAttachment(sqlAttachmentData,
                     new FreemarkerAttachmentRenderer(template));
         }
-
     }
 }
