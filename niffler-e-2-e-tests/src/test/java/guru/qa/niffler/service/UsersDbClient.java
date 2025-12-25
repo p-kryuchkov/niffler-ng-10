@@ -13,6 +13,7 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
+import io.qameta.allure.Step;
 import jaxb.userdata.FriendshipStatus;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+import static java.util.Objects.requireNonNull;
 
 public class UsersDbClient implements UsersClient {
 
@@ -40,8 +42,9 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
+    @Step("Create user by SQL")
     public @Nonnull UserJson createUser(@Nonnull String username, @Nonnull String password) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
                     AuthUserEntity authUser = new AuthUserEntity();
                     authUser.setUsername(username);
                     authUser.setPassword(pe.encode(password));
@@ -72,15 +75,15 @@ public class UsersDbClient implements UsersClient {
                             null
                     );
                 }
-        );
+        ));
     }
 
     @Override
     public @Nonnull UserJson updateUser(@Nonnull UserJson userJson) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
             UserEntity userdataUser = UserEntity.fromJson(userJson);
             return UserJson.fromEntity(udUserRepository.updateUser(userdataUser), null);
-        });
+        }));
     }
 
     @Override
