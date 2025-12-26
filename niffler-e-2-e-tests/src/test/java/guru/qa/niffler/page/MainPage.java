@@ -1,6 +1,8 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.condition.Color;
+import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.page.component.SearchField;
 import guru.qa.niffler.page.component.SpendingTable;
@@ -98,5 +100,38 @@ public class MainPage extends BasePage<MainPage> {
     public MainPage checkLegendNotContainsCategory(String category) {
         statistics.checkLegendNotContainsCategory(category);
         return this;
+    }
+
+    @Step("Check bubbles with order under diagram")
+    public MainPage checkBubblesWithOrder(String... categories){
+        statistics.checkBubbles(getOrderedBubbles(categories));
+        return this;
+    }
+
+    @Step("Check bubbles with order under diagram")
+    public MainPage checkBubblesWithOrder(Bubble... bubbles){
+        statistics.checkBubbles(bubbles);
+        return this;
+    }
+
+    @Step("Check bubbles contains under diagram")
+    public MainPage checkBubblesContains(Bubble... bubbles){
+        statistics.checkBubblesContains(bubbles);
+        return this;
+    }
+
+    @Step("Check bubbles in any order under diagram")
+    public MainPage checkBubblesInAnyOrder(Bubble... bubbles){
+        statistics.checkBubblesInAnyOrder(bubbles);
+        return this;
+    }
+
+    private Bubble[] getOrderedBubbles(String... categories){
+        Bubble[] bubbles = new Bubble[categories.length];
+        Color[] orderedColors = Color.orderedColors();
+        for (int i = 0; i < bubbles.length; i++) {
+            bubbles[i] = new Bubble(orderedColors[i], categories[i]);
+        }
+        return bubbles;
     }
 }
