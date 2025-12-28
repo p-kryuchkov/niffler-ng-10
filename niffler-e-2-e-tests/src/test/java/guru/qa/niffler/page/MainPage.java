@@ -3,6 +3,7 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.model.Bubble;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.page.component.SearchField;
 import guru.qa.niffler.page.component.SpendingTable;
@@ -123,6 +124,12 @@ public class MainPage extends BasePage<MainPage> {
     @Step("Check bubbles in any order under diagram")
     public MainPage checkBubblesInAnyOrder(Bubble... bubbles){
         statistics.checkBubblesInAnyOrder(bubbles);
+        return this;
+    }
+
+    @Step("Check spends in table")
+    public MainPage checkSpends(SpendJson... spends){
+        spendingTable.checkSpends(spends);
         return this;
     }
 

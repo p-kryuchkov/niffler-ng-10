@@ -1,16 +1,15 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.DataFilterValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.EditSpendingPage;
-
-import java.io.File;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static guru.qa.niffler.condition.SpendConditions.spends;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SpendingTable extends BaseComponent<SpendingTable> {
@@ -21,6 +20,7 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
     private final AlertDialog alertDialog = new AlertDialog();
     private final ElementsCollection spendingRows = self.$$("tr");
     private final ElementsCollection periodRows = self.$(":rb:").$$("li");
+
     public SpendingTable() {
         super($("#spendings"));
     }
@@ -59,6 +59,11 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
 
     public SpendingTable checkTableSize(int expectedSize) {
         assertEquals(expectedSize, spendingRows.size());
+        return this;
+    }
+
+    public SpendingTable checkSpends(SpendJson... spendJsons) {
+        spendingRows.should(spends(spendJsons));
         return this;
     }
 }

@@ -9,6 +9,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,8 @@ public class ScreenshotsTest {
                 .login(user.username(), user.testData().password())
                 .waitingSpendingDiagramLoad()
                 .checkLegendContainsCategory(categoryString)
-                .assertDiagramScreenshotsMatch(expected);
+                .assertDiagramScreenshotsMatch(expected)
+                .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 
     @User(
@@ -58,7 +60,8 @@ public class ScreenshotsTest {
                 .waitingSpendingDiagramLoad()
                 .checkLegendNotContainsCategory(firstCategoryString)
                 .checkLegendContainsCategory(secondCategoryString)
-                .assertDiagramScreenshotsMatch(expected);
+                .assertDiagramScreenshotsMatch(expected)
+                .checkSpends(user.testData().spendings().get(1));
     }
 
     @User(
@@ -134,7 +137,8 @@ public class ScreenshotsTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkBubblesWithOrder(new Bubble(Color.yellow, firstCategoryString),
-                        new Bubble(Color.green, secondCategoryString));
+                        new Bubble(Color.green, secondCategoryString))
+                .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 
     @User(
@@ -155,7 +159,8 @@ public class ScreenshotsTest {
                 .login(user.username(), user.testData().password())
                 .checkBubblesInAnyOrder(
                         new Bubble(Color.green, secondCategoryString),
-                        new Bubble(Color.yellow, firstCategoryString));
+                        new Bubble(Color.yellow, firstCategoryString))
+                .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 
     @User(
@@ -172,6 +177,7 @@ public class ScreenshotsTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkBubblesContains(
-                        new Bubble(Color.yellow, firstCategoryString));
+                        new Bubble(Color.yellow, firstCategoryString))
+                .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 }
