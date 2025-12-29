@@ -1,23 +1,32 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.utils.SelenideUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 
 @ExtendWith({BrowserExtension.class})
 public class FriendsTest {
     private static final Config CFG = Config.getInstance();
+    @RegisterExtension
+    private final BrowserExtension browserExtension = new BrowserExtension();
+    private final SelenideDriver selenideDriver = new SelenideDriver(SelenideUtils.chromeConfig);
 
     @User(friends = 1)
     @Test
     void friendShouldBePresentInFriendsTable(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .checkFriend(user.testData().friends().getFirst().username());
@@ -26,7 +35,11 @@ public class FriendsTest {
     @User()
     @Test
     void friendsTableShouldBeEmptyForNewUser(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .checkFriendsEmpty();
@@ -35,7 +48,11 @@ public class FriendsTest {
     @User(incomeInvitations = 1)
     @Test
     void incomeInvitationBePresentInFriendsTable(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .checkRequest(user.testData().incomeInvitations().getFirst().username());
@@ -44,7 +61,11 @@ public class FriendsTest {
     @User(outcomeInvitations = 1)
     @Test
     void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToAllPeoplePage()
                 .checkUserWaiting(user.testData().outcomeInvitations().getFirst().username());
@@ -53,7 +74,11 @@ public class FriendsTest {
     @User(incomeInvitations = 1)
     @Test
     void acceptInvitationTest(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .acceptRequest(user.testData().incomeInvitations().getFirst().username())
@@ -64,7 +89,11 @@ public class FriendsTest {
     @User(incomeInvitations = 1)
     @Test
     void declineInvitationTest(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .declineRequest(user.testData().incomeInvitations().getFirst().username())
@@ -75,7 +104,11 @@ public class FriendsTest {
     @User(friends = 1)
     @Test
     void deleteFriendTest(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToFriendsPage()
                 .unfriend(user.testData().friends().getFirst().username())
@@ -86,7 +119,11 @@ public class FriendsTest {
     @User()
     @Test
     void createInvitationTest(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
+        browserExtension.drivers().add(selenideDriver);
+
+
+        selenideDriver.open(CFG.frontUrl());
+        new LoginPage(selenideDriver)
                 .login(user.username(), user.testData().password())
                 .goToAllPeoplePage()
                 .addFriend("TestDefaultUser")

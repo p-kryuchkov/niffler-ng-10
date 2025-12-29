@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.page.component.Calendar;
@@ -10,16 +11,28 @@ import java.io.File;
 import java.util.Date;
 
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+
 
 public class EditSpendingPage extends BasePage <EditSpendingPage>{
-    private final SelenideElement descriptionInput = $("#description");
-    private final SelenideElement amountInput = $("#amount");
-    private final SelenideElement category = $("#category");
-    private final SelenideElement calendarButton = $("[alt='Calendar']");
-    private final Calendar calendar = new Calendar($("div.MuiDateCalendar-root"));
-    private final CurrencySelector currencySelector = new CurrencySelector();
-    private final SelenideElement saveBtn = $("#save");
+    private final SelenideElement descriptionInput;
+    private final SelenideElement amountInput;
+    private final SelenideElement category;
+    private final SelenideElement calendarButton;
+    private final Calendar calendar;
+    private final CurrencySelector currencySelector;
+    private final SelenideElement saveBtn;
+
+
+    public EditSpendingPage(SelenideDriver driver) {
+        super(driver);
+        this.descriptionInput = driver.$("#description");
+        this.amountInput = driver.$("#amount");
+        this.category = driver.$("#category");
+        this.calendarButton = driver.$("[alt='Calendar']");
+        this.calendar = new Calendar(driver, driver.$("div.MuiDateCalendar-root"));
+        this.currencySelector = new CurrencySelector(driver);
+        this.saveBtn = driver.$("#save");
+    }
 
     @Step("Set amount to: {amount}")
     public EditSpendingPage setAmount(String amount) {
@@ -55,6 +68,6 @@ public class EditSpendingPage extends BasePage <EditSpendingPage>{
     @Step("Save spending")
     public MainPage save() {
         saveBtn.click();
-        return new MainPage();
+        return new MainPage(driver);
     }
 }

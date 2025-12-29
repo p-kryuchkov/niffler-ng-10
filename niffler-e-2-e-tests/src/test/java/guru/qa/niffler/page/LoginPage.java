@@ -1,18 +1,28 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.ownText;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage {
-    private final SelenideElement usernameInput = $("#username");
-    private final SelenideElement passwordInput = $("#password");
-    private final SelenideElement submitBtn = $("#login-button");
-    private final SelenideElement registerButton = $("#register-button");
-    private final SelenideElement formError = $(".form__error");
+    private final SelenideElement usernameInput;
+    private final SelenideElement passwordInput;
+    private final SelenideElement submitBtn;
+    private final SelenideElement registerButton;
+    private final SelenideElement formError;
+    private final SelenideDriver driver;
+
+    public LoginPage(SelenideDriver driver) {
+        this.usernameInput = driver.$("#username");
+        this.passwordInput = driver.$("#password");
+        this.submitBtn = driver.$("#login-button");
+        this.registerButton = driver.$("#register-button");
+        this.formError = driver.$(".form__error");
+        this.driver = driver;
+    }
 
     @Step("Submit login form")
     public LoginPage submit() {
@@ -37,13 +47,13 @@ public class LoginPage {
         usernameInput.val(username);
         passwordInput.val(password);
         submitBtn.click();
-        return new MainPage();
+        return new MainPage(driver);
     }
 
     @Step("Open registration page")
     public RegisterPage registerNewUser() {
         registerButton.click();
-        return new RegisterPage();
+        return new RegisterPage(driver);
     }
 
     @Step("Check that all login form elements are visible")

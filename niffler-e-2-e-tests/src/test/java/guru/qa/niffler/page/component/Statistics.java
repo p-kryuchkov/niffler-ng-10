@@ -1,10 +1,12 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
+
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.model.Bubble;
+import lombok.SneakyThrows;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.io.File;
@@ -12,18 +14,19 @@ import java.io.File;
 import static com.codeborne.selenide.CollectionCondition.*;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+
 import static guru.qa.niffler.condition.StatConditions.*;
 
 public class Statistics extends BaseComponent<Statistics> {
-    public Statistics() {
-        super($("#stat"));
+    public Statistics(SelenideDriver driver) {
+        super(driver, driver.$("#stat"));
     }
 
     private final ElementsCollection legendRows = self.$("#legend-container").$$("li");
-    private final SelenideElement diagram = $("canvas[role='img']");
-    public Statistics waitLoadingDiagram() {
-        Selenide.sleep(4000);
+    private final SelenideElement diagram = driver.$("canvas[role='img']");
+    @SneakyThrows
+    public Statistics waitLoadingDiagram(){
+        Thread.sleep(4000);
         diagram.shouldBe(visible);
         return this;
     }
