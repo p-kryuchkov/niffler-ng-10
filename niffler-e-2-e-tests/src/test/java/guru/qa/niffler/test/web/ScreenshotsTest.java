@@ -22,6 +22,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+//тесты будут падать в зависимоcти от браузера
 @ExtendWith(BrowserExtension.class)
 public class ScreenshotsTest {
     private static final Config CFG = Config.getInstance();
