@@ -8,7 +8,6 @@ import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.Bubble;
-import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
@@ -136,8 +135,8 @@ public class ScreenshotsTest {
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
-                .checkBubblesWithOrder(new Bubble(Color.yellow, firstCategoryString),
-                        new Bubble(Color.green, secondCategoryString))
+                .checkBubblesWithOrder(new Bubble(Color.YELLOW, firstCategoryString),
+                        new Bubble(Color.GREEN, secondCategoryString))
                 .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 
@@ -158,8 +157,8 @@ public class ScreenshotsTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkBubblesInAnyOrder(
-                        new Bubble(Color.green, secondCategoryString),
-                        new Bubble(Color.yellow, firstCategoryString))
+                        new Bubble(Color.GREEN, secondCategoryString),
+                        new Bubble(Color.YELLOW, firstCategoryString))
                 .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 
@@ -177,7 +176,7 @@ public class ScreenshotsTest {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password())
                 .checkBubblesContains(
-                        new Bubble(Color.yellow, firstCategoryString))
+                        new Bubble(Color.YELLOW, firstCategoryString))
                 .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 }
