@@ -1,9 +1,13 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.condition.Color;
+import guru.qa.niffler.model.Bubble;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.page.component.SearchField;
 import guru.qa.niffler.page.component.SpendingTable;
+import guru.qa.niffler.page.component.Statistics;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 
@@ -18,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MainPage extends BasePage<MainPage> {
     private final SelenideElement spendings = $("#spendings");
-    private final SelenideElement statistics = $("#stat");
     private final SearchField searchInput = new SearchField();
     private final Header header = new Header();
     private final SpendingTable spendingTable = new SpendingTable();
+    private final Statistics statistics = new Statistics();
 
     @Step("Open spending editor for spending with description: {description}")
     public EditSpendingPage editSpending(String description) {
@@ -42,7 +46,6 @@ public class MainPage extends BasePage<MainPage> {
 
     @Step("Check that main page elements are visible")
     public MainPage checkElements() {
-        statistics.should(visible);
         spendings.shouldBe(visible);
         return this;
     }
@@ -69,19 +72,19 @@ public class MainPage extends BasePage<MainPage> {
 
     @Step("Waiting spending diagram load")
     public MainPage waitingSpendingDiagramLoad() {
-        spendingTable.waitLoadingDiagram();
+        statistics.waitLoadingDiagram();
         return this;
     }
 
     @Step("Screenshot diagram")
     public File screenshotDiagram() {
-        return spendingTable.screenshotDiagram();
+        return statistics.screenshotDiagram();
     }
 
     @Step("Assert diagram screenshots match")
     public MainPage assertDiagramScreenshotsMatch(BufferedImage expected) {
         try {
-            assertFalse(new ScreenDiffResult(expected, ImageIO.read(screenshotDiagram())));
+            assertFalse(new ScreenDiffResult(expected, ImageIO.read(screenshotDiagram())), "Screen comparison failure");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -90,13 +93,52 @@ public class MainPage extends BasePage<MainPage> {
 
     @Step("Check category in legend")
     public MainPage checkLegendContainsCategory(String category) {
-        spendingTable.checkLegendContainsCategory(category);
+        statistics.checkLegendContainsCategory(category);
         return this;
     }
 
     @Step("Check category is not in legend")
     public MainPage checkLegendNotContainsCategory(String category) {
-        spendingTable.checkLegendNotContainsCategory(category);
+        statistics.checkLegendNotContainsCategory(category);
         return this;
+    }
+
+    @Step("Check bubbles with order under diagram")
+    public MainPage checkBubblesWithOrder(String... categories){
+        statistics.checkBubbles(getOrderedBubbles(categories));
+        return this;
+    }
+
+    @Step("Check bubbles with order under diagram")
+    public MainPage checkBubblesWithOrder(Bubble... bubbles){
+        statistics.checkBubbles(bubbles);
+        return this;
+    }
+
+    @Step("Check bubbles contains under diagram")
+    public MainPage checkBubblesContains(Bubble... bubbles){
+        statistics.checkBubblesContains(bubbles);
+        return this;
+    }
+
+    @Step("Check bubbles in any order under diagram")
+    public MainPage checkBubblesInAnyOrder(Bubble... bubbles){
+        statistics.checkBubblesInAnyOrder(bubbles);
+        return this;
+    }
+
+    @Step("Check spends in table")
+    public MainPage checkSpends(SpendJson... spends){
+        spendingTable.checkSpends(spends);
+        return this;
+    }
+
+    private Bubble[] getOrderedBubbles(String... categories){
+        Bubble[] bubbles = new Bubble[categories.length];
+        Color[] orderedColors = Color.orderedColors();
+        for (int i = 0; i < bubbles.length; i++) {
+            bubbles[i] = new Bubble(orderedColors[i], categories[i]);
+        }
+        return bubbles;
     }
 }
