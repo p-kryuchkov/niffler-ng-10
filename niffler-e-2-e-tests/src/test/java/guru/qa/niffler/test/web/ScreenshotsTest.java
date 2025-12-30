@@ -6,15 +6,18 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.ScreenshotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.jupiter.converter.Browser;
+import guru.qa.niffler.jupiter.converter.BrowserDriverConverter;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.utils.SelenideUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -24,24 +27,24 @@ public class ScreenshotsTest {
     private static final Config CFG = Config.getInstance();
     @RegisterExtension
     private final BrowserExtension browserExtension = new BrowserExtension();
-    private final SelenideDriver chrome = new SelenideDriver(SelenideUtils.chromeConfig);
-    private final SelenideDriver firefox = new SelenideDriver(SelenideUtils.chromeConfig);
 
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @User(
             spendings = @Spending(
                     amount = 1223
             ))
     @ScreenshotTest(value = "img/stat.png", rewriteExpected = false)
-    void checkStatComponentTest(UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(chrome);
-        browserExtension.drivers().add(firefox);
+    void checkStatComponentTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+            UserJson user, BufferedImage expected) throws IOException {
+        browserExtension.drivers().add(driver);
 
         String categoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().getFirst().amount().intValue());
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .waitingSpendingDiagramLoad()
                 .checkLegendContainsCategory(categoryString)
@@ -55,10 +58,12 @@ public class ScreenshotsTest {
                     @Spending(amount = 500, category = "Еда")
             }
     )
-    @Test
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @ScreenshotTest(value = "img/deletestat.png", rewriteExpected = false)
-    void checkStatComponentDeleteSpendingTest(UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(chrome);
+    void checkStatComponentDeleteSpendingTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+                                              UserJson user, BufferedImage expected) throws IOException {
+        browserExtension.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().getFirst().amount().intValue());
@@ -67,8 +72,8 @@ public class ScreenshotsTest {
                 user.testData().spendings().get(1).amount().intValue());
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .deleteSpending(user.testData().spendings().getFirst().description())
                 .waitingSpendingDiagramLoad()
@@ -84,10 +89,12 @@ public class ScreenshotsTest {
                     @Spending(amount = 100, category = "Учеба")
             }
     )
-    @Test
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @ScreenshotTest(value = "img/editstat.png", rewriteExpected = false)
-    void checkStatComponentEditSpendingTest(UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(chrome);
+    void checkStatComponentEditSpendingTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+                                            UserJson user, BufferedImage expected) throws IOException {
+        browserExtension.drivers().add(driver);
 
         String newAmount = "333";
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
@@ -97,8 +104,8 @@ public class ScreenshotsTest {
                 user.testData().spendings().get(1).amount().intValue());
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .editSpending(user.testData().spendings().getFirst().description())
                 .setAmount(newAmount)
@@ -115,14 +122,16 @@ public class ScreenshotsTest {
                     @Spending(amount = 100, category = "Учеба")
             }
     )
-    @Test
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @ScreenshotTest(value = "img/archivestat.png", rewriteExpected = false)
-    void checkStatComponentArchiveTest(UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(chrome);
+    void checkStatComponentArchiveTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+                                       UserJson user, BufferedImage expected) throws IOException {
+        browserExtension.drivers().add(driver);
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .editProfile()
                 .archiveCategory(user.testData().spendings().getFirst().category().name())
@@ -131,30 +140,35 @@ public class ScreenshotsTest {
                 .assertDiagramScreenshotsMatch(expected);
     }
 
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @User()
     @ScreenshotTest(value = "img/avatar.png", rewriteExpected = false)
         //Тест падает всегда из-за того что после загрузки аватара меняется немного цвет, писал в чат ответа не получил
-    void checkAvatarTest(UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(chrome);
+    void checkAvatarTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+                         UserJson user, BufferedImage expected) throws IOException {
+        browserExtension.drivers().add(driver);
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .editProfile()
                 .uploadPicture(expected)
                 .assertAvatarScreenshotsMatch(expected);
     }
 
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @User(
             spendings = {
                     @Spending(amount = 1223, category = "Путешествия"),
                     @Spending(amount = 100, category = "Учеба")
             }
     )
-    @Test
-    void checkOrderedBubbles(UserJson user) throws IOException {
-        browserExtension.drivers().add(chrome);
+    void checkOrderedBubbles(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+                             UserJson user) throws IOException {
+        browserExtension.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().get(0).amount().intValue());
@@ -163,23 +177,25 @@ public class ScreenshotsTest {
                 user.testData().spendings().get(1).amount().intValue());
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .checkBubblesWithOrder(new Bubble(Color.yellow, firstCategoryString),
                         new Bubble(Color.green, secondCategoryString))
                 .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @User(
             spendings = {
                     @Spending(amount = 1223, category = "Путешествия"),
                     @Spending(amount = 100, category = "Учеба")
             }
     )
-    @Test
-    void checkBubblesInAnyOrder(UserJson user) throws IOException {
-        browserExtension.drivers().add(chrome);
+    void checkBubblesInAnyOrder(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+                                UserJson user) throws IOException {
+        browserExtension.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().get(0).amount().intValue());
@@ -188,8 +204,8 @@ public class ScreenshotsTest {
                 user.testData().spendings().get(1).amount().intValue());
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .checkBubblesInAnyOrder(
                         new Bubble(Color.green, secondCategoryString),
@@ -197,22 +213,24 @@ public class ScreenshotsTest {
                 .checkSpends(user.testData().spendings().toArray(SpendJson[]::new));
     }
 
+    @ParameterizedTest
+    @EnumSource(Browser.class)
     @User(
             spendings = {
                     @Spending(amount = 1223, category = "Путешествия"),
                     @Spending(amount = 100, category = "Учеба")
             }
     )
-    @Test
-    void checkBubblesContains(UserJson user) throws IOException {
-        browserExtension.drivers().add(chrome);
+    void checkBubblesContains(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
+                              UserJson user) throws IOException {
+        browserExtension.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s ₽", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().getFirst().amount().intValue());
 
 
-        chrome.open(CFG.frontUrl());
-        new LoginPage(chrome)
+        driver.open(CFG.frontUrl());
+        new LoginPage(driver)
                 .login(user.username(), user.testData().password())
                 .checkBubblesContains(
                         new Bubble(Color.yellow, firstCategoryString))
