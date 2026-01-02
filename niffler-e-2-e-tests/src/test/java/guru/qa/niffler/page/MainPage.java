@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.model.Bubble;
@@ -17,15 +18,25 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MainPage extends BasePage<MainPage> {
-    private final SelenideElement spendings = $("#spendings");
-    private final SearchField searchInput = new SearchField();
-    private final Header header = new Header();
-    private final SpendingTable spendingTable = new SpendingTable();
-    private final Statistics statistics = new Statistics();
+    private final SelenideElement spendings;
+    private final SearchField searchInput;
+    private final Header header;
+    private final SpendingTable spendingTable;
+    private final Statistics statistics;
+    private final SelenideDriver driver;
+
+    public MainPage(SelenideDriver driver) {
+        super(driver);
+        this.driver = driver;
+        this.spendings = driver.$("#spendings");
+        this.searchInput = new SearchField(driver);
+        this.header = new Header(driver);
+        this.spendingTable = new SpendingTable(driver);
+        this.statistics = new Statistics(driver);
+    }
 
     @Step("Open spending editor for spending with description: {description}")
     public EditSpendingPage editSpending(String description) {

@@ -1,13 +1,13 @@
 package guru.qa.niffler.page.component;
 
+import com.codeborne.selenide.SelenideDriver;
 import org.openqa.selenium.Keys;
 
-import static com.codeborne.selenide.Selenide.$;
 
 public class SearchField extends BaseComponent<SearchField> {
 
-    public SearchField() {
-        super($("[aria-label=\"search\"]"));
+    public SearchField(SelenideDriver driver) {
+        super(driver, driver.$("[aria-label=\"search\"]"));
     }
 
     private SearchField clearIfNotEmpty() {
