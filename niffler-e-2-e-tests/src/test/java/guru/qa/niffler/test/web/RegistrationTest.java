@@ -1,9 +1,8 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.SelenideConfig;
 import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.extension.StaticBrowserExtension;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.utils.SelenideUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -13,18 +12,18 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Random;
 
-@ExtendWith(BrowserExtension.class)
+@ExtendWith(StaticBrowserExtension.class)
 public class RegistrationTest {
     private static final Config CFG = Config.getInstance();
 
     @RegisterExtension
-    private final BrowserExtension browserExtension = new BrowserExtension();
+    private final StaticBrowserExtension staticBrowserExtension = new StaticBrowserExtension();
     private final SelenideDriver selenideDriver = new SelenideDriver(SelenideUtils.chromeConfig);
 
     @Test
     @DisplayName("Успешная регистрация нового пользователя")
     void shouldRegisterNewUser() {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
         final String username = "testRegisterUser" + new Random().nextInt(999);
         final String password = String.valueOf(new Random().nextInt(100000, 1000000));
 
@@ -45,7 +44,7 @@ public class RegistrationTest {
     @Test
     @DisplayName("Ошибка регистрации существующего пользователя")
     void shouldNotRegisterUserWithExistingUsername() {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
         final String username = "Olduser";
         final String password = "54321";
@@ -64,7 +63,7 @@ public class RegistrationTest {
     @Test
     @DisplayName("Ошибка при несовпадении пароля и подтверждения")
     void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual() {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
         final String username = "testRegisterUser" + new Random().nextInt(999);
         final String password = String.valueOf(new Random().nextInt(100000, 1000000));
@@ -83,7 +82,7 @@ public class RegistrationTest {
     @Test
     @DisplayName("Успешный логин существующего пользователя")
     void mainPageShouldBeDisplayedAfterSuccessLogin() {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
         final String username = "TestDefaultUser";
         final String password = "12345";
@@ -99,7 +98,7 @@ public class RegistrationTest {
     @Test
     @DisplayName("Ошибка при логине с некорректными данными")
     void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
         final String username = "Testuser";
 

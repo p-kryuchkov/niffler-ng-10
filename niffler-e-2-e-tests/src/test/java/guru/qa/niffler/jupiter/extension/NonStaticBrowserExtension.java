@@ -14,7 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BrowserExtension implements
+public class NonStaticBrowserExtension implements
         BeforeEachCallback,
         AfterEachCallback,
         TestExecutionExceptionHandler,

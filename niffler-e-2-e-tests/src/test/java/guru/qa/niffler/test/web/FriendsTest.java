@@ -3,7 +3,7 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.extension.StaticBrowserExtension;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.utils.SelenideUtils;
@@ -12,17 +12,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 
-@ExtendWith({BrowserExtension.class})
+@ExtendWith({StaticBrowserExtension.class})
 public class FriendsTest {
     private static final Config CFG = Config.getInstance();
     @RegisterExtension
-    private final BrowserExtension browserExtension = new BrowserExtension();
+    private final StaticBrowserExtension staticBrowserExtension = new StaticBrowserExtension();
     private final SelenideDriver selenideDriver = new SelenideDriver(SelenideUtils.chromeConfig);
 
     @User(friends = 1)
     @Test
     void friendShouldBePresentInFriendsTable(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());
@@ -35,7 +35,7 @@ public class FriendsTest {
     @User()
     @Test
     void friendsTableShouldBeEmptyForNewUser(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());
@@ -48,7 +48,7 @@ public class FriendsTest {
     @User(incomeInvitations = 1)
     @Test
     void incomeInvitationBePresentInFriendsTable(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());
@@ -61,7 +61,7 @@ public class FriendsTest {
     @User(outcomeInvitations = 1)
     @Test
     void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());
@@ -74,7 +74,7 @@ public class FriendsTest {
     @User(incomeInvitations = 1)
     @Test
     void acceptInvitationTest(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());
@@ -89,7 +89,7 @@ public class FriendsTest {
     @User(incomeInvitations = 1)
     @Test
     void declineInvitationTest(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());
@@ -104,7 +104,7 @@ public class FriendsTest {
     @User(friends = 1)
     @Test
     void deleteFriendTest(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());
@@ -119,7 +119,7 @@ public class FriendsTest {
     @User()
     @Test
     void createInvitationTest(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());

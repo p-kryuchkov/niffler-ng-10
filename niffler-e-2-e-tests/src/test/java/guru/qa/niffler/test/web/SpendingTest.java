@@ -4,7 +4,7 @@ import com.codeborne.selenide.SelenideDriver;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.extension.StaticBrowserExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
@@ -17,13 +17,13 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-@ExtendWith(BrowserExtension.class)
+@ExtendWith(StaticBrowserExtension.class)
 public class SpendingTest {
 
     private static final Config CFG = Config.getInstance();
 
     @RegisterExtension
-    private final BrowserExtension browserExtension = new BrowserExtension();
+    private final StaticBrowserExtension staticBrowserExtension = new StaticBrowserExtension();
     private final SelenideDriver selenideDriver = new SelenideDriver(SelenideUtils.chromeConfig);
 
     @User(
@@ -33,7 +33,7 @@ public class SpendingTest {
             ))
     @Test
     void spendingDescriptionShouldBeEditedByTableAction(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
         final String newDescription = "Обучение Niffler Next Generation";
 
@@ -51,7 +51,7 @@ public class SpendingTest {
     @User()
     @Test
     void createNewSpendingTest(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
         Date spendingDate = Date.from(LocalDate.of(2025, 12, 11)
                 .atStartOfDay(ZoneId.systemDefault())
@@ -81,7 +81,7 @@ public class SpendingTest {
             ))
     @Test
     void deleteSpending(UserJson user) {
-        browserExtension.drivers().add(selenideDriver);
+        staticBrowserExtension.drivers().add(selenideDriver);
 
 
         selenideDriver.open(CFG.frontUrl());

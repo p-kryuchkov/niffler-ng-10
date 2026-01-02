@@ -8,7 +8,7 @@ import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.converter.Browser;
 import guru.qa.niffler.jupiter.converter.BrowserDriverConverter;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.extension.StaticBrowserExtension;
 import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
@@ -23,11 +23,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 //тесты будут падать в зависимоcти от браузера
-@ExtendWith(BrowserExtension.class)
+@ExtendWith(StaticBrowserExtension.class)
 public class ScreenshotsTest {
     private static final Config CFG = Config.getInstance();
     @RegisterExtension
-    private final BrowserExtension browserExtension = new BrowserExtension();
+    private static final StaticBrowserExtension STATIC_BROWSER_EXTENSION = new StaticBrowserExtension();
 
     @ParameterizedTest
     @EnumSource(Browser.class)
@@ -38,7 +38,7 @@ public class ScreenshotsTest {
     @ScreenshotTest(value = "img/stat.png", rewriteExpected = false)
     void checkStatComponentTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
             UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
         String categoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().getFirst().amount().intValue());
@@ -64,7 +64,7 @@ public class ScreenshotsTest {
     @ScreenshotTest(value = "img/deletestat.png", rewriteExpected = false)
     void checkStatComponentDeleteSpendingTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
                                               UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().getFirst().amount().intValue());
@@ -95,7 +95,7 @@ public class ScreenshotsTest {
     @ScreenshotTest(value = "img/editstat.png", rewriteExpected = false)
     void checkStatComponentEditSpendingTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
                                             UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
         String newAmount = "333";
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
@@ -128,7 +128,7 @@ public class ScreenshotsTest {
     @ScreenshotTest(value = "img/archivestat.png", rewriteExpected = false)
     void checkStatComponentArchiveTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
                                        UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
 
         driver.open(CFG.frontUrl());
@@ -148,7 +148,7 @@ public class ScreenshotsTest {
         //Тест падает всегда из-за того что после загрузки аватара меняется немного цвет, писал в чат ответа не получил
     void checkAvatarTest(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
                          UserJson user, BufferedImage expected) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
 
         driver.open(CFG.frontUrl());
@@ -169,7 +169,7 @@ public class ScreenshotsTest {
     )
     void checkOrderedBubbles(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
                              UserJson user) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().get(0).amount().intValue());
@@ -196,7 +196,7 @@ public class ScreenshotsTest {
     )
     void checkBubblesInAnyOrder(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
                                 UserJson user) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().get(0).amount().intValue());
@@ -224,7 +224,7 @@ public class ScreenshotsTest {
     )
     void checkBubblesContains(@ConvertWith(BrowserDriverConverter.class) SelenideDriver driver,
                               UserJson user) throws IOException {
-        browserExtension.drivers().add(driver);
+        STATIC_BROWSER_EXTENSION.drivers().add(driver);
 
         String firstCategoryString = String.format("%s %s ₽", user.testData().spendings().getFirst().category().name(),
                 user.testData().spendings().getFirst().amount().intValue());
