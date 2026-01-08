@@ -1,13 +1,18 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.api.AuthApi;
+import guru.qa.niffler.api.core.CodeInterceptor;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
-import org.apache.commons.lang3.StringUtils;
+import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
+import lombok.SneakyThrows;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+
+import static guru.qa.niffler.utils.OauthUtils.generateCodeChallenge;
+import static guru.qa.niffler.utils.OauthUtils.generateCodeVerifier;
 
 public class AuthApiClient extends RestClient {
     private final AuthApi authApi;
@@ -23,8 +28,17 @@ public class AuthApiClient extends RestClient {
 
 
     public AuthApiClient() {
-        super(CFG.authUrl(), true);
+        super(CFG.authUrl(), true, new CodeInterceptor());
         this.authApi = create(AuthApi.class);
+    }
+
+    @SneakyThrows
+    public String apiLogin(@Nonnull String username, @Nonnull String password) {
+        final String codeVerifier = generateCodeVerifier();
+        final String codeChallenge = generateCodeChallenge(codeVerifier);
+        authorize(codeChallenge);
+        login(username, password);
+        return getToken(ApiLoginExtension.getCode(), codeVerifier);
     }
 
     @Nonnull
@@ -38,7 +52,7 @@ public class AuthApiClient extends RestClient {
         ).execute();
     }
 
-    public void authorize(String codeChallenge) throws IOException {
+    private void authorize(String codeChallenge) throws IOException {
         authApi.authorize(RESPONSE_TYPE,
                         CLIENT_ID,
                         SCOPE,
@@ -48,16 +62,16 @@ public class AuthApiClient extends RestClient {
                 .execute();
     }
 
-    public String login(@Nonnull String username, @Nonnull String password) throws IOException {
-        return StringUtils.substringAfter(authApi.login(
+    private void login(@Nonnull String username, @Nonnull String password) throws IOException {
+        authApi.login(
                         ThreadSafeCookieStore.INSTANCE.xsrfCookie(),
                         username,
                         password
                 )
-                .execute().raw().request().url().toString(), "code=");
+                .execute();
     }
 
-    public String getToken(@Nonnull String code, String codeVerifier) throws IOException {
+    private String getToken(@Nonnull String code, String codeVerifier) throws IOException {
         return authApi.token(code, REDIRECT_URI, codeVerifier, GRANT_TYPE, CLIENT_ID).execute().body().path("id_token").asText();
     }
 }

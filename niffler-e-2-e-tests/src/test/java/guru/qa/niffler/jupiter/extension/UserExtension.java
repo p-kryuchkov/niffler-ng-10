@@ -1,7 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.model.StaticUser;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersClient;
@@ -62,12 +61,20 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
     @Override
     public UserJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
             ParameterResolutionException {
-        return createdUser().orElseThrow();
+        return getUser().orElseThrow();
     }
 
-    public static Optional<UserJson> createdUser() {
+    public static Optional<UserJson> getUser() {
         final ExtensionContext methodContext = context();
         return Optional.ofNullable(methodContext.getStore(NAMESPACE)
                 .get(methodContext.getUniqueId(), UserJson.class));
+    }
+
+    public static void setUser(UserJson userJson) {
+        final ExtensionContext methodContext = context();
+        methodContext.getStore(NAMESPACE).put(
+                methodContext.getUniqueId(),
+                userJson
+        );
     }
 }

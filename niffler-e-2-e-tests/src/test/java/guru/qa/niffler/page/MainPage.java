@@ -21,6 +21,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MainPage extends BasePage<MainPage> {
+    public static final String URL = CFG.frontUrl() + "main";
     private final SelenideElement spendings = $("#spendings");
     private final SearchField searchInput = new SearchField();
     private final Header header = new Header();
