@@ -5,8 +5,6 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
-import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.service.UsersApiClient;
 import guru.qa.niffler.service.UsersClient;
@@ -24,7 +22,7 @@ public class ProfileTest {
     public void changeInfoTest() {
 
         String name = "ИмяТест";
-      ProfilePage profilePage = Selenide.open(ProfilePage.URL, ProfilePage.class)
+        ProfilePage profilePage = Selenide.open(ProfilePage.URL, ProfilePage.class)
                 .setName(name)
                 .clickSaveChanges()
                 .checkSnackbarText("Profile successfully updated")

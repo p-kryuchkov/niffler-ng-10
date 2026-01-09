@@ -10,6 +10,9 @@ import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.service.AuthApiClient;
+import guru.qa.niffler.service.SpendApiClient;
+import guru.qa.niffler.service.UsersApiClient;
+import jaxb.userdata.FriendshipStatus;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
@@ -19,6 +22,8 @@ import java.util.Optional;
 public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ApiLoginExtension.class);
     private final AuthApiClient authApiClient = new AuthApiClient();
+    private final SpendApiClient spendApiClient = new SpendApiClient();
+    private final UsersApiClient usersApiClient = new UsersApiClient();
     private static final Config CFG = Config.getInstance();
     private final boolean setupBrowser;
 
@@ -49,9 +54,17 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
                         UserJson fakeUser = new UserJson(
                                 apiLogin.username(),
                                 new TestData(
-                                        apiLogin.password()
-                                )
+                                        apiLogin.password())
                         );
+                        final TestData testData = new TestData(
+                                fakeUser.testData().password(),
+                                usersApiClient.getFriends(fakeUser).stream().filter(friend -> FriendshipStatus.INVITE_RECEIVED.equals(friend.friendshipStatus())).toList(),
+                                usersApiClient.getAll(fakeUser).stream().filter(friend -> FriendshipStatus.INVITE_SENT.equals(friend.friendshipStatus())).toList(),
+                                usersApiClient.getFriends(fakeUser).stream().filter(friend -> FriendshipStatus.FRIEND.equals(friend.friendshipStatus())).toList(),
+                                spendApiClient.getAllCategories(apiLogin.username(), true),
+                                spendApiClient.getAllSpends(apiLogin.username(), null, null, null
+                                ));
+                        fakeUser = fakeUser.addTestData(testData);
                         if (userFromUserExtension.isPresent()) {
                             throw new IllegalStateException("@User must not be present in case that @ApiLogin contains username or password");
                         }
