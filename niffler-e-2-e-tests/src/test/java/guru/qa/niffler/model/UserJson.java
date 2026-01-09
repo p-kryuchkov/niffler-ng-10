@@ -7,6 +7,7 @@ import guru.qa.niffler.data.entity.user.UserEntity;
 import jaxb.userdata.FriendshipStatus;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -32,6 +33,10 @@ public record UserJson(
         FriendshipStatus friendshipStatus,
         @JsonIgnore
         TestData testData) {
+
+    public UserJson(@Nonnull String username, @Nullable TestData testdata) {
+        this(null, username, null, null, null, null, null, null, null, testdata);
+    }
 
     @Nonnull
     public static UserJson fromEntity(@Nonnull UserEntity entity, @Nonnull FriendshipStatus friendshipStatus) {

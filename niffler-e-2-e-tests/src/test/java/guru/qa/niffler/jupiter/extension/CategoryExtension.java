@@ -7,7 +7,6 @@ import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.SpendClient;
 import guru.qa.niffler.service.SpendDbClient;
-import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -33,7 +32,7 @@ public class CategoryExtension implements
                 .ifPresent(userAnno -> {
                     if (ArrayUtils.isNotEmpty(userAnno.categories())) {
 
-                        Optional<UserJson> testUser = UserExtension.createdUser();
+                        Optional<UserJson> testUser = UserExtension.getUser();
                         final String username = testUser.isPresent()
                                 ? testUser.get().username()
                                 : userAnno.username();
