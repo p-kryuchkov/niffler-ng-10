@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@ExtendWith({UserExtension.class, ApiLoginExtension.class})
 public @interface ApiLogin {
     String username() default "";
     String password() default "";
