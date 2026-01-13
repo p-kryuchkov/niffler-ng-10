@@ -1,19 +1,30 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.ownText;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 
 public class RegisterPage {
-    private final SelenideElement usernameInput = $("#username");
-    private final SelenideElement passwordInput = $("#password");
-    private final SelenideElement passwordSubmitInput = $("#passwordSubmit");
-    private final SelenideElement registerButton = $("#register-button");
-    private final SelenideElement signInButton = $(".form_sign-in");
-    private final SelenideElement formError = $(".form__error");
+    private final SelenideElement usernameInput;
+    private final SelenideElement passwordInput;
+    private final SelenideElement passwordSubmitInput;
+    private final SelenideElement registerButton;
+    private final SelenideElement signInButton;
+    private final SelenideElement formError;
+    private final SelenideDriver driver;
+
+    public RegisterPage(SelenideDriver driver) {
+        this.usernameInput = driver.$("#username");
+        this.passwordInput =  driver.$("#password");
+        this.passwordSubmitInput =  driver.$("#passwordSubmit");
+        this.registerButton =  driver.$("#register-button");
+        this.signInButton =  driver.$(".form_sign-in");
+        this.formError =  driver.$(".form__error");
+        this.driver = driver;
+    }
 
     @Step("Set username: {username}")
     public RegisterPage setUsername(String username) {
@@ -42,7 +53,7 @@ public class RegisterPage {
     @Step("Click 'Sign in' and go to Login page")
     public LoginPage signIn() {
         signInButton.click();
-        return new LoginPage();
+        return new LoginPage(driver);
     }
 
     @Step("Check form error message: {errorText}")

@@ -3,6 +3,7 @@ package guru.qa.niffler.jupiter.annotation;
 import guru.qa.niffler.jupiter.extension.ScreenshotTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @ExtendWith(ScreenshotTestExtension.class)
-@Test
+@ParameterizedTest
 public @interface ScreenshotTest {
     String value();
     boolean rewriteExpected() default false;

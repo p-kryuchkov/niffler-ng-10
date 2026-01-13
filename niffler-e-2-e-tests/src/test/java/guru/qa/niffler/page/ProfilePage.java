@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ClickOptions;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.utils.ScreenDiffResult;
@@ -12,26 +13,39 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ProfilePage extends BasePage<ProfilePage> {
-    private final SelenideElement avatar = $(".MuiAvatar-img");
-    private final SelenideElement uploadPictureButton = $("input[type='file']");
-    private final SelenideElement registerPassKey = $("#:r11:");
-    private final SelenideElement usernameInput = $("#username");
-    private final SelenideElement nameInput = $("#name");
-    private final SelenideElement saveChangesButton = $("[type=submit]");
-    private final SelenideElement showArchivedCategoriesCheckbox = $x("//span[contains(text(),'Show archived')]/..//input[@type='checkbox']");
-    private final SelenideElement addNewCategoryInput = $("#category");
-    private final SelenideElement submitArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Archive']");
-    private final SelenideElement submitUnArchive = $x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unarchive']");
-    private final Header header = new Header();
+    private final SelenideElement avatar;
+    private final SelenideElement uploadPictureButton;
+    private final SelenideElement registerPassKey;
+    private final SelenideElement usernameInput;
+    private final SelenideElement nameInput;
+    private final SelenideElement saveChangesButton;
+    private final SelenideElement showArchivedCategoriesCheckbox;
+    private final SelenideElement addNewCategoryInput;
+    private final SelenideElement submitArchive;
+    private final SelenideElement submitUnArchive;
+    private final Header header;
+
+    public ProfilePage(SelenideDriver driver) {
+        super(driver);
+        this.avatar = driver.$(".MuiAvatar-img");
+        this.uploadPictureButton = driver.$("input[type='file']");
+        this.registerPassKey = driver.$("#:r11:");
+        this.usernameInput = driver.$("#username");
+        this.nameInput = driver.$("#name");
+        this.saveChangesButton = driver.$("[type=submit]");
+        this.showArchivedCategoriesCheckbox = driver.$x("//span[contains(text(),'Show archived')]/..//input[@type='checkbox']");
+        this.addNewCategoryInput = driver.$("#category");
+        this.submitArchive = driver.$x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Archive']");
+        this.submitUnArchive = driver.$x("//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Unarchive']");
+        this.header = new Header(driver);
+    }
 
     @Step("Find category element: {category}")
     private SelenideElement findCategory(String category) {
-        return $x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
+        return driver.$x("//span[contains(@class,'MuiChip-label') and text()='" + category + "']/ancestor::*[2]");
     }
 
     @Step("Find edit button for category: {category}")

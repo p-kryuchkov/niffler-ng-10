@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
@@ -8,21 +9,30 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byXpath;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
 public class AllPeoplePage extends BasePage <AllPeoplePage>{
-    private final SelenideElement friendsTab = $("a[href='/people/friends']");
-    private final SearchField searchInput = new SearchField();
-    private final ElementsCollection peopleTableRows = $$("#all tr");
-    private final SelenideElement pageNextButton = $("#page-next");
-    private final SelenideElement pagePreviousButton = $("#page-prev");
+    private final SelenideElement friendsTab;
+    private final SearchField searchInput;
+    private final ElementsCollection peopleTableRows;
+    private final SelenideElement pageNextButton;
+    private final SelenideElement pagePreviousButton;
+    private final SelenideDriver driver;
+
+    public AllPeoplePage(SelenideDriver driver) {
+        super(driver);
+        this.driver = driver;
+        this.friendsTab = driver.$("a[href='/people/friends']");
+        this.searchInput = new SearchField(driver);
+        this.peopleTableRows = driver.$$("#all tr");
+        this.pageNextButton = driver.$("#page-next");
+        this.pagePreviousButton = driver.$("#page-prev");
+    }
 
     private static final String addFriendButtonXpath = ".//button[contains(@class,'MuiButtonBase-root') and normalize-space(text())='Add friend']";
 
     public FriendsPage switchToFriendsTab() {
         friendsTab.click();
-        return new FriendsPage();
+        return new FriendsPage(driver);
     }
 
     @Step("Search value {searchValue}")

@@ -1,6 +1,7 @@
 package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 
 import javax.annotation.Nonnull;
@@ -10,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Calendar extends BaseComponent<Calendar> {
@@ -24,15 +24,15 @@ public class Calendar extends BaseComponent<Calendar> {
     private final ElementsCollection yearButtons;
 
 
-    public Calendar(SelenideElement self) {
-        super(self);
+    public Calendar(SelenideDriver driver, SelenideElement self) {
+        super(driver, self);
         this.currentMonthAndYear = self.$("div.MuiPickersCalendarHeader-label");
         this.switchToYearViewButton = self.$("[aria-label='calendar view is open, switch to year view']");
         this.arrowLeftButton = self.$("[data-testid='ArrowLeftIcon']");
         this.arrowRightButton = self.$("[data-testid='ArrowRightIcon']");
         this.dayButtons = self.$$("button.MuiButtonBase-root");
         this.yearButtons = self.$$("button.MuiPickersYear-yearButton");
-        this.dateField = $("input[name='date']");
+        this.dateField = driver.$("input[name='date']");
     }
 
     public Calendar selectDateInCalendar(@Nonnull Date date) {

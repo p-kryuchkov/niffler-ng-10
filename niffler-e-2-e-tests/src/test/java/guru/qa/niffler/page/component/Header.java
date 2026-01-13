@@ -1,57 +1,67 @@
 package guru.qa.niffler.page.component;
 
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.*;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.$;
 
 public class Header extends BaseComponent<Header> {
-    private final SelenideElement mainPageButton = self.$("a[href='/main']");
-    private final SelenideElement addSpendingButton = self.$("a[href='/spending']");
-    private final SelenideElement personIcon = self.$("[data-testid='PersonIcon']");
-    private final SelenideElement menu = $("[role='menu']");
-    private final SelenideElement profileButton = menu.$("a[href='/profile']");
-    private final SelenideElement friendsButton = menu.$("a[href='/people/friends']");
-    private final SelenideElement allPeopleButton = menu.$("a[href='/people/all']");
-    private final SelenideElement signOutButton = menu.$(byText("Sign out"));
+    private final SelenideElement mainPageButton;
+    private final SelenideElement addSpendingButton;
+    private final SelenideElement personIcon;
+    private final SelenideElement menu;
+    private final SelenideElement profileButton;
+    private final SelenideElement friendsButton;
+    private final SelenideElement allPeopleButton;
+    private final SelenideElement signOutButton;
+    private final SelenideDriver driver;
 
-    public Header() {
-        super($("#root header"));
+    public Header(SelenideDriver driver) {
+        super(driver, driver.$("#root header"));
+        this.driver = driver;
+        this.mainPageButton = self.$("a[href='/main']");
+        this.addSpendingButton = self.$("a[href='/spending']");
+        this.personIcon = self.$("[data-testid='PersonIcon']");
+        this.menu = driver.$("[role='menu']");
+        this.profileButton = menu.$("a[href='/profile']");
+        this.friendsButton = menu.$("a[href='/people/friends']");
+        this.allPeopleButton = menu.$("a[href='/people/all']");
+        this.signOutButton = menu.$(byText("Sign out"));
     }
 
     public FriendsPage toFriendsPage() {
         personIcon.shouldBe(visible).click();
         friendsButton.shouldBe(visible).click();
-        return new FriendsPage();
+        return new FriendsPage(driver);
     }
 
     public AllPeoplePage toAllPeoplesPage() {
         personIcon.shouldBe(visible).click();
         allPeopleButton.shouldBe(visible).click();
-        return new AllPeoplePage();
+        return new AllPeoplePage(driver);
     }
 
     public ProfilePage toProfilePage() {
         personIcon.shouldBe(visible).click();
         profileButton.shouldBe(visible).click();
-        return new ProfilePage();
+        return new ProfilePage(driver);
     }
 
     public LoginPage signOut() {
         personIcon.shouldBe(visible).click();
         signOutButton.shouldBe(visible).click();
-        return new LoginPage();
+        return new LoginPage(driver);
     }
 
     public EditSpendingPage addSpendingPage() {
         addSpendingButton.shouldBe(visible).click();
-        return new EditSpendingPage();
+        return new EditSpendingPage(driver);
     }
 
     public MainPage toMainPage() {
         mainPageButton.shouldBe(visible).click();
-        return new MainPage();
+        return new MainPage(driver);
     }
 }
