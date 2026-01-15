@@ -17,6 +17,8 @@ import static com.codeborne.selenide.Selenide.$x;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ProfilePage extends BasePage<ProfilePage> {
+    public static final String URL = CFG.frontUrl() + "profile";
+
     private final SelenideElement avatar = $(".MuiAvatar-img");
     private final SelenideElement uploadPictureButton = $("input[type='file']");
     private final SelenideElement registerPassKey = $("#:r11:");

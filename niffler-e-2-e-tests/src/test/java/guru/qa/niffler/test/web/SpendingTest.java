@@ -2,6 +2,7 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.ScreenshotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
@@ -9,6 +10,7 @@ import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,12 +35,12 @@ public class SpendingTest {
                     amount = 89900,
                     currency = CurrencyValues.RUB
             ))
+    @ApiLogin
     @Test
     void spendingDescriptionShouldBeEditedByTableAction(UserJson user) {
         final String newDescription = "Обучение Niffler Next Generation";
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .editSpending(user.testData().spendings().getFirst().description())
                 .setNewSpendingDescription(newDescription)
                 .save()
@@ -47,6 +49,7 @@ public class SpendingTest {
     }
 
     @User()
+    @ApiLogin
     @Test
     void createNewSpendingTest(UserJson user) {
         Date spendingDate = Date.from(LocalDate.of(2025, 12, 11)
@@ -56,8 +59,7 @@ public class SpendingTest {
         String description = "Обучение Niffler Next Generation";
         String amount = "3453";
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .addSpending()
                 .addNewCategory(categoryName)
                 .setCurrency(CurrencyValues.RUB)
@@ -73,10 +75,10 @@ public class SpendingTest {
             spendings = @Spending(
                     amount = 1223
             ))
+    @ApiLogin
     @Test
     void deleteSpending(UserJson user) {
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login(user.username(), user.testData().password())
+        Selenide.open(MainPage.URL, MainPage.class)
                 .deleteSpending(user.testData().spendings().getFirst().description())
                 .checkSnackbarText("Spendings succesfully deleted");
     }

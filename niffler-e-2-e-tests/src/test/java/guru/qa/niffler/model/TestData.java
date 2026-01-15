@@ -1,7 +1,10 @@
 package guru.qa.niffler.model;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 public record TestData(String password,
                        List<UserJson> incomeInvitations,
                        List<UserJson> outcomeInvitations,
@@ -9,4 +12,7 @@ public record TestData(String password,
                        List<CategoryJson> categories,
                        List<SpendJson> spendings
 ) {
+    public TestData(@Nonnull String password) {
+        this(password, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    }
 }

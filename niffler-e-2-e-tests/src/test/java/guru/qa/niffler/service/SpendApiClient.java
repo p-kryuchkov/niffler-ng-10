@@ -120,6 +120,20 @@ public class SpendApiClient extends  RestClient implements SpendClient {
         return requireNonNull(response.body()) != null ? response.body() : Collections.emptyList();
     }
 
+    @Step("Get all categories for user '{username}' with filters: excludeArchived={excludeArchived}")
+    @Nonnull
+    public List<CategoryJson> getAllCategories(String username,
+                                        boolean excludeArchived) {
+        final Response<List<CategoryJson>> response;
+        try {
+            response = spendApi.getAllCategories(username, excludeArchived).execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return requireNonNull(response.body()) != null ? response.body() : Collections.emptyList();
+    }
+
     @Step("Edit spend: {spend}")
     @Nullable
     public SpendJson editSpend(SpendJson spend) {

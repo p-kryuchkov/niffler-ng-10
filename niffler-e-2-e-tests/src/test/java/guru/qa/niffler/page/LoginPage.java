@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.config.Config;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.ownText;
@@ -8,6 +9,9 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage {
+    protected static final Config CFG = Config.getInstance();
+    public static final String URL = CFG.authUrl() + "login";
+
     private final SelenideElement usernameInput = $("#username");
     private final SelenideElement passwordInput = $("#password");
     private final SelenideElement submitBtn = $("#login-button");
