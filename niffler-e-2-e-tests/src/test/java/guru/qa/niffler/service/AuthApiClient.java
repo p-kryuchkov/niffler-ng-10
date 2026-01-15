@@ -5,7 +5,6 @@ import guru.qa.niffler.api.core.CodeInterceptor;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
-import lombok.SneakyThrows;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
@@ -32,13 +31,17 @@ public class AuthApiClient extends RestClient {
         this.authApi = create(AuthApi.class);
     }
 
-    @SneakyThrows
+
     public String apiLogin(@Nonnull String username, @Nonnull String password) {
         final String codeVerifier = generateCodeVerifier();
         final String codeChallenge = generateCodeChallenge(codeVerifier);
-        authorize(codeChallenge);
-        login(username, password);
-        return getToken(ApiLoginExtension.getCode(), codeVerifier);
+        try {
+            authorize(codeChallenge);
+            login(username, password);
+            return getToken(ApiLoginExtension.getCode(), codeVerifier);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Nonnull
