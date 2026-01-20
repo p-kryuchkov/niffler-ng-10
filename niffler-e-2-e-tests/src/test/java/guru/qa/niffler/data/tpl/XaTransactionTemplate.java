@@ -24,7 +24,8 @@ public class XaTransactionTemplate {
         return this;
     }
 
-    public @Nullable <T> T execute(Supplier<T>... actions) {
+    @Nullable
+    public <T> T execute(Supplier<T>... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
             ut.begin();

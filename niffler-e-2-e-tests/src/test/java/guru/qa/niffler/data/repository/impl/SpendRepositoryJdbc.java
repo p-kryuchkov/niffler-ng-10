@@ -28,11 +28,11 @@ public class SpendRepositoryJdbc implements SpendRepository {
     @Override
     public @Nonnull SpendEntity create(@Nonnull SpendEntity spend) {
         return xaTransactionTemplate.execute(() -> {
-            SpendEntity resultSpend = spendDao.create(spend);
             if (spend.getCategory() != null) {
-                categoryDao.findCategoryById(spend.getCategory().getId())
-                        .orElseGet(() -> categoryDao.create(spend.getCategory()));
+                spend.setCategory(categoryDao.findCategoryByUsernameAndCategoryName(spend.getUsername(), spend.getCategory().getName())
+                        .orElseGet(() -> categoryDao.create(spend.getCategory())));
             }
+            SpendEntity resultSpend = spendDao.create(spend);
             return resultSpend;
         });
     }
