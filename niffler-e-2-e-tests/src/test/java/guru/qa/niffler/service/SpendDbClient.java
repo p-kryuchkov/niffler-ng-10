@@ -5,6 +5,7 @@ import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.repository.SpendRepository;
 import guru.qa.niffler.data.repository.impl.SpendRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.SpendRepositoryJdbc;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
@@ -14,11 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNull;
+
 public class SpendDbClient implements SpendClient {
 
     private static final Config CFG = Config.getInstance();
 
-    private final SpendRepository spendRepository = new SpendRepositoryHibernate();
+    private final SpendRepository spendRepository = new SpendRepositoryJdbc();
 
     private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
             CFG.spendJdbcUrl()
@@ -27,10 +30,16 @@ public class SpendDbClient implements SpendClient {
     @Step("Create spend: {spend}")
     @Override
     public @Nonnull SpendJson createSpend(@Nonnull SpendJson spend) {
-        return xaTransactionTemplate.execute(() ->
-                SpendJson.fromEntity(spendRepository.create(SpendEntity.fromJson(spend)))
-        );
-    }
+            return requireNonNull(
+                    xaTransactionTemplate.execute(
+                            () -> SpendJson.fromEntity(
+                                    spendRepository.create(
+                                            SpendEntity.fromJson(spend)
+                                    )
+                            )
+                    )
+            );
+        }
 
     @Step("Update spend: {spend}")
     @Override
