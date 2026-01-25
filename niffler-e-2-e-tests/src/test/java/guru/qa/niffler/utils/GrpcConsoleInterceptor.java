@@ -4,9 +4,13 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.util.JsonFormat;
 import io.grpc.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class GrpcConsoleInterceptor implements io.grpc.ClientInterceptor {
     private static final JsonFormat.Printer printer = JsonFormat.printer();
+    final static Logger logger = LoggerFactory.getLogger(GrpcConsoleInterceptor.class);
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> methodDescriptor, CallOptions callOptions, Channel channel) {
@@ -15,7 +19,7 @@ public class GrpcConsoleInterceptor implements io.grpc.ClientInterceptor {
             @Override
             public void sendMessage(Object message) {
                 try {
-                    System.out.println("Request: " + printer.print((MessageOrBuilder) message));
+                    logger.info("Request: {}", printer.print((MessageOrBuilder) message));
                 } catch (InvalidProtocolBufferException e) {
                     throw new RuntimeException(e);
                 }
@@ -28,7 +32,7 @@ public class GrpcConsoleInterceptor implements io.grpc.ClientInterceptor {
                     @Override
                     public void onMessage(Object message) {
                         try {
-                            System.out.println("Response    : " + printer.print((MessageOrBuilder) message));
+                            logger.info("Response: {}", printer.print((MessageOrBuilder) message));
                         } catch (InvalidProtocolBufferException e) {
                             throw new RuntimeException(e);
                         }
