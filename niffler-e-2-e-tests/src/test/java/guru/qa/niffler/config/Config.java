@@ -25,12 +25,6 @@ public interface Config {
 
     String spendJdbcUrl();
 
-    String currencyGrpcAddress();
-
-    default int currencyGrpcPort(){
-        return 8092;
-    };
-
     String currencyJdbcUrl();
 
     String githubUrl();
