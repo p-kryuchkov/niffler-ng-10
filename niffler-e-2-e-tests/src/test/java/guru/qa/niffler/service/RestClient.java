@@ -32,12 +32,15 @@ public class RestClient {
     }
 
     public RestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {
-        this(baseUrl, JacksonConverterFactory.create(), followRedirect, interceptors);
+        this(baseUrl, JacksonConverterFactory.create(), followRedirect , HttpLoggingInterceptor.Level.BASIC, interceptors);
+    }
+    public RestClient(String baseUrl, boolean followRedirect, HttpLoggingInterceptor.Level level, @Nullable Interceptor... interceptors) {
+        this(baseUrl, JacksonConverterFactory.create(), followRedirect , level, interceptors);
     }
 
     @SafeVarargs
-    public RestClient(String baseUrl, Converter.Factory converterFactory, boolean followRedirect, @Nullable Interceptor... interceptors) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+    public RestClient(String baseUrl, Converter.Factory converterFactory, boolean followRedirect, HttpLoggingInterceptor.Level level, @Nullable Interceptor... interceptors) {
+        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .followRedirects(followRedirect)
                 .cookieJar(
                         new JavaNetCookieJar(
@@ -51,7 +54,7 @@ public class RestClient {
             for (Interceptor interceptor : interceptors) {
                 builder.addNetworkInterceptor(interceptor);
             }
-        builder.addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC));
+        builder.addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(level));
         builder.addNetworkInterceptor(new AllureOkHttp3());
         this.okHttpClient = builder.build();
         this.retrofit = new Retrofit.Builder()
