@@ -87,13 +87,12 @@ class UserServiceTest {
                     "3o6OhYSdhJcGS9lINjlQ2GDd04NawEhtJS9FDiYnBHtm/1OQT7/kugi26hu8idwRWhfU25re1yGPdBLUcHh90V9IhzZXBD8IChwnGmxB7MtnkBDCKOCoy05MbgibDu4lqgIzpWXD5y8+zdayD" +
                     "mpTsYYejJUOeC8HR+GdBUBLpdhJG8XVoYnD2QQqmgFElD1Q3M/ODhzMBez4wUrHnX0yGq7c4XWmNmIOZmYLlU44TiyOOn927dc2LJKazFp1MTqGytXERsYbyoAVwYa0hNaCMKTJDSgBT30rwixN" +
                     "ggwisNq4EEJLoIa+iSEIBXWaxMc7sJuad7LhMrolJUztJWwW+DijaTMnK1y5pj9oQLtwauq2bZrGgtAQevdetxuKt7/TovB8ymg7eP7wb/4M3oNmwO9t/g6+ONtXHiFxAWuilw4ysWln4oat0YuCk0" +
-                    "LMAPR2sG6JWgkMiI8E44CI+IDAliRVECAE4WhZg/rX3CAAAAAElFTkSuQmCC",
-            ""
+                    "LMAPR2sG6JWgkMiI8E44CI+IDAliRVECAE4WhZg/rX3CAAAAAElFTkSuQmCC"
     })
     @ParameterizedTest
-    void userShouldBeUpdated(String photo,
-                             @Mock UserRepository userRepository,
-                             @Mock MessagingService messagingService) {
+    void shouldUpdateAdditionalFields(String photoForTest,
+                                      @Mock UserRepository userRepository,
+                                      @Mock MessagingService messagingService) {
         when(userRepository.findByUsername(eq(mainTestUserName)))
                 .thenReturn(Optional.of(mainTestUser));
 
@@ -102,15 +101,13 @@ class UserServiceTest {
 
         userService = new UserService(userRepository, messagingService);
 
-        final String photoForTest = photo.isEmpty() ? null : photo;
-
         final UserJson toBeUpdated = new UserJson(
                 null,
                 mainTestUserName,
-                "Test",
-                "TestSurname",
+                null,
+                null,
                 "Test TestSurname",
-                CurrencyValues.USD,
+                CurrencyValues.RUB,
                 photoForTest,
                 null,
                 null
@@ -118,10 +115,97 @@ class UserServiceTest {
         final UserJson result = userService.update(toBeUpdated);
         assertEquals(mainTestUserUuid, result.id());
         assertEquals("Test TestSurname", result.fullname());
-        assertEquals(CurrencyValues.USD, result.currency());
         assertEquals(photoForTest, result.photo());
+    }
 
+    @Test
+    void shouldClearPhotoIfEmpty(@Mock UserRepository userRepository,
+                                 @Mock MessagingService messagingService) {
+        when(userRepository.findByUsername(eq(mainTestUserName)))
+                .thenReturn(Optional.of(mainTestUser));
+
+        when(userRepository.save(any(UserEntity.class)))
+                .thenAnswer(answer -> answer.getArguments()[0]);
+
+        userService = new UserService(userRepository, messagingService);
+
+        final UserJson toBeUpdated = new UserJson(
+                null,
+                mainTestUserName,
+                null,
+                null,
+                "Test TestSurname",
+                CurrencyValues.RUB,
+                "",
+                null,
+                null
+        );
+        final UserJson result = userService.update(toBeUpdated);
+        assertNull(result.photo());
+    }
+
+    @Test
+    void shouldSaveUser(@Mock UserRepository userRepository,
+                                @Mock MessagingService messagingService) {
+        UserEntity existing = new UserEntity();
+        existing.setId(mainTestUserUuid);
+        existing.setUsername(mainTestUserName);
+
+        when(userRepository.findByUsername(mainTestUserName))
+                .thenReturn(Optional.of(existing));
+
+        when(userRepository.save(any(UserEntity.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        userService = new UserService(userRepository, messagingService);
+
+        UserJson toBeUpdated = new UserJson(
+                null,
+                mainTestUserName,
+                null,
+                null,
+                null,
+                CurrencyValues.USD,
+                null,
+                null,
+                null
+        );
+
+        UserJson result = userService.update(toBeUpdated);
         verify(userRepository, times(1)).save(any(UserEntity.class));
+    }
+
+    @Test
+    void shouldUpdateBaseFields(@Mock UserRepository userRepository,
+                                @Mock MessagingService messagingService) {
+        UserEntity existing = new UserEntity();
+        existing.setId(mainTestUserUuid);
+        existing.setUsername(mainTestUserName);
+
+        when(userRepository.findByUsername(mainTestUserName))
+                .thenReturn(Optional.of(existing));
+
+        when(userRepository.save(any(UserEntity.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        userService = new UserService(userRepository, messagingService);
+
+        UserJson toBeUpdated = new UserJson(
+                null,
+                mainTestUserName,
+                null,
+                null,
+                null,
+                CurrencyValues.USD,
+                null,
+                null,
+                null
+        );
+
+        UserJson result = userService.update(toBeUpdated);
+
+        assertEquals(mainTestUserUuid, result.id());
+        assertEquals(CurrencyValues.USD, result.currency());
     }
 
     @Test
@@ -205,6 +289,12 @@ class UserServiceTest {
         assertEquals(notExistingUser, result.username());
         assertEquals(CurrencyValues.RUB, result.currency());
         assertNull(result.id());
+        assertNull(result.firstname());
+        assertNull(result.surname());
+        assertNull(result.fullname());
+        assertNull(result.photo());
+        assertNull(result.photoSmall());
+        assertNull(result.friendshipStatus());
     }
 
     @Test
@@ -324,6 +414,25 @@ class UserServiceTest {
         inviteFromTargetUserToCurrentUser.setRequester(secondTestUser);
         inviteFromTargetUserToCurrentUser.setAddressee(mainTestUser);
         mainTestUser.setFriendshipAddressees(List.of(inviteFromTargetUserToCurrentUser));
+
+        when(userRepository.findByUsername(eq(mainTestUser.getUsername()))).thenReturn(Optional.of(mainTestUser));
+        when(userRepository.findByUsername(eq(secondTestUser.getUsername()))).thenReturn(Optional.of(secondTestUser));
+
+        userService = new UserService(userRepository, messagingService);
+        UserJson result = userService.acceptFriendshipRequest(mainTestUserName, secondTestUser.getUsername());
+        verify(userRepository, times(1))
+                .save(eq(mainTestUser));
+        assertEquals(FRIEND, result.friendshipStatus());
+    }
+
+    @Test
+    void acceptFriendshipRequestReturnUserWithStatusFriendIfFriendshipAccepted(@Mock UserRepository userRepository,
+                                                                               @Mock MessagingService messagingService) {
+        FriendshipEntity acceptedFriendship = new FriendshipEntity();
+        acceptedFriendship.setRequester(secondTestUser);
+        acceptedFriendship.setAddressee(mainTestUser);
+        acceptedFriendship.setStatus(ACCEPTED);
+        mainTestUser.setFriendshipAddressees(List.of(acceptedFriendship));
 
         when(userRepository.findByUsername(eq(mainTestUser.getUsername()))).thenReturn(Optional.of(mainTestUser));
         when(userRepository.findByUsername(eq(secondTestUser.getUsername()))).thenReturn(Optional.of(secondTestUser));

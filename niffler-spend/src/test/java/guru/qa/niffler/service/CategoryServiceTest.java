@@ -242,6 +242,59 @@ class CategoryServiceTest {
     }
 
     @Test
+    void updateReturnUnarchiveCategoryWhenNotArchivedCategoriesMoreThenMaxCategoriesSize(@Mock CategoryRepository categoryRepository) {
+        final String username = "duck";
+        final UUID id = UUID.randomUUID();
+        final CategoryEntity archiveCat = new CategoryEntity();
+        archiveCat.setId(id);
+        archiveCat.setUsername(username);
+        archiveCat.setName("Магазины");
+        archiveCat.setArchived(false);
+
+        final CategoryEntity unArchiveCat = new CategoryEntity();
+        unArchiveCat.setId(id);
+        unArchiveCat.setUsername(username);
+        unArchiveCat.setName("Продукты");
+        unArchiveCat.setArchived(false);
+
+        CategoryService categoryService = new CategoryService(categoryRepository);
+        when(categoryRepository.findByUsernameAndId(eq(username), eq(id))).thenReturn(Optional.of(archiveCat));
+        when(categoryRepository.save(unArchiveCat)).thenReturn(unArchiveCat);
+        CategoryJson result = categoryService.update(CategoryJson.fromEntity(unArchiveCat));
+        verify(categoryRepository, times(1))
+                .save(eq(unArchiveCat));
+        assertEquals("Продукты", result.name());
+        assertFalse(result.archived());
+    }
+
+    @Test
+    void updateReturnArchiveCategoryWhenNotArchivedCategoriesMoreThenMaxCategoriesSize(@Mock CategoryRepository categoryRepository) {
+        final String username = "duck";
+        final UUID id = UUID.randomUUID();
+        final CategoryEntity firstCategory = new CategoryEntity();
+        firstCategory.setId(id);
+        firstCategory.setUsername(username);
+        firstCategory.setName("Магазины");
+        firstCategory.setArchived(true);
+
+        final CategoryEntity secondCategory = new CategoryEntity();
+        secondCategory.setId(id);
+        secondCategory.setUsername(username);
+        secondCategory.setName("Продукты");
+        secondCategory.setArchived(true);
+
+        CategoryService categoryService = new CategoryService(categoryRepository);
+        when(categoryRepository.findByUsernameAndId(eq(username), eq(id))).thenReturn(Optional.of(firstCategory));
+        when(categoryRepository.save(secondCategory)).thenReturn(secondCategory);
+        CategoryJson result = categoryService.update(CategoryJson.fromEntity(secondCategory));
+        verify(categoryRepository, times(1))
+                .save(eq(secondCategory));
+        assertEquals(id, result.id());
+        assertEquals("Продукты", result.name());
+        assertTrue(result.archived());
+    }
+
+    @Test
     void updateReturnUpdateArchiveCategoryWhenArchivedCategoriesMoreThenMaxCategoriesSize(@Mock CategoryRepository categoryRepository) {
         final String username = "duck";
         final UUID id = UUID.randomUUID();
