@@ -25,7 +25,7 @@ services:
     container_name: zookeeper
     image: confluentinc/cp-zookeeper:7.3.2
     ports:
-      - - 22181:2181
+      - 2181:2181
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
     networks:
@@ -193,6 +193,9 @@ services:
       - BUILD_URL=${BUILD_URL}
       - HEAD_COMMIT_MESSAGE=${HEAD_COMMIT_MESSAGE}
       - EXECUTION_TYPE=${EXECUTION_TYPE}
+    volumes:
+      - ./:/niffler
+      - allure-results:/niffler/niffler-e-2-e-tests/build/allure-results
     depends_on:
       frontend.niffler.dc:
         condition: service_started
@@ -208,6 +211,8 @@ services:
     environment:
       - CHECK_RESULTS_EVERY_SECONDS=NONE
       - KEEP_HISTORY=1
+    volumes:
+      - allure-results:/app/allure-results
     ports:
       - 5050:5050
     networks:
@@ -229,3 +234,6 @@ services:
 networks:
   niffler-network:
     driver: bridge
+volumes:
+  allure-results:
+    external: true
