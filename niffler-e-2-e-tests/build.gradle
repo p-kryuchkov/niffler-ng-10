@@ -50,38 +50,13 @@ configurations {
     jaxb
 }
 
-tasks.register('genJaxb') {
-    ext.sourcesDir = layout.buildDirectory.dir("generated-sources/jaxb").get()
-    ext.classesDir = layout.buildDirectory.dir("classes/jaxb").get()
-    ext.schema = "${userdataWsdlUrl}"
-
-    outputs.dir classesDir
-
-    doLast() {
-        project.ant {
-            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
-                    classpath: configurations.jaxb.asPath
-            mkdir(dir: sourcesDir)
-            mkdir(dir: classesDir)
-
-            xjc(destdir: sourcesDir, schema: schema, package: "guru.qa.niffler.userdata.wsdl") {
-                arg(value: "-wsdl")
-                produces(dir: sourcesDir, includes: "**/*.java")
-            }
-
-            javac(destdir: classesDir, source: 21, target: 21, debug: true,
-                    debugLevel: "lines,vars,source",
-                    classpath: configurations.jaxb.asPath) {
-                src(path: sourcesDir)
-                include(name: "**/*.java")
-                include(name: "*.java")
-            }
-
-            copy(todir: classesDir) {
-                fileset(dir: sourcesDir, erroronmissingdir: false) {
-                    exclude(name: "**/*.java")
-                }
-            }
+xjcGeneration {
+    defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
+    schemas {
+        wsdlSchema {
+            schemaFile = 'userdata.wsdl'
+            javaPackageName = 'guru.qa.jaxb.userdata'
+            sourceSet = 'test'
         }
     }
 }

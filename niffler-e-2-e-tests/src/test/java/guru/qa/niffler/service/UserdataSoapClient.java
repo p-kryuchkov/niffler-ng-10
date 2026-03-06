@@ -1,6 +1,7 @@
 package guru.qa.niffler.service;
 
 import com.google.common.base.Stopwatch;
+import guru.qa.jaxb.userdata.*;
 import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserDataApi;
 import guru.qa.niffler.api.UserDataSoapApi;
@@ -10,7 +11,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
 import io.qameta.allure.Step;
-import jaxb.userdata.*;
+
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;

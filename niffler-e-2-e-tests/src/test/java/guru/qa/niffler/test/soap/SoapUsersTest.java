@@ -4,13 +4,14 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.SoapTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserdataSoapClient;
-import jaxb.userdata.*;
+import guru.qa.jaxb.userdata.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static jaxb.userdata.FriendshipStatus.FRIEND;
-import static jaxb.userdata.FriendshipStatus.INVITE_RECEIVED;
+
+import static guru.qa.jaxb.userdata.FriendshipStatus.FRIEND;
+import static guru.qa.jaxb.userdata.FriendshipStatus.INVITE_RECEIVED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SoapTest

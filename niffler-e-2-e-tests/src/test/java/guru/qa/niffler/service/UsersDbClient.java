@@ -14,7 +14,6 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
 import io.qameta.allure.Step;
-import jaxb.userdata.FriendshipStatus;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -110,7 +109,7 @@ public class UsersDbClient implements UsersClient {
                     authUserRepository.createUser(authUser);
                     UserEntity friend = udUserRepository.createUser(userEntity(username));
                     udUserRepository.sendInvitation(targetEntity, friend);
-                    result.add(UserJson.fromEntity(friend, FriendshipStatus.INVITE_RECEIVED));
+                    result.add(UserJson.fromEntity(friend, guru.qa.jaxb.userdata.FriendshipStatus.INVITE_RECEIVED));
                     return null;
                 });
             }
@@ -132,7 +131,7 @@ public class UsersDbClient implements UsersClient {
                     authUserRepository.createUser(authUser);
                     UserEntity friend = udUserRepository.createUser(userEntity(username));
                     udUserRepository.sendInvitation(friend, targetEntity);
-                    result.add(UserJson.fromEntity(friend, FriendshipStatus.INVITE_SENT));
+                    result.add(UserJson.fromEntity(friend, guru.qa.jaxb.userdata.FriendshipStatus.INVITE_SENT));
                     return null;
                 });
             }
@@ -156,7 +155,7 @@ public class UsersDbClient implements UsersClient {
                             authUserRepository.createUser(authUser);
                             UserEntity friend = udUserRepository.createUser(userEntity(username));
                             udUserRepository.addFriend(targetEntity, friend);
-                            result.add(UserJson.fromEntity(friend, FriendshipStatus.FRIEND));
+                            result.add(UserJson.fromEntity(friend, guru.qa.jaxb.userdata.FriendshipStatus.FRIEND));
                             return null;
                         }
                 );

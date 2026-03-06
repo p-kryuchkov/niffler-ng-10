@@ -2,6 +2,7 @@ package guru.qa.niffler.jupiter.extension;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
+import guru.qa.jaxb.userdata.FriendshipStatus;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
@@ -12,7 +13,7 @@ import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.service.AuthApiClient;
 import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.service.UsersApiClient;
-import jaxb.userdata.FriendshipStatus;
+
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
