@@ -8,13 +8,14 @@ import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Token;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.UserType;
+import guru.qa.niffler.jupiter.annotation.meta.GqlTest;
 import guru.qa.niffler.model.CurrencyValues;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@GqlTest
 public class CurrenciesGraphQlTest extends BaseGraphQlTest{
     @User
     @Test

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.user.UserEntity;
-import jaxb.userdata.FriendshipStatus;
+
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

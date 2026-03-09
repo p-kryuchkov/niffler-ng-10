@@ -14,7 +14,7 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.utils.RandomDataUtils;
 import io.qameta.allure.Step;
-import jaxb.userdata.FriendshipStatus;
+import guru.qa.niffler.model.FriendshipStatus;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;

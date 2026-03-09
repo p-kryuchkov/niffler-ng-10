@@ -12,11 +12,10 @@ import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.service.AuthApiClient;
 import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.service.UsersApiClient;
-import jaxb.userdata.FriendshipStatus;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
-
+import guru.qa.niffler.model.FriendshipStatus;
 import java.util.Optional;
 
 public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver {

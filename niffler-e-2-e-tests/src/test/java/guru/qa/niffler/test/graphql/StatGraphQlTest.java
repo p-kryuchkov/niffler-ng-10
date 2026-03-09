@@ -5,12 +5,13 @@ import com.apollographql.java.client.ApolloCall;
 import com.apollographql.java.rx2.Rx2Apollo;
 import guru.qa.StatQuery;
 import guru.qa.niffler.jupiter.annotation.*;
+import guru.qa.niffler.jupiter.annotation.meta.GqlTest;
 import guru.qa.niffler.model.CurrencyValues;
 import org.junit.jupiter.api.Test;
 
 import static guru.qa.type.CurrencyValues.EUR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@GqlTest
 public class StatGraphQlTest extends BaseGraphQlTest {
 
     @User

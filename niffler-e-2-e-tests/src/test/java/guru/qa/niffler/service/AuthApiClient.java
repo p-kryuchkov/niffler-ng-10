@@ -33,6 +33,8 @@ public class AuthApiClient extends RestClient {
 
 
     public String apiLogin(@Nonnull String username, @Nonnull String password) {
+        ThreadSafeCookieStore.INSTANCE.removeAll();
+        ApiLoginExtension.setCode(null);
         final String codeVerifier = generateCodeVerifier();
         final String codeChallenge = generateCodeChallenge(codeVerifier);
         try {
