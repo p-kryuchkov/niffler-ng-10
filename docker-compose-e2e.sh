@@ -9,6 +9,7 @@ export ALLURE_DOCKER_API=http://allure:5050/
 export HEAD_COMMIT_MESSAGE="local build"
 export ARCH=$(uname -m)
 export BROWSER=${1:-chrome}
+export BUILD_MODE=${2:-nobuild}
 
 docker compose down
 docker_containers=$(docker ps -a -q)
@@ -17,6 +18,11 @@ required_docker_images=$(docker compose config --images)
 need_build=false
 
 echo "Browser: $BROWSER"
+echo "Build mode: $BUILD_MODE"
+
+if [ "$BUILD_MODE" = "build" ]; then
+          need_build=true
+fi
 
 echo '### Java version ###'
 java --version
