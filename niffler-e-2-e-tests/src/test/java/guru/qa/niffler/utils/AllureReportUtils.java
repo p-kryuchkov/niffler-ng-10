@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class AllureReportUtils {
-    private static final Path ALLURE_RESULTS_PATH = Path.of("build", "allure-results");
+    private static final Path ALLURE_RESULTS_PATH = Path.of("niffler-e-2-e-tests", "build", "allure-results");
 
     public static List<AllureResultFile> readAllureResultFiles() {
         try (Stream<Path> files = Files.list(ALLURE_RESULTS_PATH)) {

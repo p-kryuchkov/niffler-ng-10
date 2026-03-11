@@ -15,7 +15,10 @@ public interface AllureApi {
     Call<Void> createProject(@Body CreateProjectRequest request);
 
     @POST("/allure-docker-service/send-results")
-    Call<Void> sendResults(@Body SendResultsRequest request);
+    Call<Void> sendResults(
+            @Query("project_id") String projectId,
+            @Query("force_project_creation") boolean forceProjectCreation,
+            @Body SendResultsRequest request);
 
     @GET("/allure-docker-service/generate-report")
     Call<Void> generateReport(

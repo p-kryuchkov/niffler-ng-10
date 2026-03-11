@@ -34,6 +34,10 @@ for image in $required_docker_images; do
 done
 
 if [ "$need_build" = true ]; then
+  if [ ! -z "$docker_images" ]; then
+    echo "### Remove images: $docker_images ###"
+    docker rmi $docker_images
+  fi
   echo "### Build images ###"
   bash ./gradlew clean
   bash ./gradlew jibDockerBuild -x :niffler-e-2-e-tests:test -Duser.timezone=UTC

@@ -1,23 +1,21 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.api.AllureApi;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.allure.AllureResultFile;
 import guru.qa.niffler.model.allure.CreateProjectRequest;
 import guru.qa.niffler.model.allure.SendResultsRequest;
-import guru.qa.niffler.utils.AllureReportUtils;
 import retrofit2.Response;
 
 import java.io.IOException;
 import java.util.List;
 
-import static ch.qos.logback.core.util.OptionHelper.getEnv;
 import static guru.qa.niffler.utils.AllureReportUtils.readAllureResultFiles;
 
 public class AllureApiClient extends RestClient {
     private final AllureApi allureApi;
-    private static final String allureBaseUrl = getEnv("ALLURE_DOCKER_API");
-    private static final String PROJECT_ID = "Niffler";
+    private static final String allureBaseUrl =
+            System.getenv().getOrDefault("ALLURE_DOCKER_API", "http://localhost:5050/");
+    private static final String PROJECT_ID = "niffler";
 
     public AllureApiClient() {
         super(allureBaseUrl);
@@ -26,13 +24,12 @@ public class AllureApiClient extends RestClient {
 
     public void createProject() {
         CreateProjectRequest request = new CreateProjectRequest(PROJECT_ID);
-
         try {
             Response<Void> response = allureApi.createProject(request).execute();
 
-            if (response.code() != 200) {
+            if (!response.isSuccessful()) {
                 throw new IllegalStateException(
-                        "Failed to create allure project. Code: "
+                                "Failed to create allure project. Code: "
                                 + response.code()
                                 + ", error: " + getErrorBody(response)
                 );
@@ -44,10 +41,9 @@ public class AllureApiClient extends RestClient {
 
     public void sendResults() {
         List<AllureResultFile> resultFiles = readAllureResultFiles();
-        SendResultsRequest request = new SendResultsRequest(PROJECT_ID, resultFiles, true);
-
+        SendResultsRequest request = new SendResultsRequest(resultFiles);
         try {
-            Response<Void> response = allureApi.sendResults(request).execute();
+            Response<Void> response = allureApi.sendResults(PROJECT_ID, true,request).execute();
 
             if (!response.isSuccessful()) {
                 throw new IllegalStateException(
