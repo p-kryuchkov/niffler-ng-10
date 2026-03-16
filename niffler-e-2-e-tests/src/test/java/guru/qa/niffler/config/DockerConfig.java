@@ -9,8 +9,9 @@ public String frontUrl() {
         return "http://frontend.niffler.dc/";
     }
 
-    @Override
-    public String authUrl() {
+@Nonnull
+@Override
+public String authUrl() {
         return "http://auth.niffler.dc:9000/";
     }
 
