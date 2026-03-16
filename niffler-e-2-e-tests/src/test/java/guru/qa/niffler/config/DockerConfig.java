@@ -3,8 +3,9 @@ package guru.qa.niffler.config;
 public enum DockerConfig implements Config{
     INSTANCE;
 
-    @Override
-    public String frontUrl() {
+@Nonnull
+@Override
+public String frontUrl() {
         return "http://frontend.niffler.dc/";
     }
 
