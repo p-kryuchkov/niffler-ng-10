@@ -37,6 +37,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "org.springframework.security:spring-security-test:${project.ext.springSecurityTestVersion}"
+  //  testImplementation "org.wiremock:wiremock-jetty12:${project.ext.wireMockVersion}"
+    testImplementation "org.wiremock:wiremock-grpc-extension-jetty12:0.11.0"
 }
 
 xjcGeneration {
@@ -98,4 +100,24 @@ tasks.register('printVersion') {
     doLast {
         println project.version
     }
+}
+
+def grpcCommonProtoDir = project(':niffler-grpc-common').file('src/main/proto')
+def wiremockGrpcDir = file("$projectDir/src/test/resources/wiremock/grpc")
+
+tasks.register('generateGrpcDescriptor', Exec) {
+    group = 'protobuf'
+    description = 'Manually generates WireMock descriptor from proto in :niffler-grpc-common'
+
+    doFirst {
+        wiremockGrpcDir.mkdirs()
+    }
+
+    commandLine(
+            'protoc',
+            "--proto_path=${grpcCommonProtoDir}",
+            '--include_imports',
+            "--descriptor_set_out=${wiremockGrpcDir}/currency.dsc",
+            "${grpcCommonProtoDir}/niffler-currency.proto"
+    )
 }
