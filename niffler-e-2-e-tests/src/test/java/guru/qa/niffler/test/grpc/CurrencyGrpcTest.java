@@ -2,6 +2,7 @@ package guru.qa.niffler.test.grpc;
 
 import com.google.protobuf.Empty;
 import guru.qa.niffler.grpc.*;
+import guru.qa.niffler.jupiter.annotation.meta.GrpcTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@GrpcTest
 public class CurrencyGrpcTest extends BaseGrpcTest {
     @Test
     void allCurrenciesShouldReturnedTest() {

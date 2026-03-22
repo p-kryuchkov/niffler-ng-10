@@ -20,7 +20,6 @@ public class AllureBackendLogsExtension implements SuiteExtension {
         final String caseId = UUID.randomUUID().toString();
         allureLifecycle.scheduleTestCase(new TestResult().setUuid(caseId).setName(caseName));
         allureLifecycle.startTestCase(caseId);
-
         addAttachmentForService(allureLifecycle, "niffler-auth");
         addAttachmentForService(allureLifecycle, "niffler-currency");
         addAttachmentForService(allureLifecycle, "niffler-gateway");

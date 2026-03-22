@@ -8,12 +8,13 @@ import guru.qa.RecursiveFriendsQuery;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Token;
 import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.jupiter.annotation.meta.GqlTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@GqlTest
 public class UserGraphQlTest extends BaseGraphQlTest {
     @User(
             friends = 2

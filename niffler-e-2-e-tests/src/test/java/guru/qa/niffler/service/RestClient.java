@@ -24,11 +24,11 @@ public class RestClient {
     private final Retrofit retrofit;
 
     public RestClient(String baseUrl) {
-        this(baseUrl, JacksonConverterFactory.create(), false, null);
+        this(baseUrl, JacksonConverterFactory.create(), false, HttpLoggingInterceptor.Level.BASIC);
     }
 
     public RestClient(String baseUrl, boolean followRedirect) {
-        this(baseUrl, JacksonConverterFactory.create(), followRedirect, null);
+        this(baseUrl, JacksonConverterFactory.create(), followRedirect, HttpLoggingInterceptor.Level.BASIC);
     }
 
     public RestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {

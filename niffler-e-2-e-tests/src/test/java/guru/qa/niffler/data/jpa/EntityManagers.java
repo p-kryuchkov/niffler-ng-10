@@ -1,11 +1,11 @@
 package guru.qa.niffler.data.jpa;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import guru.qa.niffler.data.tpl.DataSources;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.naming.InitialContext;
@@ -29,7 +29,8 @@ public class EntityManagers {
                         jdbcUrl,
                         key -> {
                             DataSources.dataSource(jdbcUrl);
-                            return Persistence.createEntityManagerFactory(jdbcUrl);
+                            final String persistenceUnitName = StringUtils.substringAfter(jdbcUrl, "5432/");
+                            return Persistence.createEntityManagerFactory(persistenceUnitName);
                         }
                 ).createEntityManager()
         );
